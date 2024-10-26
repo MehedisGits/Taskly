@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:taskly/screens/onboarding/loginScreen.dart';
+import 'package:taskly/utils/assetsPath.dart';
 
 import '../../style/style.dart';
 
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 children: [
                   // SVG Image
                   SvgPicture.asset(
-                    "assets/images/onboarding_image.svg",
+                    AssetsPath.onBoardingSvg,
                     alignment: Alignment.center,
                   ),
 
