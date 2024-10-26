@@ -111,13 +111,17 @@ Ink SuccessButtonChild(String buttonText) {
   );
 }
 
-SvgPicture ScreenBackground(context) {
-  return SvgPicture.asset(
-    'assets/images/background.svg',
-    alignment: Alignment.center,
-    width: MediaQuery.of(context).size.width,
-    height: MediaQuery.of(context).size.height,
-    fit: BoxFit.cover,
+SizedBox ScreenBackground(context) {
+  return SizedBox(
+    width: double.infinity,
+    height: double.infinity,
+    child: SvgPicture.asset(
+      'assets/images/background.svg',
+      alignment: Alignment.center,
+      width: MediaQuery.sizeOf(context).width,
+      height: MediaQuery.sizeOf(context).height,
+      fit: BoxFit.cover,
+    ),
   );
 }
 

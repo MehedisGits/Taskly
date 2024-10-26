@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/style/style.dart';
 
 class PinVerificationScreen extends StatefulWidget {
   const PinVerificationScreen({super.key});
@@ -10,6 +11,12 @@ class PinVerificationScreen extends StatefulWidget {
 class _PinVerificationScreenState extends State<PinVerificationScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Stack(
+        children: [
+          ScreenBackground(context),
+        ],
+      ),
+    );
   }
 }
