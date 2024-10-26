@@ -40,6 +40,8 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
                   animationType: AnimationType.fade,
                   animationDuration: const Duration(milliseconds: 300),
                   enableActiveFill: true,
+                  onCompleted: (v) {},
+                  onChanged: (v) {},
                 ),
                 const SizedBox(
                   height: 20,
