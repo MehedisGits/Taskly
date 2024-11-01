@@ -156,7 +156,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ),
                     const SizedBox(height: 20),
                     // Register Button
-                    Container(
+                    SizedBox(
                       width: double.infinity, // Full-width button
                       child: ElevatedButton(
                         onPressed: () {

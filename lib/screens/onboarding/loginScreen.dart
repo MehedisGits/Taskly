@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:taskly/screens/onboarding/emailVerificationScreen.dart';
 import 'package:taskly/screens/onboarding/registrationScreen.dart';
@@ -110,7 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => RegistrationScreen(),
+                                    builder: (context) =>
+                                        const RegistrationScreen(),
                                   ));
                             },
                             child: const Text(

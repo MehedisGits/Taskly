@@ -148,8 +148,8 @@ PinTheme AppOtpStyle() {
     // Rounded corners for a Material feel
     borderRadius: BorderRadius.circular(8),
     // Add subtle shadow for elevation
-    fieldHeight: 56,
-    fieldWidth: 56,
+    fieldHeight: 48,
+    fieldWidth: 48,
     borderWidth: 1.0,
     shape: PinCodeFieldShape.box,
   );

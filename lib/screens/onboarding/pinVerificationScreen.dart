@@ -1,3 +1,6 @@
+// ignore: file_names
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:taskly/screens/onboarding/loginScreen.dart';
@@ -34,6 +37,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
                   height: 24,
                 ),
                 PinCodeTextField(
+                  keyboardType: TextInputType.number,
                   appContext: context,
                   length: 6,
                   pinTheme: AppOtpStyle(),
