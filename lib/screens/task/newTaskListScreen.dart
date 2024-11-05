@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/style/style.dart';
 
 class NewTaskListScreen extends StatefulWidget {
   const NewTaskListScreen({super.key});
@@ -12,101 +13,124 @@ class _taskListScreenState extends State<NewTaskListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Card(
-                  margin: EdgeInsets.all(8),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          '17',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w700),
-                        ),
-                        Text('Cancelled')
-                      ],
+            padding: const EdgeInsets.all(12.0),
+            child: Stack(
+              children: [
+                ScreenBackground(context),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 50,
                     ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Card(
-                  margin: EdgeInsets.all(8),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Center(
-                    child: Column(
+                    Row(
                       children: [
-                        Text(
-                          '17',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w700),
+                        Expanded(
+                          flex: 1,
+                          child: Card(
+                            margin: EdgeInsets.all(8),
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '17',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                    Text('Cancelled')
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        Text('Completed')
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Card(
-                  margin: EdgeInsets.all(8),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          '17',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w700),
+                        Expanded(
+                          flex: 1,
+                          child: Card(
+                            margin: EdgeInsets.all(8),
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '17',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                    Text('Completed')
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        Text('Progress')
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Card(
-                  margin: EdgeInsets.all(8),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          '17',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w700),
+                        Expanded(
+                          flex: 1,
+                          child: Card(
+                            margin: EdgeInsets.all(8),
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '17',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                    Text('Progress')
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        Text('New Task')
+                        Expanded(
+                          flex: 1,
+                          child: Card(
+                            margin: EdgeInsets.all(8),
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '17',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                    Text('New Task')
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
+                    )
+                  ],
                 ),
-              ),
-            ],
-          )
-        ],
-      ),
-    ));
+              ],
+            )));
   }
 }
