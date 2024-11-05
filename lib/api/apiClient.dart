@@ -38,7 +38,7 @@ Future<bool> RegistrationRequest(formValues) async {
 }
 
 Future<bool> VerifyEmailRequest(Email) async {
-  Uri URL = Uri.parse("$baseURL/RecoverVerifyEmail");
+  Uri URL = Uri.parse("$baseURL/RecoverVerifyEmail/$Email");
   var response = await http.get(URL, headers: reqHeader);
   int resultCode = response.statusCode;
   var resultBody = jsonDecode(response.body);
@@ -53,9 +53,37 @@ Future<bool> VerifyEmailRequest(Email) async {
 }
 
 Future<bool> VerifyOTPRequest(Email, OTP) async {
-  return true;
+  Uri URL = Uri.parse("$baseURL/RecoverVerifyOtp/$Email/$OTP");
+
+  var response = await http.get(URL, headers: reqHeader);
+
+  int resultCode = response.statusCode;
+  var resultBody = jsonDecode(response.body);
+
+  if (resultCode == 200 && resultBody['status'] == "success") {
+    SuccessToast("Request Success");
+    return true;
+  } else {
+    ErrorToast("Request failed! try again");
+    return false;
+  }
 }
 
 Future<bool> SetPasswordRequest(formValues) async {
-  return true;
+  Uri URL = Uri.parse("$baseURL/RecoverResetPassword");
+
+  var postBody = jsonEncode(formValues);
+
+  var response = await http.post(URL, headers: reqHeader, body: postBody);
+
+  int resultCode = response.statusCode;
+  var resultBody = jsonDecode(response.body);
+
+  if (resultCode == 200 && resultBody['status'] == "success") {
+    SuccessToast("Request Success");
+    return true;
+  } else {
+    ErrorToast("Request failed! try again");
+    return false;
+  }
 }

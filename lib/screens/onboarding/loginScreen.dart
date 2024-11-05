@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/screens/onboarding/emailVerificationScreen.dart';
 import 'package:taskly/screens/onboarding/registrationScreen.dart';
+import 'package:taskly/screens/task/newTaskListScreen.dart';
 
 import '../../style/style.dart';
 
@@ -70,9 +71,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Validate form fields before proceeding
-                      if (_formKey.currentState!.validate()) {
-                        // Process login here
-                      }
+                      // if (_formKey.currentState!.validate()) {
+                      //   // Process login here
+                      // }
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NewTaskListScreen(),
+                        ),
+                        (route) => false,
+                      );
                     },
                     style: AppButtonStyle(),
                     child: SuccessButtonChild('Login'),
