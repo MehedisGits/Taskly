@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/style/style.dart';
 
 class NewTaskListScreen extends StatefulWidget {
   const NewTaskListScreen({super.key});
@@ -9,7 +10,7 @@ class NewTaskListScreen extends StatefulWidget {
 
 class _taskListScreenState extends State<NewTaskListScreen> {
   int _selectedIndex = 0;
-
+  String userName = "Mehedi";
   static const List<Widget> _pages = <Widget>[
     Center(child: Text('New Task List Screen')),
     Center(child: Text('Cancelled Task List Screen')),
@@ -26,29 +27,6 @@ class _taskListScreenState extends State<NewTaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.green,
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Rakibul Islam Mehedi',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white)),
-              Text('rakibulislammehedi4@gmail.com',
-                  style: TextStyle(fontSize: 14, color: Colors.white70)),
-            ],
-          ),
-          leading: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                  'https://avatars.githubusercontent.com/u/125388734?v=4'),
-            ),
-          ),
-        ),
         bottomNavigationBar: NavigationBar(
           indicatorColor: Colors.green,
           backgroundColor: Colors.white,
@@ -85,7 +63,48 @@ class _taskListScreenState extends State<NewTaskListScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TaskCountRow(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              ClipOval(
+                                child: Image.network(
+                                  "https://avatars.githubusercontent.com/u/125388734?v=4",
+                                  height: 48,
+                                  width: 48,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'Good morning, $userName',
+                                    style: TextStyle(
+                                        color: colorLightGrey,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    'rakibulislammehedi4@gmail.com',
+                                    style: TextStyle(color: colorLightGrey),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.notification_important))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     SizedBox(height: 20),
                     Expanded(child: _pages[_selectedIndex])
                   ],
@@ -96,117 +115,3 @@ class _taskListScreenState extends State<NewTaskListScreen> {
 }
 
 //Top Row for Count every Task...
-class TaskCountRow extends StatelessWidget {
-  const TaskCountRow({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Colors.white),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    Text(
-                      '17',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                    ),
-                    Text('Cancelled')
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 8,
-        ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Colors.white),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    Text(
-                      '17',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                    ),
-                    Text('Completed')
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 8,
-        ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Colors.white),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    Text(
-                      '17',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                    ),
-                    Text('Progress')
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 8,
-        ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Colors.white),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    Text(
-                      '17',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                    ),
-                    Text('New Task')
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
