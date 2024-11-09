@@ -1,117 +1,130 @@
 import 'package:flutter/material.dart';
-import 'package:taskly/style/style.dart';
 
-class NewTaskListScreen extends StatefulWidget {
-  const NewTaskListScreen({super.key});
+class Newtasklistscreen extends StatefulWidget {
+  const Newtasklistscreen({super.key});
 
   @override
-  State<NewTaskListScreen> createState() => _taskListScreenState();
+  State<Newtasklistscreen> createState() => _NewtasklistscreenState();
 }
 
-class _taskListScreenState extends State<NewTaskListScreen> {
-  int _selectedIndex = 0;
-  String userName = "Mehedi";
-  static const List<Widget> _pages = <Widget>[
-    Center(child: Text('New Task List Screen')),
-    Center(child: Text('Cancelled Task List Screen')),
-    Center(child: Text('Progress Task List Screen')),
-    Center(child: Text('Completed Task List Screen')),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
+class _NewtasklistscreenState extends State<Newtasklistscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: NavigationBar(
-          indicatorColor: Colors.green,
-          backgroundColor: Colors.white,
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: _onItemTapped,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.new_label_outlined),
-              selectedIcon: Icon(Icons.new_label),
-              label: 'Home',
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Summary Row
+            Row(
+              children: [
+                Expanded(
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.black12,
+                    child: Column(
+                      children: const [
+                        Text(
+                          '09',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600),
+                        ),
+                        Text('Cancelled'),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 4),
+                Expanded(
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.black12,
+                    child: Column(
+                      children: const [
+                        Text(
+                          '12',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600),
+                        ),
+                        Text('Completed'),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 4),
+                Expanded(
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.black12,
+                    child: Column(
+                      children: const [
+                        Text(
+                          '70',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600),
+                        ),
+                        Text('In Progress'),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 4),
+                Expanded(
+                  child: Card(
+                    color: Colors.black12,
+                    elevation: 0,
+                    child: Column(
+                      children: const [
+                        Text(
+                          '32',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600),
+                        ),
+                        Text('New Task'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.cancel_outlined),
-              selectedIcon: Icon(Icons.cancel),
-              label: 'Cancelled',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.timelapse_outlined),
-              selectedIcon: Icon(Icons.timelapse),
-              label: 'Progress',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.check_circle_outline),
-              selectedIcon: Icon(Icons.check_circle),
-              label: 'Completed',
+            SizedBox(height: 10),
+
+            // Task List
+            Expanded(
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) => Card(
+                  elevation: 0.8,
+                  color: Colors.white,
+                  margin: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Heading',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Description',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Stack(
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              ClipOval(
-                                child: Image.network(
-                                  "https://avatars.githubusercontent.com/u/125388734?v=4",
-                                  height: 48,
-                                  width: 48,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 6,
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    'Good morning, $userName',
-                                    style: TextStyle(
-                                        color: colorLightGrey,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  Text(
-                                    'rakibulislammehedi4@gmail.com',
-                                    style: TextStyle(color: colorLightGrey),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.notification_important))
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(height: 20),
-                    Expanded(child: _pages[_selectedIndex])
-                  ],
-                ),
-              ],
-            )));
+      ),
+    );
   }
 }
-
-//Top Row for Count every Task...

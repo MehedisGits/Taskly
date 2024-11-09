@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/screens/onboarding/emailVerificationScreen.dart';
 import 'package:taskly/screens/onboarding/registrationScreen.dart';
-import 'package:taskly/screens/task/newTaskListScreen.dart';
+import 'package:taskly/screens/task/dashboardScreen.dart';
 
 import '../../style/style.dart';
 
