@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:taskly/style/style.dart';
 
 class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TmAppBar({super.key});
@@ -13,30 +12,37 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
     return 'Good evening';
   }
 
-  Widget _buildGreetingRow() {
+  Widget _buildGreetingRow(double screenWidth) {
     return Row(
       children: [
         ClipOval(
           child: Image.network(
             "https://avatars.githubusercontent.com/u/125388734?v=4",
-            height: 48,
-            width: 48,
+            height: screenWidth * 0.1, // Responsive size based on screen width
+            width: screenWidth * 0.1, // Responsive size based on screen width
+            fit: BoxFit.cover,
           ),
         ),
-        SizedBox(width: 8),
+        SizedBox(width: screenWidth * 0.02),
+        // Increased space for better alignment
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '${greetingMessage()}, $userName',
               style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600),
+                color: Colors.white,
+                fontSize: screenWidth * 0.040, // Responsive font size
+                fontWeight: FontWeight.w600,
+              ),
             ),
+            SizedBox(height: screenWidth * 0.01), // Added spacing between texts
             Text(
               'rakibulislammehedi4@gmail.com',
-              style: TextStyle(color: colorLightGrey, fontSize: 14),
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: screenWidth * 0.030, // Responsive font size
+              ),
             ),
           ],
         ),
@@ -46,25 +52,31 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width; // Get screen width
+
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.green,
       title: Row(
         children: [
           Expanded(
-            child: _buildGreetingRow(),
+            child: _buildGreetingRow(screenWidth),
           ),
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notification_important, color: Colors.black),
+            onPressed: () {
+              // Add notification action here, like navigating to the notification screen
+              print("Notifications clicked!");
+            },
+            icon: Icon(Icons.notification_important, color: Colors.white),
             tooltip: 'Notifications',
+            iconSize: screenWidth * 0.05, // Responsive icon size
           ),
         ],
       ),
-      iconTheme: IconThemeData(color: Colors.black), // Consistent icon color
+      iconTheme: IconThemeData(color: Colors.white), // Consistent icon color
       elevation: 0, // Flat appearance
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

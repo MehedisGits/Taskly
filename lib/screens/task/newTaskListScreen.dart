@@ -10,119 +10,199 @@ class Newtasklistscreen extends StatefulWidget {
 class _NewtasklistscreenState extends State<Newtasklistscreen> {
   @override
   Widget build(BuildContext context) {
+    // Get screen width and height to make the UI responsive
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Summary Row
+            // Summary Row (Status Cards)
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Card(
-                    elevation: 0,
-                    color: Colors.black12,
-                    child: Column(
-                      children: const [
-                        Text(
-                          '09',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w600),
-                        ),
-                        Text('Cancelled'),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 4),
-                Expanded(
-                  child: Card(
-                    elevation: 0,
-                    color: Colors.black12,
-                    child: Column(
-                      children: const [
-                        Text(
-                          '12',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w600),
-                        ),
-                        Text('Completed'),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 4),
-                Expanded(
-                  child: Card(
-                    elevation: 0,
-                    color: Colors.black12,
-                    child: Column(
-                      children: const [
-                        Text(
-                          '70',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w600),
-                        ),
-                        Text('In Progress'),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 4),
-                Expanded(
-                  child: Card(
-                    color: Colors.black12,
-                    elevation: 0,
-                    child: Column(
-                      children: const [
-                        Text(
-                          '32',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w600),
-                        ),
-                        Text('New Task'),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildStatusCard('09', 'Cancelled', screenWidth),
+                _buildStatusCard('12', 'Completed', screenWidth),
+                _buildStatusCard('70', 'In Progress', screenWidth),
+                _buildStatusCard('32', 'New Task', screenWidth),
               ],
             ),
-            SizedBox(height: 10),
+            SizedBox(height: screenHeight * 0.02),
+            // Dynamic space based on screen height
+
+            // Task List Header
+            Text(
+              'Tasks Overview',
+              style: TextStyle(
+                fontSize: screenWidth * 0.05, // Responsive font size
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            // Dynamic space based on screen height
 
             // Task List
             Expanded(
               child: ListView.builder(
                 itemCount: 10,
-                itemBuilder: (context, index) => Card(
-                  elevation: 0.8,
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Heading',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Description',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                      ],
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () {
+                    // Handle task item tap, maybe navigate to a task detail screen
+                    print('Task $index clicked');
+                  },
+                  child: Card(
+                    elevation: 1,
+                    color: Colors.white,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(12), // Rounded corners
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(screenWidth * 0.02),
+                      // Dynamic padding
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Task Heading Here',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.045,
+                              // Responsive font size
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.01),
+                          // Dynamic space
+                          Text(
+                            'Brief description of the task goes here. Tap for more details.',
+                            style: TextStyle(
+                                fontSize: screenWidth * 0.035,
+                                color: Colors.grey),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          // Dynamic space
+
+                          // Bottom Row with label and icon buttons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Left side: label with green circle background
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(screenWidth * 0.02),
+                                    // Responsive size
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: screenWidth *
+                                          0.03, // Responsive icon size
+                                    ),
+                                  ),
+                                  SizedBox(width: screenWidth * 0.01),
+                                  // Dynamic space
+                                  Text(
+                                    'In Progress', // Label for task status
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.035,
+                                      // Responsive font size
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // Right side: Edit and Delete icons
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                      size: screenWidth *
+                                          0.05, // Responsive icon size
+                                    ),
+                                    onPressed: () {
+                                      // Handle Edit action
+                                      print('Edit Task $index');
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                      size: screenWidth *
+                                          0.05, // Responsive icon size
+                                    ),
+                                    onPressed: () {
+                                      // Handle Delete action
+                                      print('Delete Task $index');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Custom widget for the status cards with gradient waterbox effect
+  Widget _buildStatusCard(String count, String status, double screenWidth) {
+    return Expanded(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Rounded corners
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [Colors.green.shade300, Colors.blue.shade500],
+              // Blue gradient
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          padding: EdgeInsets.all(screenWidth * 0.01), // Dynamic padding
+          child: Column(
+            children: [
+              Text(
+                count,
+                style: TextStyle(
+                    fontSize: screenWidth * 0.07, // Responsive font size
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              SizedBox(height: screenWidth * 0.02), // Responsive space
+              Text(
+                status,
+                style: TextStyle(
+                    fontSize: screenWidth * 0.03, color: Colors.white70),
+              ),
+            ],
+          ),
         ),
       ),
     );
