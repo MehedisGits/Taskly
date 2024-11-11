@@ -48,7 +48,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                   hintText: "Enter Task Title",
                   hintStyle: TextStyle(color: Colors.grey[600]),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Colors.white,
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: Colors.green, width: 2),
@@ -78,7 +78,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                 hintText: "Enter Task Description",
                 hintStyle: TextStyle(color: Colors.grey[600]),
                 filled: true,
-                fillColor: Colors.grey[200],
+                fillColor: Colors.white,
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: Colors.green, width: 2),

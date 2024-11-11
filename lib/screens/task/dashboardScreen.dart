@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:taskly/screens/profile/profileUpdateScreen.dart';
+import 'package:taskly/screens/profile/profileScreen.dart';
 import 'package:taskly/screens/task/cancelledTaskListScreen.dart';
 import 'package:taskly/screens/task/completedTaskListScreen.dart';
 import 'package:taskly/screens/task/newTaskListScreen.dart';
@@ -35,61 +35,65 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TmAppBar(),
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TaskCreateScreen()),
-          );
-        },
-        shape: CircleBorder(),
-        backgroundColor: Colors.white,
-        child: Icon(Icons.add_task, color: colorGreen),
-      ),
-      bottomNavigationBar: NavigationBar(
-        indicatorColor: colorLight,
-        backgroundColor: Colors.white,
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onItemTapped,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.new_label_outlined),
-            selectedIcon: Icon(Icons.new_label),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.cancel_outlined),
-            selectedIcon: Icon(Icons.cancel),
-            label: 'Cancelled',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.timelapse_outlined),
-            selectedIcon: Icon(Icons.timelapse),
-            label: 'Progress',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.check_circle_outline),
-            selectedIcon: Icon(Icons.check_circle),
-            label: 'Completed',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_2_outlined),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _pages,
+        appBar: TmAppBar(),
+        floatingActionButton: FloatingActionButton.small(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TaskCreateScreen()),
+            );
+          },
+          shape: CircleBorder(),
+          backgroundColor: Colors.white,
+          child: Icon(Icons.add_task, color: colorGreen),
+        ),
+        bottomNavigationBar: NavigationBar(
+          indicatorColor: colorLight,
+          backgroundColor: Colors.white,
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _onItemTapped,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.new_label_outlined),
+              selectedIcon: Icon(Icons.new_label),
+              label: 'Home',
             ),
-          ),
-        ],
-      ),
-    );
+            NavigationDestination(
+              icon: Icon(Icons.cancel_outlined),
+              selectedIcon: Icon(Icons.cancel),
+              label: 'Cancelled',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.timelapse_outlined),
+              selectedIcon: Icon(Icons.timelapse),
+              label: 'Progress',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.check_circle_outline),
+              selectedIcon: Icon(Icons.check_circle),
+              label: 'Completed',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_2_outlined),
+              selectedIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            ScreenBackground(context),
+            Column(
+              children: [
+                Expanded(
+                  child: IndexedStack(
+                    index: _selectedIndex,
+                    children: _pages,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ));
   }
 }
