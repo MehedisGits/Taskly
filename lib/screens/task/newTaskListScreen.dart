@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/style/style.dart';
 
+import '../widgets/tm_appBar.dart';
+
 class Newtasklistscreen extends StatefulWidget {
   const Newtasklistscreen({super.key});
 
@@ -16,6 +18,7 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      appBar: TmAppBar(),
       body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Stack(
@@ -220,16 +223,28 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Edit task status'),
+            title: Text(
+              'Edit task status',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
             elevation: 2,
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: ['New', 'Completed', 'Progress', 'Cancelled'].map((e) {
                 return ListTile(
+                  onTap: () {},
                   title: Text(e),
                 );
               }).toList(),
             ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cancel')),
+              TextButton(onPressed: () {}, child: Text('Okay')),
+            ],
           );
         });
   }

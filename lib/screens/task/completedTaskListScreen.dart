@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/tm_appBar.dart';
+
 class CompletedTaskListScreen extends StatelessWidget {
   const CompletedTaskListScreen({super.key});
 
@@ -10,6 +12,7 @@ class CompletedTaskListScreen extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      appBar: TmAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(

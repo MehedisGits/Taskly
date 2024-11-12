@@ -5,7 +5,6 @@ import 'package:taskly/screens/task/completedTaskListScreen.dart';
 import 'package:taskly/screens/task/newTaskListScreen.dart';
 import 'package:taskly/screens/task/progressTaskListScreen.dart';
 import 'package:taskly/screens/task/taskCreateScreen.dart';
-import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
 
 class NewTaskListScreen extends StatefulWidget {
@@ -35,7 +34,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: TmAppBar(),
         floatingActionButton: FloatingActionButton.small(
           onPressed: () {
             Navigator.push(

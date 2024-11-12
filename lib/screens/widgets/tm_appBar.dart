@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/screens/profile/profileScreen.dart';
 
 class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const TmAppBar({super.key});
+  const TmAppBar({super.key, this.isProfileScreenOpen = false});
 
   final String userName = "Mehedi";
+
+  final bool isProfileScreenOpen;
 
   String greetingMessage() {
     final hour = DateTime.now().hour;
@@ -12,15 +15,29 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
     return 'Good evening';
   }
 
-  Widget _buildGreetingRow(double screenWidth) {
+  Widget _buildGreetingRow(double screenWidth, context) {
     return Row(
       children: [
-        ClipOval(
-          child: Image.network(
-            "https://avatars.githubusercontent.com/u/125388734?v=4",
-            height: screenWidth * 0.1, // Responsive size based on screen width
-            width: screenWidth * 0.1, // Responsive size based on screen width
-            fit: BoxFit.cover,
+        GestureDetector(
+          onTap: () {
+            if (isProfileScreenOpen) {
+              return;
+            }
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(),
+                ));
+          },
+          child: ClipOval(
+            child: Image.network(
+              "https://avatars.githubusercontent.com/u/125388734?v=4",
+              height: screenWidth * 0.1,
+              // Responsive size based on screen width
+              width: screenWidth * 0.1,
+              // Responsive size based on screen width
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         SizedBox(width: screenWidth * 0.02),
@@ -59,12 +76,14 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         children: [
           Expanded(
-            child: _buildGreetingRow(screenWidth),
+            child: _buildGreetingRow(screenWidth, context),
           ),
           IconButton(
             onPressed: () {
-              // Add notification action here, like navigating to the notification screen
-              print("Notifications clicked!");
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("No new notification"),
+                duration: Duration(seconds: 2),
+              ));
             },
             icon: Icon(Icons.notification_important, color: Colors.white),
             tooltip: 'Notifications',

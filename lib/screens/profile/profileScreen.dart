@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/screens/onboarding/loginScreen.dart';
 import 'package:taskly/screens/profile/profileUpdateScreen.dart';
+import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -13,6 +14,9 @@ class ProfileScreen extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      appBar: TmAppBar(
+        isProfileScreenOpen: true,
+      ),
       body: Stack(children: [
         ScreenBackground(context),
         SingleChildScrollView(
