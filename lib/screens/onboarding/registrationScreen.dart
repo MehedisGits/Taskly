@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/api/models/networkResponse.dart';
 import 'package:taskly/api/services/networkCaller.dart';
+import 'package:taskly/api/urls.dart';
 
 import '../../style/style.dart';
 import '../widgets/show_snackbar.dart';
@@ -231,7 +232,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     };
 
     NetworkResponse response = await NetworkCaller.postRequest(
-        url: 'http://35.73.30.144:2005/api/v1/Registration', body: requestBody);
+        url: registrationUrl, body: requestBody);
 
     setState(() {
       _inProgress = false;

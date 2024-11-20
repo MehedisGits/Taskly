@@ -15,6 +15,13 @@ class EmailVerificationScreen extends StatefulWidget {
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
+  GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  TextEditingController _emailTEController = TextEditingController();
+  TextEditingController _firstNameTEController = TextEditingController();
+  TextEditingController _lastNameTEController = TextEditingController();
+  TextEditingController _mobileNumberTEController = TextEditingController();
+  TextEditingController _passwordTEController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,61 +29,75 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         ScreenBackground(context),
         Padding(
           padding: const EdgeInsets.all(30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Your Email Address',
-                style: Heading1(colorDarkBlue),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                  'A 6 digit verification pin will send to your email address'),
-              const SizedBox(height: 20),
-              TextFormField(
-                decoration: AppInputDecoration('Email Address'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PinVerificationScreen(),
-                      ));
-                },
-                style: AppButtonStyle(),
-                child: SuccessButtonChild('Next'),
-              ),
-              const SizedBox(height: 24),
-              Container(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Have account?'),
-                    const SizedBox(width: 8),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ));
-                      },
-                      child: const Text(
-                        'SIgn in',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-                  ],
+          child: Form(
+            key: _globalKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Your Email Address',
+                  style: Heading1(colorDarkBlue),
                 ),
-              )
-            ],
+                const SizedBox(height: 8),
+                const Text(
+                    'A 6 digit verification pin will send to your email address'),
+                const SizedBox(height: 20),
+                TextFormField(
+                  decoration: AppInputDecoration('Email Address'),
+                  controller: _emailTEController,
+                  textInputAction: TextInputAction.next,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PinVerificationScreen(),
+                        ));
+                  },
+                  style: AppButtonStyle(),
+                  child: SuccessButtonChild('Next'),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Have account?'),
+                      const SizedBox(width: 8),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ));
+                        },
+                        child: const Text(
+                          'SIgn in',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ]),
     );
   }
+
+  void _onTapNext() {}
 }

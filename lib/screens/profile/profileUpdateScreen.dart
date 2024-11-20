@@ -2,8 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:taskly/api/models/networkResponse.dart';
+import 'package:taskly/api/services/networkCaller.dart';
+import 'package:taskly/api/urls.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
+
+import '../widgets/show_snackbar.dart';
 
 class ProfileUpdateScreen extends StatefulWidget {
   const ProfileUpdateScreen({super.key});
@@ -13,7 +18,15 @@ class ProfileUpdateScreen extends StatefulWidget {
 }
 
 class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
+  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _firstNameTEController = TextEditingController();
+  final TextEditingController _lastNameTEController = TextEditingController();
+  final TextEditingController _mobileNumberTEController =
+      TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
   File? _profileImage;
+  bool _isLoading = false;
 
   Future<void> _pickImage() async {
     try {
@@ -25,8 +38,46 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         });
       }
     } catch (e) {
-      // Handle any errors during image picking
-      print("Error picking image: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error picking image: $e")),
+      );
+    }
+  }
+
+  void _onTapContinue() {
+    // Handle profile update logic here
+    _profileUpdate();
+  }
+
+  Future<void> _profileUpdate() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    Map<String, dynamic> formValues = {
+      "email": _emailTEController.text.trim(),
+      "firstName": _firstNameTEController.text.trim(),
+      "lastName": _lastNameTEController.text.trim(),
+      "mobile": _mobileNumberTEController.text.trim(),
+      "password": _passwordTEController.text
+    };
+    NetworkResponse response = await NetworkCaller.postRequest(
+        url: profileUpdateUrl, body: formValues);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (response.isSuccess) {
+      showSnackBar(context, 'Profile updated successfully');
+      // This will replace the login screen and all previous screens with the dashboard
+      Navigator.pop(context);
+    } else {
+      showSnackBar(
+        context,
+        'Something wrong!',
+        true,
+      );
     }
   }
 
@@ -39,25 +90,44 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
           ScreenBackground(context),
           SingleChildScrollView(
             padding: const EdgeInsets.all(40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 20),
-                _buildPhotoPicker(),
-                const SizedBox(height: 12),
-                _buildTextField("Email"),
-                const SizedBox(height: 12),
-                _buildTextField("First Name"),
-                const SizedBox(height: 12),
-                _buildTextField("Last Name"),
-                const SizedBox(height: 12),
-                _buildTextField("Mobile"),
-                const SizedBox(height: 12),
-                _buildTextField("Password", isPassword: true),
-                const SizedBox(height: 20),
-                _buildSubmitButton(),
-              ],
+            child: Form(
+              key: _globalKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 20),
+                  _buildPhotoPicker(),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    label: "Email",
+                    controller: _emailTEController,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    label: "First Name",
+                    controller: _firstNameTEController,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    label: "Last Name",
+                    controller: _lastNameTEController,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    label: "Mobile",
+                    controller: _mobileNumberTEController,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    label: "Password",
+                    controller: _passwordTEController,
+                    isPassword: true,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSubmitButton(),
+                ],
+              ),
             ),
           ),
         ],
@@ -65,11 +135,10 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     );
   }
 
-  // Header widget
   Widget _buildHeader() {
-    return Text(
+    return const Text(
       'Update Profile',
-      style: const TextStyle(
+      style: TextStyle(
         color: Colors.black87,
         fontSize: 22,
         fontWeight: FontWeight.w600,
@@ -77,12 +146,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     );
   }
 
-  // Photo picker widget
   Widget _buildPhotoPicker() {
     return GestureDetector(
       onTap: _pickImage,
       child: Container(
-        height: 80,
+        height: 120,
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
@@ -92,17 +160,22 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         ),
         child: Row(
           children: [
-            Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  bottomLeft: Radius.circular(10),
-                ),
-              ),
-              child: const Icon(Icons.photo_camera, color: Colors.white),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: _profileImage == null
+                  ? Container(
+                      height: 80,
+                      width: 80,
+                      color: Colors.grey.shade300,
+                      child:
+                          const Icon(Icons.photo_camera, color: Colors.white),
+                    )
+                  : Image.file(
+                      _profileImage!,
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -118,8 +191,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     );
   }
 
-  // Custom text field widget
-  Widget _buildTextField(String label, {bool isPassword = false}) {
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    bool isPassword = false,
+  }) {
     return TextFormField(
       obscureText: isPassword,
       decoration: InputDecoration(
@@ -128,23 +204,29 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         fillColor: Colors.white,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.green, width: 2),
+          borderSide: const BorderSide(color: Colors.green, width: 1),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+      controller: controller,
+      textInputAction: TextInputAction.next,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
     );
   }
 
-  // Submit button widget
   Widget _buildSubmitButton() {
     return ElevatedButton(
-      onPressed: () {
-        // Handle the submit action
-      },
+      onPressed: _isLoading ? null : _onTapContinue,
       style: AppButtonStyle(),
-      child: SuccessButtonChild('Continue'),
+      child: _isLoading
+          ? Center(
+              child: const CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            )
+          : SuccessButtonChild('Submit'),
     );
   }
 }

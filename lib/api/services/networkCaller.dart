@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:taskly/api/models/networkResponse.dart';
+import 'package:taskly/api/urls.dart';
 
 class NetworkCaller {
   /// Handles GET requests
@@ -41,7 +42,7 @@ class NetworkCaller {
       Uri uri = Uri.parse(url);
       final Response response = await post(
         uri,
-        headers: {'Content-Type': 'application/json'},
+        headers: reqHeader,
         body: jsonEncode(body),
       );
 
@@ -61,7 +62,7 @@ class NetworkCaller {
     } catch (e) {
       return NetworkResponse(
         isSuccess: false,
-        statusCode: -1,
+        statusCode: 404,
         errorMessage: e.toString(),
       );
     }

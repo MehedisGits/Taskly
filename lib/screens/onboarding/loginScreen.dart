@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/api/models/networkResponse.dart';
 import 'package:taskly/api/services/networkCaller.dart';
+import 'package:taskly/api/urls.dart';
 import 'package:taskly/screens/onboarding/emailVerificationScreen.dart';
 import 'package:taskly/screens/onboarding/registrationScreen.dart';
 
@@ -159,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
     };
 
     NetworkResponse response = await NetworkCaller.postRequest(
-      url: 'http://35.73.30.144:2005/api/v1/Login',
+      url: loginUrl,
       body: postRequest,
     );
 
