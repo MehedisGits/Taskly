@@ -7,6 +7,7 @@ import 'package:taskly/screens/onboarding/pinVerificationScreen.dart';
 import 'package:taskly/screens/onboarding/registrationScreen.dart';
 import 'package:taskly/screens/onboarding/setPasswordScreen.dart';
 import 'package:taskly/screens/onboarding/splashScreen.dart';
+import 'package:taskly/screens/task/dashboardScreen.dart';
 
 void main() {
   runApp(DevicePreview(
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/emailVerification': (context) => const EmailVerificationScreen(),
         '/pinVerification': (context) => const PinVerificationScreen(),
         '/setPassword': (context) => const SetPasswordScreen(),
+        '/dashboard': (context) => const NewTaskListScreen(),
       },
     );
   }
