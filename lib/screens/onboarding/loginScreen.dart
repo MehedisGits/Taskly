@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:taskly/api/controller.dart';
 import 'package:taskly/api/models/networkResponse.dart';
 import 'package:taskly/api/services/networkCaller.dart';
 import 'package:taskly/api/urls.dart';
@@ -169,6 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (response.isSuccess) {
+      await AuthController.saveAccessToken(response.responseData['token']);
       showSnackBar(context, 'Login successful');
       // This will replace the login screen and all previous screens with the dashboard
       Navigator.pushNamedAndRemoveUntil(

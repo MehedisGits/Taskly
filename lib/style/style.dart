@@ -74,8 +74,8 @@ ButtonStyle AppButtonStyle() {
 TextStyle ButtonTextStyle() {
   return const TextStyle(
     color: Colors.white,
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
   );
 }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:taskly/screens/profile/profileScreen.dart';
 import 'package:taskly/screens/task/cancelledTaskListScreen.dart';
 import 'package:taskly/screens/task/completedTaskListScreen.dart';
 import 'package:taskly/screens/task/newTaskListScreen.dart';
@@ -22,7 +21,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     Center(child: CancelledTaskListScreen()),
     Center(child: TaskProgressScreen()),
     Center(child: CompletedTaskListScreen()),
-    Center(child: ProfileScreen()),
   ];
 
   void _onItemTapped(int index) {
@@ -70,11 +68,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
               icon: Icon(Icons.check_circle_outline),
               selectedIcon: Icon(Icons.check_circle),
               label: 'Completed',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_2_outlined),
-              selectedIcon: Icon(Icons.person),
-              label: 'Profile',
             ),
           ],
         ),

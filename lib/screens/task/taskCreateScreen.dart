@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/api/models/networkResponse.dart';
+import 'package:taskly/api/services/networkCaller.dart';
+import 'package:taskly/api/urls.dart';
+import 'package:taskly/screens/widgets/show_snackbar.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
+import 'package:taskly/style/style.dart';
 
 class TaskCreateScreen extends StatefulWidget {
   const TaskCreateScreen({super.key});
@@ -10,6 +15,12 @@ class TaskCreateScreen extends StatefulWidget {
 
 class _TaskCreateScreenState extends State<TaskCreateScreen> {
   bool isTitleExpanded = false; // Track expansion for the title field
+  final TextEditingController _titleTEController = TextEditingController();
+  final TextEditingController _descriptionTEController =
+      TextEditingController();
+
+  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,36 +33,43 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       body: Padding(
         padding: EdgeInsets.all(screenWidth * 0.04),
         // Adjust padding based on screen size
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: screenHeight * 0.05), // Dynamic spacing
-            Text(
-              'Add New Task Here:',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: screenWidth * 0.06, // Responsive font size
-                color: Colors.black87,
+        child: Form(
+          key: _globalKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: screenHeight * 0.05), // Dynamic spacing
+              Text(
+                'Add New Task Here:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.06, // Responsive font size
+                  color: Colors.black87,
+                ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: screenHeight * 0.02),
 
-            // Title TextFormField with Custom Style
-            AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              child: TextFormField(
+              // Title TextFormField with Custom Style
+              TextFormField(
+                controller: _titleTEController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Enter task title";
+                  }
+                  return null;
+                },
                 maxLines: isTitleExpanded ? null : 1,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(10)),
                   hintText: "Enter Task Title",
                   hintStyle: TextStyle(color: Colors.grey[600]),
                   filled: true,
                   fillColor: Colors.white,
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.green, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.green, width: 1),
                   ),
                 ),
                 onTap: () {
@@ -65,52 +83,88 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                   });
                 },
               ),
-            ),
-            SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: screenHeight * 0.02),
 
-            // Description TextFormField with Custom Style
-            TextFormField(
-              minLines: 3,
-              maxLines: null,
-              decoration: InputDecoration(
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                hintText: "Enter Task Description",
-                hintStyle: TextStyle(color: Colors.grey[600]),
-                filled: true,
-                fillColor: Colors.white,
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.green, width: 2),
+              // Description TextFormField with Custom Style
+              TextFormField(
+                controller: _descriptionTEController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Enter task description";
+                  }
+                  return null;
+                },
+                minLines: 3,
+                maxLines: null,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  hintText: "Enter Task Description",
+                  hintStyle: TextStyle(color: Colors.grey[600]),
+                  filled: true,
+                  fillColor: Colors.white,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.green, width: 1),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.04),
+              SizedBox(height: screenHeight * 0.04),
 
-            // Custom 'Continue' Button
-            Center(
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.green),
-                  padding: MaterialStateProperty.all(EdgeInsets.symmetric(
-                      vertical: screenHeight * 0.02,
-                      horizontal: screenWidth * 0.1)),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8))),
-                ),
-                onPressed: () {},
-                child: Text(
-                  'Continue',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: screenWidth * 0.05, // Responsive font size
-                      fontWeight: FontWeight.bold),
-                ),
+              // Custom 'Continue' Button
+              ElevatedButton(
+                onPressed: isLoading ? null : _onTapSubmitButton,
+                style: AppButtonStyle(),
+                child: isLoading
+                    ? SizedBox(
+                        width: double.infinity,
+                        child: Center(
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    : SuccessButtonChild('Submit'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _onTapSubmitButton() {
+    if (_globalKey.currentState!.validate()) {
+      _addNewTask();
+    }
+  }
+
+  Future<void> _addNewTask() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    Map<String, dynamic> postData = {
+      "title": _titleTEController.text.trim(),
+      "description": _descriptionTEController.text.trim(),
+      "status": "New"
+    };
+
+    NetworkResponse response =
+        await NetworkCaller.postRequest(url: addNewTaskUrl, body: postData);
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response.isSuccess) {
+      showSnackBar(context, "New task added");
+      _titleTEController.clear();
+      _descriptionTEController.clear();
+    } else if (response.statusCode == 401) {
+      showSnackBar(context, 'Unauthorized user', true);
+    } else {
+      showSnackBar(context, response.errorMessage, true);
+    }
   }
 }

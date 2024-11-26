@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:taskly/screens/onboarding/loginScreen.dart';
+import 'package:taskly/api/controller.dart';
+import 'package:taskly/screens/task/dashboardScreen.dart';
 import 'package:taskly/utils/assetsPath.dart';
 
 import '../../style/style.dart';
+import 'loginScreen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,6 +15,33 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _moveToNextScreen();
+  }
+
+  Future<void> _moveToNextScreen() async {
+    // Automatically navigate to LoginScreen after 3 seconds
+    await AuthController.getAccessToken();
+
+    if (AuthController.isLoggedIn()) {
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewTaskListScreen(),
+            ));
+      });
+    } else {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +60,6 @@ class _SplashScreenState extends State<SplashScreen> {
                     AssetsPath.onBoardingSvg,
                     alignment: Alignment.center,
                   ),
-
                   const SizedBox(height: 20),
 
                   // Text Section
@@ -46,20 +74,20 @@ class _SplashScreenState extends State<SplashScreen> {
                     textAlign: TextAlign.center,
                     style: Heading6(colorDarkBlue),
                   ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  ElevatedButton(
+                  const SizedBox(height: 24),
+                  /*ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ));
+                      // Manually navigate to LoginScreen on button click
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
                     },
                     style: AppButtonStyle(),
                     child: SuccessButtonChild('Get started'),
-                  ),
+                  ),*/
                 ],
               ),
             ),
