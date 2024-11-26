@@ -22,7 +22,7 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Stack(
             children: [
-              ScreenBackground(context),
+              screenBackground(context),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

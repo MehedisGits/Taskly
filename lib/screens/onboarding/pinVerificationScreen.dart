@@ -19,7 +19,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          ScreenBackground(context),
+          screenBackground(context),
           Padding(
             padding: const EdgeInsets.all(30),
             child: Column(
@@ -28,7 +28,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
               children: [
                 Text(
                   'PIN Verification',
-                  style: Heading1(colorDarkBlue),
+                  style: heading1(textColor: colorDarkBlue),
                 ),
                 const SizedBox(height: 10),
                 const Text(
@@ -40,7 +40,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
                   keyboardType: TextInputType.number,
                   appContext: context,
                   length: 6,
-                  pinTheme: AppOtpStyle(),
+                  pinTheme: appOtpStyle(),
                   animationType: AnimationType.fade,
                   animationDuration: const Duration(milliseconds: 300),
                   enableActiveFill: true,
@@ -52,8 +52,8 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {},
-                  style: AppButtonStyle(),
-                  child: SuccessButtonChild('Verify'),
+                  style: appButtonStyle(),
+                  child: successButtonChild('Verify'),
                 ),
                 const SizedBox(
                   height: 20,

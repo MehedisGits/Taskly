@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:taskly/utils/assetsPath.dart';
 
+/// Color constants
 const colorRed = Color.fromRGBO(231, 28, 36, 1);
 const colorDark = Color.fromRGBO(136, 28, 32, 1);
 const colorGreen = Color.fromRGBO(33, 191, 115, 1);
@@ -14,28 +15,31 @@ const colorDarkBlue = Color.fromRGBO(44, 62, 80, 1);
 const colorLightGrey = Color.fromRGBO(135, 142, 150, 1);
 const colorLight = Color.fromRGBO(211, 211, 211, 1);
 
-TextStyle Heading1(textColor) {
+/// Text style for Heading1
+TextStyle heading1({required Color textColor}) {
   return TextStyle(
-    fontFamily: 'poppins',
+    fontFamily: 'Poppins',
     color: textColor,
     fontSize: 28,
     fontWeight: FontWeight.w700,
   );
 }
 
-TextStyle Heading6(textColor) {
+/// Text style for Heading6
+TextStyle heading6({required Color textColor}) {
   return TextStyle(
-    fontFamily: 'poppins',
+    fontFamily: 'Poppins',
     color: textColor,
     fontSize: 16,
     fontWeight: FontWeight.w700,
   );
 }
 
-InputDecoration AppInputDecoration(String label) {
+/// Input decoration for TextFields
+InputDecoration appInputDecoration(String label) {
   return InputDecoration(
     focusedBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.green, width: 1),
+      borderSide: BorderSide(color: colorGreen, width: 1),
     ),
     fillColor: colorWhite,
     filled: true,
@@ -48,11 +52,12 @@ InputDecoration AppInputDecoration(String label) {
   );
 }
 
-DecoratedBox AppDropDownStyle(child) {
+/// Decorated box style for dropdowns
+DecoratedBox appDropDownStyle(Widget child) {
   return DecoratedBox(
     decoration: BoxDecoration(
-      color: Colors.white,
-      border: Border.all(color: Colors.white, width: 1),
+      color: colorWhite,
+      border: Border.all(color: colorWhite, width: 1),
       borderRadius: BorderRadius.circular(4),
     ),
     child: Padding(
@@ -62,7 +67,8 @@ DecoratedBox AppDropDownStyle(child) {
   );
 }
 
-ButtonStyle AppButtonStyle() {
+/// Button style for primary actions
+ButtonStyle appButtonStyle() {
   return ElevatedButton.styleFrom(
     elevation: 1,
     padding: EdgeInsets.zero,
@@ -71,15 +77,17 @@ ButtonStyle AppButtonStyle() {
   );
 }
 
-TextStyle ButtonTextStyle() {
+/// Text style for button text
+TextStyle buttonTextStyle() {
   return const TextStyle(
-    color: Colors.white,
+    color: colorWhite,
     fontSize: 18,
     fontWeight: FontWeight.w500,
   );
 }
 
-Ink SuccessButtonChild(String buttonText) {
+/// Success button child widget
+Ink successButtonChild(String buttonText) {
   return Ink(
     decoration: BoxDecoration(
       color: colorGreen,
@@ -90,27 +98,29 @@ Ink SuccessButtonChild(String buttonText) {
       alignment: Alignment.center,
       child: Text(
         buttonText,
-        style: ButtonTextStyle(),
+        style: buttonTextStyle(),
       ),
     ),
   );
 }
 
-SizedBox ScreenBackground(context) {
+/// Background with a scalable SVG
+SizedBox screenBackground(BuildContext context) {
   return SizedBox(
     width: double.infinity,
     height: double.infinity,
     child: SvgPicture.asset(
       AssetsPath.backgroundSvg,
       alignment: Alignment.center,
-      width: MediaQuery.sizeOf(context).width,
-      height: MediaQuery.sizeOf(context).height,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
       fit: BoxFit.cover,
     ),
   );
 }
 
-void SuccessToast(msg) {
+/// Success toast message
+void successToast(String msg) {
   Fluttertoast.showToast(
     msg: msg,
     gravity: ToastGravity.BOTTOM,
@@ -122,7 +132,8 @@ void SuccessToast(msg) {
   );
 }
 
-void ErrorToast(msg) {
+/// Error toast message
+void errorToast(String msg) {
   Fluttertoast.showToast(
     msg: msg,
     gravity: ToastGravity.BOTTOM,
@@ -134,20 +145,16 @@ void ErrorToast(msg) {
   );
 }
 
-PinTheme AppOtpStyle() {
+/// Pin Code Input Field Style
+PinTheme appOtpStyle() {
   return PinTheme(
-    // Set a muted border color for inactive fields to reduce visual noise
     inactiveColor: colorGreen,
     inactiveFillColor: Colors.transparent,
-    // Highlight selected fields with primary color as per Material guidelines
     selectedColor: colorBlue,
     selectedFillColor: Colors.blue.shade50,
-    // Keep active fields consistent with background to reduce distractions
     activeColor: Colors.grey.shade300,
     activeFillColor: Colors.transparent,
-    // Rounded corners for a Material feel
     borderRadius: BorderRadius.circular(8),
-    // Add subtle shadow for elevation
     fieldHeight: 48,
     fieldWidth: 48,
     borderWidth: 1.0,

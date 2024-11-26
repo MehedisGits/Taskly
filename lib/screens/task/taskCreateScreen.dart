@@ -114,7 +114,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               // Custom 'Continue' Button
               ElevatedButton(
                 onPressed: isLoading ? null : _onTapSubmitButton,
-                style: AppButtonStyle(),
+                style: appButtonStyle(),
                 child: isLoading
                     ? SizedBox(
                         width: double.infinity,
@@ -124,7 +124,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                           ),
                         ),
                       )
-                    : SuccessButtonChild('Submit'),
+                    : successButtonChild('Submit'),
               ),
             ],
           ),
@@ -162,9 +162,9 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       _titleTEController.clear();
       _descriptionTEController.clear();
     } else if (response.statusCode == 401) {
-      showSnackBar(context, 'Unauthorized user', true);
+      showSnackBar(context, 'Unauthorized user', isError: true);
     } else {
-      showSnackBar(context, response.errorMessage, true);
+      showSnackBar(context, response.errorMessage, isError: true);
     }
   }
 }

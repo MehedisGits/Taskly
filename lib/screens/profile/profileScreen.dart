@@ -18,158 +18,105 @@ class ProfileScreen extends StatelessWidget {
       appBar: TmAppBar(
         isProfileScreenOpen: true,
       ),
-      body: Stack(children: [
-        ScreenBackground(context),
-        SingleChildScrollView(
-          // Make the body scrollable
-          padding: EdgeInsets.all(screenWidth * 0.05),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Profile Picture Section
-              Center(
-                child: CircleAvatar(
-                    radius: screenWidth * 0.15, // Dynamic size
-                    backgroundImage: NetworkImage(
-                        'https://avatars.githubusercontent.com/u/125388734?v=4') // Placeholder image
-                    ),
-              ),
-              SizedBox(height: screenHeight * 0.02),
+      body: Stack(
+        children: [
+          screenBackground(context),
+          SingleChildScrollView(
+            padding: EdgeInsets.all(screenWidth * 0.05),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Profile Picture Section
+                _buildProfilePictureSection(screenWidth, screenHeight),
+                SizedBox(height: screenHeight * 0.02),
 
-              // User Name Section
-              Center(
-                child: Text(
-                  'Rakibul Islam Mehedi',
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.06, // Responsive font size
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
+                // User Name Section
+                _buildUserInfo('Rakibul Islam Mehedi',
+                    'rakibulislammehedi4@gmail.com', screenWidth),
 
-              // Email Section
-              Center(
-                child: Text(
-                  'rakibulislammehedi4@gmail.com',
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.04,
-                    color: Colors.black54,
-                  ),
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.04),
+                SizedBox(height: screenHeight * 0.04),
 
-              // Account Information Section
-              Text(
-                'Account Information',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.05,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.02),
+                // Account Information Section
+                _buildSectionTitle('Account Information', screenWidth),
+                _buildAccountInfoRow(
+                    'Username:', 'johndoe123', screenWidth, screenHeight),
+                _buildAccountInfoRow(
+                    'Phone:', '+1 234 567 890', screenWidth, screenHeight),
+                _buildAccountInfoRow('Address:', '123 Main Street, City',
+                    screenWidth, screenHeight),
 
-              // Account Details
-              _buildAccountInfoRow(
-                  'Username:', 'johndoe123', screenWidth, screenHeight),
-              _buildAccountInfoRow(
-                  'Phone:', '+1 234 567 890', screenWidth, screenHeight),
-              _buildAccountInfoRow('Address:', '123 Main Street, City',
-                  screenWidth, screenHeight),
+                // Task Manager App Information Section
+                SizedBox(height: screenHeight * 0.04),
+                _buildSectionTitle('Task Manager App Information', screenWidth),
+                _buildAccountInfoRow(
+                    'App Version:', '1.0.0', screenWidth, screenHeight),
+                _buildAccountInfoRow(
+                    'Tasks Created:', '120', screenWidth, screenHeight),
+                _buildAccountInfoRow(
+                    'Pending Tasks:', '45', screenWidth, screenHeight),
+                _buildAccountInfoRow(
+                    'Completed Tasks:', '75', screenWidth, screenHeight),
+                _buildAccountInfoRow(
+                    'Last Sync:', 'Today, 2:00 PM', screenWidth, screenHeight),
 
-              // Task Manager App Information Section
-              SizedBox(height: screenHeight * 0.04),
-              Text(
-                'Task Manager App Information',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.05,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.02),
+                SizedBox(height: screenHeight * 0.03),
 
-              // Task Manager Details
-              _buildAccountInfoRow(
-                  'App Version:', '1.0.0', screenWidth, screenHeight),
-              _buildAccountInfoRow(
-                  'Tasks Created:', '120', screenWidth, screenHeight),
-              _buildAccountInfoRow(
-                  'Pending Tasks:', '45', screenWidth, screenHeight),
-              _buildAccountInfoRow(
-                  'Completed Tasks:', '75', screenWidth, screenHeight),
-              _buildAccountInfoRow(
-                  'Last Sync:', 'Today, 2:00 PM', screenWidth, screenHeight),
-
-              // Spacer to push buttons to the bottom
-              SizedBox(height: screenHeight * 0.03),
-
-              // Edit Profile and Logout Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Edit Profile Button
-                  TextButton(
-                    onPressed: () {
-                      // Navigate to edit profile screen
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfileUpdateScreen(),
-                          ));
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: EdgeInsets.symmetric(
-                        vertical: screenHeight * 0.02,
-                        horizontal: screenWidth * 0.1,
-                      ),
-                    ),
-                    child: Text(
-                      'Edit Profile',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: screenWidth * 0.045,
-                      ),
-                    ),
-                  ),
-
-                  // Logout Button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle logout
-                      AuthController.clearUserData();
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
-                        ),
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      padding: EdgeInsets.symmetric(
-                        vertical: screenHeight * 0.02,
-                        horizontal: screenWidth * 0.1,
-                      ),
-                    ),
-                    child: Text(
-                      'Logout',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.045,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: screenHeight * 0.03),
-            ],
+                // Edit Profile and Logout Buttons
+                _buildActionButtons(screenWidth, screenHeight, context),
+                SizedBox(height: screenHeight * 0.03),
+              ],
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
+    );
+  }
+
+  // Profile Picture Section
+  Widget _buildProfilePictureSection(double screenWidth, double screenHeight) {
+    return Center(
+      child: CircleAvatar(
+        radius: screenWidth * 0.15, // Dynamic size
+        backgroundImage: NetworkImage(
+            'https://avatars.githubusercontent.com/u/125388734?v=4'), // Placeholder image
+      ),
+    );
+  }
+
+  // User Information Section
+  Widget _buildUserInfo(String name, String email, double screenWidth) {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: screenWidth * 0.06, // Responsive font size
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          Text(
+            email,
+            style: TextStyle(
+              fontSize: screenWidth * 0.04,
+              color: Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Section Title
+  Widget _buildSectionTitle(String title, double screenWidth) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: screenWidth * 0.05,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
     );
   }
 
@@ -197,6 +144,76 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Action Buttons (Edit Profile and Logout)
+  Widget _buildActionButtons(
+      double screenWidth, double screenHeight, BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // Edit Profile Button
+        _buildActionButton(
+          label: 'Edit Profile',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileUpdateScreen(),
+              ),
+            );
+          },
+          color: Colors.green,
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
+        ),
+
+        // Logout Button
+        _buildActionButton(
+          label: 'Logout',
+          onPressed: () {
+            AuthController.clearUserData();
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ),
+              (route) => false,
+            );
+          },
+          color: Colors.red,
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
+        ),
+      ],
+    );
+  }
+
+  // Custom Action Button
+  Widget _buildActionButton({
+    required String label,
+    required VoidCallback onPressed,
+    required Color color,
+    required double screenWidth,
+    required double screenHeight,
+  }) {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        backgroundColor: color,
+        padding: EdgeInsets.symmetric(
+          vertical: screenHeight * 0.02,
+          horizontal: screenWidth * 0.1,
+        ),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: screenWidth * 0.045,
+        ),
       ),
     );
   }

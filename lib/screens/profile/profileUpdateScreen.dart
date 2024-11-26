@@ -38,15 +38,14 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error picking image: $e")),
-      );
+      showErrorSnackBar(e.toString());
     }
   }
 
   void _onTapContinue() {
-    // Handle profile update logic here
-    _profileUpdate();
+    if (_globalKey.currentState?.validate() ?? false) {
+      _profileUpdate();
+    }
   }
 
   Future<void> _profileUpdate() async {
@@ -59,8 +58,9 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       "firstName": _firstNameTEController.text.trim(),
       "lastName": _lastNameTEController.text.trim(),
       "mobile": _mobileNumberTEController.text.trim(),
-      "password": _passwordTEController.text
+      "password": _passwordTEController.text,
     };
+
     NetworkResponse response = await NetworkCaller.postRequest(
         url: profileUpdateUrl, body: formValues);
 
@@ -70,15 +70,15 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
     if (response.isSuccess) {
       showSnackBar(context, 'Profile updated successfully');
-      // This will replace the login screen and all previous screens with the dashboard
       Navigator.pop(context);
     } else {
-      showSnackBar(
-        context,
-        'Something wrong!',
-        true,
-      );
+      showErrorSnackBar('Something went wrong!');
     }
+  }
+
+  void showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -87,7 +87,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       appBar: TmAppBar(isProfileScreenOpen: true),
       body: Stack(
         children: [
-          ScreenBackground(context),
+          screenBackground(context),
           SingleChildScrollView(
             padding: const EdgeInsets.all(40),
             child: Form(
@@ -100,30 +100,23 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                   _buildPhotoPicker(),
                   const SizedBox(height: 12),
                   _buildTextField(
-                    label: "Email",
-                    controller: _emailTEController,
-                  ),
+                      label: "Email",
+                      controller: _emailTEController,
+                      validator: _validateEmail),
                   const SizedBox(height: 12),
                   _buildTextField(
-                    label: "First Name",
-                    controller: _firstNameTEController,
-                  ),
+                      label: "First Name", controller: _firstNameTEController),
                   const SizedBox(height: 12),
                   _buildTextField(
-                    label: "Last Name",
-                    controller: _lastNameTEController,
-                  ),
+                      label: "Last Name", controller: _lastNameTEController),
                   const SizedBox(height: 12),
                   _buildTextField(
-                    label: "Mobile",
-                    controller: _mobileNumberTEController,
-                  ),
+                      label: "Mobile", controller: _mobileNumberTEController),
                   const SizedBox(height: 12),
                   _buildTextField(
-                    label: "Password",
-                    controller: _passwordTEController,
-                    isPassword: true,
-                  ),
+                      label: "Password",
+                      controller: _passwordTEController,
+                      isPassword: true),
                   const SizedBox(height: 20),
                   _buildSubmitButton(),
                 ],
@@ -139,10 +132,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     return const Text(
       'Update Profile',
       style: TextStyle(
-        color: Colors.black87,
-        fontSize: 22,
-        fontWeight: FontWeight.w600,
-      ),
+          color: Colors.black87, fontSize: 22, fontWeight: FontWeight.w600),
     );
   }
 
@@ -195,6 +185,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     required String label,
     required TextEditingController controller,
     bool isPassword = false,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       obscureText: isPassword,
@@ -213,20 +204,28 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       controller: controller,
       textInputAction: TextInputAction.next,
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: validator,
     );
+  }
+
+  String? _validateEmail(String? value) {
+    final emailRegex = RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$');
+    if (value == null || value.isEmpty) {
+      return 'Please enter an email';
+    }
+    if (!emailRegex.hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
   }
 
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: _isLoading ? null : _onTapContinue,
-      style: AppButtonStyle(),
+      style: appButtonStyle(),
       child: _isLoading
-          ? Center(
-              child: const CircularProgressIndicator(
-                color: Colors.white,
-              ),
-            )
-          : SuccessButtonChild('Submit'),
+          ? const CircularProgressIndicator(color: Colors.white)
+          : successButtonChild('Submit'),
     );
   }
 }

@@ -61,7 +61,7 @@ class TaskProgressScreen extends StatelessWidget {
             SizedBox(height: screenHeight * 0.02),
             // Progress Bar
             LinearProgressIndicator(
-              value: 0.7, // 70% progress
+              value: 0.7, // Ideally, this should be dynamic
               backgroundColor: Colors.grey.shade200,
               valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
             ),
@@ -93,43 +93,37 @@ class TaskProgressScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Task Name
-            Text(
-              'Task: UI Development for Mobile App',
-              style: TextStyle(
-                fontSize: screenWidth * 0.05,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
+            _buildTaskInfo('Task: UI Development for Mobile App', screenWidth,
+                screenHeight),
             SizedBox(height: screenHeight * 0.02),
             // Task Description
-            Text(
+            _buildTaskInfo(
               'This task involves the development of UI screens for the mobile application. The progress is currently at 70%, with only a few screens remaining to be implemented.',
-              style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                color: Colors.black54,
-              ),
+              screenWidth,
+              screenHeight,
             ),
             SizedBox(height: screenHeight * 0.02),
             // Task Deadline
-            Text(
-              'Deadline: 30th November 2024',
-              style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                color: Colors.black87,
-              ),
-            ),
+            _buildTaskInfo(
+                'Deadline: 30th November 2024', screenWidth, screenHeight),
             SizedBox(height: screenHeight * 0.02),
             // Task Priority
-            Text(
-              'Priority: High',
-              style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                color: Colors.redAccent,
-              ),
-            ),
+            _buildTaskInfo('Priority: High', screenWidth, screenHeight,
+                color: Colors.redAccent),
           ],
         ),
+      ),
+    );
+  }
+
+  // Helper widget for task information
+  Widget _buildTaskInfo(String text, double screenWidth, double screenHeight,
+      {Color color = Colors.black87}) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: screenWidth * 0.04,
+        color: color,
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // For date formatting
 
 import '../widgets/tm_appBar.dart';
 
@@ -7,9 +8,9 @@ class CompletedTaskListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen width and height to make the UI responsive
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    final mediaQuery = MediaQuery.of(context);
+    double screenWidth = mediaQuery.size.width;
+    double screenHeight = mediaQuery.size.height;
 
     return Scaffold(
       appBar: TmAppBar(),
@@ -32,7 +33,7 @@ class CompletedTaskListScreen extends StatelessWidget {
             // Completed Task List
             Expanded(
               child: ListView.builder(
-                itemCount: 10, // Example task count, replace with dynamic count
+                itemCount: 10, // Replace with actual task count
                 itemBuilder: (context, index) =>
                     _buildCompletedTaskCard(screenWidth, screenHeight, index),
               ),
@@ -46,6 +47,8 @@ class CompletedTaskListScreen extends StatelessWidget {
   // Custom widget for displaying each completed task
   Widget _buildCompletedTaskCard(
       double screenWidth, double screenHeight, int index) {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -79,7 +82,7 @@ class CompletedTaskListScreen extends StatelessWidget {
 
             // Task Completion Date
             Text(
-              'Completed on: ${DateTime.now().toLocal().toString().split(' ')[0]}',
+              'Completed on: $formattedDate',
               style: TextStyle(
                 fontSize: screenWidth * 0.04,
                 color: Colors.grey,

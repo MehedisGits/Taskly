@@ -20,11 +20,7 @@ class CancelledTaskListScreen extends StatelessWidget {
             // Screen Title
             Text(
               'Cancelled Task Overview',
-              style: TextStyle(
-                fontSize: screenWidth * 0.05,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: _getTitleStyle(screenWidth),
             ),
             SizedBox(height: screenHeight * 0.01),
 
@@ -39,6 +35,23 @@ class CancelledTaskListScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // Custom method to get title style based on screen width
+  TextStyle _getTitleStyle(double screenWidth) {
+    return TextStyle(
+      fontSize: screenWidth * 0.05,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    );
+  }
+
+  // Custom method to get text style for task info
+  TextStyle _getTextStyle(double screenWidth, Color color, {double? fontSize}) {
+    return TextStyle(
+      fontSize: fontSize ?? screenWidth * 0.04,
+      color: color,
     );
   }
 
@@ -58,31 +71,22 @@ class CancelledTaskListScreen extends StatelessWidget {
             // Task Title
             Text(
               'Cancelled Task $index',
-              style: TextStyle(
-                fontSize: screenWidth * 0.05,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: _getTextStyle(screenWidth, Colors.black87,
+                  fontSize: screenWidth * 0.05),
             ),
             SizedBox(height: screenHeight * 0.02),
 
             // Task Description
             Text(
               'This task has been cancelled. No further actions will be taken.',
-              style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                color: Colors.black54,
-              ),
+              style: _getTextStyle(screenWidth, Colors.black54),
             ),
             SizedBox(height: screenHeight * 0.02),
 
             // Task Cancellation Date
             Text(
               'Cancelled on: ${DateTime.now().toLocal().toString().split(' ')[0]}',
-              style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                color: Colors.grey,
-              ),
+              style: _getTextStyle(screenWidth, Colors.grey),
             ),
             SizedBox(height: screenHeight * 0.02),
 
@@ -99,10 +103,7 @@ class CancelledTaskListScreen extends StatelessWidget {
                   ),
                   label: Text(
                     'Reschedule',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.04,
-                      color: Colors.green,
-                    ),
+                    style: _getTextStyle(screenWidth, Colors.green),
                   ),
                   onPressed: () {
                     print('Reschedule Task $index');
@@ -118,10 +119,7 @@ class CancelledTaskListScreen extends StatelessWidget {
                   ),
                   label: Text(
                     'Delete',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.04,
-                      color: Colors.red,
-                    ),
+                    style: _getTextStyle(screenWidth, Colors.red),
                   ),
                   onPressed: () {
                     print('Delete Task $index');

@@ -13,10 +13,10 @@ Future<bool> LoginRequest(formValues) async {
   int resultCode = response.statusCode;
   var resultBody = jsonDecode(response.body);
   if (resultCode == 200 && resultBody['status'] == 'success') {
-    SuccessToast("Request Success");
+    successToast("Request Success");
     return true;
   } else {
-    ErrorToast("Request failed! try again");
+    errorToast("Request failed! try again");
     return false;
   }
 }
@@ -29,10 +29,10 @@ Future<bool> RegistrationRequest(formValues) async {
   var resultBody = jsonDecode(response.body);
 
   if (resultCode == 200 && resultBody['status'] == "success") {
-    SuccessToast("Request success");
+    successToast("Request success");
     return true;
   } else {
-    ErrorToast("Request failed! try again");
+    errorToast("Request failed! try again");
     return false;
   }
 }
@@ -44,10 +44,10 @@ Future<bool> VerifyEmailRequest(Email) async {
   var resultBody = jsonDecode(response.body);
 
   if (resultCode == 200 && resultBody['status'] == "success") {
-    SuccessToast("Request Success");
+    successToast("Request Success");
     return true;
   } else {
-    ErrorToast("Request failed! try again");
+    errorToast("Request failed! try again");
     return false;
   }
 }
@@ -61,10 +61,10 @@ Future<bool> VerifyOTPRequest(Email, OTP) async {
   var resultBody = jsonDecode(response.body);
 
   if (resultCode == 200 && resultBody['status'] == "success") {
-    SuccessToast("Request Success");
+    successToast("Request Success");
     return true;
   } else {
-    ErrorToast("Request failed! try again");
+    errorToast("Request failed! try again");
     return false;
   }
 }
@@ -80,10 +80,10 @@ Future<bool> SetPasswordRequest(formValues) async {
   var resultBody = jsonDecode(response.body);
 
   if (resultCode == 200 && resultBody['status'] == "success") {
-    SuccessToast("Request Success");
+    successToast("Request Success");
     return true;
   } else {
-    ErrorToast("Request failed! try again");
+    errorToast("Request failed! try again");
     return false;
   }
 }

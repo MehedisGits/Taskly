@@ -73,7 +73,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
         ),
         body: Stack(
           children: [
-            ScreenBackground(context),
+            screenBackground(context),
             Column(
               children: [
                 Expanded(
