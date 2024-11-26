@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await AuthController.getAccessToken();
 
     if (AuthController.isLoggedIn()) {
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 5), () {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(

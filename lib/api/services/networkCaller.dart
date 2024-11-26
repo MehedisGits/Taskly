@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:taskly/api/models/networkResponse.dart';
-import 'package:taskly/api/urls.dart';
+
+import '../controller.dart';
 
 class NetworkCaller {
   /// Handles GET requests
@@ -39,6 +40,10 @@ class NetworkCaller {
     required Map<String, dynamic> body,
   }) async {
     try {
+      final Map<String, String> reqHeader = {
+        "Content-Type": "application/json",
+        "token": AuthController.accessToken.toString()
+      };
       Uri uri = Uri.parse(url);
       final Response response = await post(
         uri,
