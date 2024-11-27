@@ -14,9 +14,13 @@ class NetworkCaller {
     try {
       Uri uri = Uri.parse(url);
       log("GET Request URL: $url");
+      Map<String, String> header = {
+        'token': AuthController.accessToken.toString() ?? ''
+      };
 
-      final Response response =
-          await _httpClient.get(uri).timeout(const Duration(seconds: 10));
+      final Response response = await _httpClient
+          .get(uri, headers: header)
+          .timeout(const Duration(seconds: 10));
 
       log("GET Response: ${response.body}");
 
