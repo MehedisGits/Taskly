@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/screens/task/cancelledTaskListScreen.dart';
 import 'package:taskly/screens/task/completedTaskListScreen.dart';
-import 'package:taskly/screens/task/newTaskListScreen.dart';
 import 'package:taskly/screens/task/progressTaskListScreen.dart';
 import 'package:taskly/screens/task/taskCreateScreen.dart';
 import 'package:taskly/style/style.dart';
@@ -17,7 +16,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _pages = <Widget>[
-    Center(child: Newtasklistscreen()),
+    Center(child: NewTaskListScreen()),
     Center(child: CancelledTaskListScreen()),
     Center(child: TaskProgressScreen()),
     Center(child: CompletedTaskListScreen()),
