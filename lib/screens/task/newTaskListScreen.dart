@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
 
-class NewTaskListScreen extends StatefulWidget {
-  const NewTaskListScreen({super.key});
+class Newtasklistscreen extends StatefulWidget {
+  const Newtasklistscreen({super.key});
 
   @override
-  State<NewTaskListScreen> createState() => _NewTaskListScreenState();
+  State<Newtasklistscreen> createState() => _NewtasklistscreenState();
 }
 
-class _NewTaskListScreenState extends State<NewTaskListScreen> {
+class _NewtasklistscreenState extends State<Newtasklistscreen> {
   @override
   Widget build(BuildContext context) {
     // Get screen width and height to make the UI responsive
