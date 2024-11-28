@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:http/http.dart';
 
 import '../controller.dart';
-import '../models/networkResponse.dart';
+import '../models/network_response.dart';
 
 class NetworkCaller {
   static final Client _httpClient = Client();

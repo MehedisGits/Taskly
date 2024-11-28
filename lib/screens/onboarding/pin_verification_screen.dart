@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:taskly/screens/onboarding/loginScreen.dart';
+import 'package:taskly/screens/onboarding/login_screen.dart';
 import 'package:taskly/style/style.dart';
 
 class PinVerificationScreen extends StatefulWidget {

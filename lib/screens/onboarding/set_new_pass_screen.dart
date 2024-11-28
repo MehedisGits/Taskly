@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:taskly/screens/onboarding/loginScreen.dart';
+import 'package:taskly/screens/onboarding/login_screen.dart';
 
 import '../../style/style.dart';
 

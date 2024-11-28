@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/api/controller.dart';
-import 'package:taskly/screens/onboarding/loginScreen.dart';
-import 'package:taskly/screens/profile/profileUpdateScreen.dart';
+import 'package:taskly/screens/onboarding/login_screen.dart';
+import 'package:taskly/screens/profile/profile_update_screen.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
 

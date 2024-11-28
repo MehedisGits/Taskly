@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:taskly/screens/onboarding/loginScreen.dart';
-import 'package:taskly/screens/onboarding/pinVerificationScreen.dart';
+import 'package:taskly/screens/onboarding/login_screen.dart';
+import 'package:taskly/screens/onboarding/pin_verification_screen.dart';
 
 import '../../style/style.dart';
 

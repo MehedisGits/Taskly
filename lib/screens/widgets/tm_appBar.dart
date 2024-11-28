@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:taskly/screens/profile/profileScreen.dart';
+import 'package:taskly/screens/profile/profile_screen.dart';
 
 class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TmAppBar({super.key, this.isProfileScreenOpen = false});

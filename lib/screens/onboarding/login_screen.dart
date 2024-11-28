@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:taskly/api/controller.dart';
-import 'package:taskly/api/models/networkResponse.dart';
+import 'package:taskly/api/models/network_response.dart';
 import 'package:taskly/api/services/networkCaller.dart';
 import 'package:taskly/api/urls.dart';
-import 'package:taskly/screens/onboarding/emailVerificationScreen.dart';
-import 'package:taskly/screens/onboarding/registrationScreen.dart';
+import 'package:taskly/screens/onboarding/email_verification_screen.dart';
+import 'package:taskly/screens/onboarding/registration_screen.dart';
 
 import '../../style/style.dart';
 import '../widgets/show_snackbar.dart';

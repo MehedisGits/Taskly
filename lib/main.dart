@@ -1,13 +1,13 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:taskly/screens/onboarding/emailVerificationScreen.dart';
-import 'package:taskly/screens/onboarding/loginScreen.dart';
-import 'package:taskly/screens/onboarding/pinVerificationScreen.dart';
-import 'package:taskly/screens/onboarding/registrationScreen.dart';
-import 'package:taskly/screens/onboarding/setPasswordScreen.dart';
-import 'package:taskly/screens/onboarding/splashScreen.dart';
-import 'package:taskly/screens/task/dashboardScreen.dart';
+import 'package:taskly/screens/onboarding/email_verification_screen.dart';
+import 'package:taskly/screens/onboarding/login_screen.dart';
+import 'package:taskly/screens/onboarding/pin_verification_screen.dart';
+import 'package:taskly/screens/onboarding/registration_screen.dart';
+import 'package:taskly/screens/onboarding/set_new_pass_screen.dart';
+import 'package:taskly/screens/onboarding/splash_screen.dart';
+import 'package:taskly/screens/task/dashboard_screen.dart';
 
 void main() {
   runApp(DevicePreview(

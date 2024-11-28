@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:taskly/api/controller.dart';
-import 'package:taskly/screens/task/dashboardScreen.dart';
+import 'package:taskly/screens/task/dashboard_screen.dart';
 import 'package:taskly/utils/assetsPath.dart';
 
 import '../../style/style.dart';
-import 'loginScreen.dart';
+import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

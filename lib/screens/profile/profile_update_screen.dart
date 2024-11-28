@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:taskly/api/models/networkResponse.dart';
+import 'package:taskly/api/models/network_response.dart';
 import 'package:taskly/api/services/networkCaller.dart';
 import 'package:taskly/api/urls.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';

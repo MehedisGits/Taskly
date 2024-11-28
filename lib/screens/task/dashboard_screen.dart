@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:taskly/screens/task/cancelledTaskListScreen.dart';
-import 'package:taskly/screens/task/completedTaskListScreen.dart';
-import 'package:taskly/screens/task/newTaskListScreen.dart';
-import 'package:taskly/screens/task/progressTaskListScreen.dart';
-import 'package:taskly/screens/task/taskCreateScreen.dart';
+import 'package:taskly/screens/task/cancelled_task_list_screen.dart';
+import 'package:taskly/screens/task/completed_task_list_screen.dart';
+import 'package:taskly/screens/task/create_new_task_screen.dart';
+import 'package:taskly/screens/task/new_task_list_screen.dart';
+import 'package:taskly/screens/task/progress_task_list_screen.dart';
 import 'package:taskly/style/style.dart';
 
 class NewTaskListScreen extends StatefulWidget {
