@@ -3,3 +3,4 @@ final String registrationUrl = '$baseUrl/Registration';
 final String loginUrl = '$baseUrl/Login';
 final String profileUpdateUrl = '$baseUrl/ProfileUpdate';
 final String addNewTaskUrl = '$baseUrl/createTask';
+final String getNewTaskListUrl = '$baseUrl/listTaskByStatus/New';

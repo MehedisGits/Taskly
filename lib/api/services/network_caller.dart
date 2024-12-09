@@ -15,8 +15,13 @@ class NetworkCaller {
       Uri uri = Uri.parse(url);
       log("GET Request URL: $url");
 
-      final Response response =
-          await _httpClient.get(uri).timeout(const Duration(seconds: 10));
+      final Map<String, String> reqHeader = {
+        if (AuthController.accessToken != null)
+          "token": AuthController.accessToken!
+        // Add additional headers if provided
+      };
+
+      final Response response = await _httpClient.get(uri, headers: reqHeader);
 
       log("GET Response: ${response.body}");
 
@@ -62,13 +67,11 @@ class NetworkCaller {
       log("POST Request Headers: $reqHeader");
       log("POST Request Body: ${jsonEncode(body)}");
 
-      final Response response = await _httpClient
-          .post(
-            uri,
-            headers: reqHeader,
-            body: body != null ? jsonEncode(body) : null,
-          )
-          .timeout(const Duration(seconds: 10));
+      final Response response = await _httpClient.post(
+        uri,
+        headers: reqHeader,
+        body: body != null ? jsonEncode(body) : null,
+      );
 
       log("POST Response: ${response.body}");
 

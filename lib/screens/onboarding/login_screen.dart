@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/api/controller.dart';
 import 'package:taskly/api/models/network_response.dart';
-import 'package:taskly/api/services/networkCaller.dart';
+import 'package:taskly/api/services/network_caller.dart';
 import 'package:taskly/api/urls.dart';
 import 'package:taskly/screens/onboarding/email_verification_screen.dart';
 import 'package:taskly/screens/onboarding/registration_screen.dart';

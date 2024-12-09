@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/api/models/network_response.dart';
-import 'package:taskly/api/services/networkCaller.dart';
+import 'package:taskly/api/services/network_caller.dart';
 import 'package:taskly/api/urls.dart';
 
 import '../../style/style.dart';

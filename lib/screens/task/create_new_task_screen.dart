@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/api/models/network_response.dart';
-import 'package:taskly/api/services/networkCaller.dart';
+import 'package:taskly/api/services/network_caller.dart';
 import 'package:taskly/api/urls.dart';
 import 'package:taskly/screens/widgets/show_snackbar.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
@@ -21,6 +21,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
   bool isLoading = false;
+  bool _shouldRefreshPrevPage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +159,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     });
 
     if (response.isSuccess) {
+      _shouldRefreshPrevPage = true;
       showSnackBar(context, "New task added");
       _titleTEController.clear();
       _descriptionTEController.clear();
@@ -166,5 +168,6 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     } else {
       showSnackBar(context, response.errorMessage, isError: true);
     }
+    Navigator.pop(context, _shouldRefreshPrevPage);
   }
 }

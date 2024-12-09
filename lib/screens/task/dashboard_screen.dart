@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taskly/screens/task/cancelled_task_list_screen.dart';
 import 'package:taskly/screens/task/completed_task_list_screen.dart';
-import 'package:taskly/screens/task/create_new_task_screen.dart';
 import 'package:taskly/screens/task/new_task_list_screen.dart';
 import 'package:taskly/screens/task/progress_task_list_screen.dart';
 import 'package:taskly/style/style.dart';
@@ -32,17 +31,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton.small(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TaskCreateScreen()),
-            );
-          },
-          shape: CircleBorder(),
-          backgroundColor: Colors.white,
-          child: Icon(Icons.add_task, color: colorGreen),
-        ),
         bottomNavigationBar: NavigationBar(
           indicatorColor: colorLight,
           backgroundColor: Colors.white,
@@ -52,7 +40,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
             NavigationDestination(
               icon: Icon(Icons.new_label_outlined),
               selectedIcon: Icon(Icons.new_label),
-              label: 'Home',
+              label: 'New',
             ),
             NavigationDestination(
               icon: Icon(Icons.cancel_outlined),
