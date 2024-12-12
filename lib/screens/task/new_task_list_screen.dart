@@ -73,12 +73,16 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
                       // Dynamic space based on screen height
 
                       // Task List Header
-                      Text(
-                        'New Tasks Overview',
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.05, // Responsive font size
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                      Center(
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'New Tasks',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.05,
+                            // Responsive font size
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.01),
@@ -94,7 +98,10 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
                               debugPrint('Task $index clicked');
                             },
                             child: BuildTaskCard(
-                                index: index, taskModel: _newTaskList[index]),
+                              index: index,
+                              taskModel: _newTaskList[index],
+                              onRefreshList: _getNewTaskList,
+                            ),
                           ),
                         ),
                       ),
@@ -156,7 +163,7 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
   Widget _buildStatusCard(int count, String status, double screenWidth) {
     return Expanded(
       child: Card(
-        elevation: 3,
+        elevation: 0.5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12), // Rounded corners
         ),
@@ -164,7 +171,7 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             gradient: LinearGradient(
-              colors: [Colors.green.shade300, Colors.blue.shade400],
+              colors: [Colors.green.shade100, Colors.blue.shade100],
               // Blue gradient
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -176,15 +183,15 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
               Text(
                 '$count',
                 style: TextStyle(
-                    fontSize: screenWidth * 0.07, // Responsive font size
+                    fontSize: screenWidth * 0.06, // Responsive font size
                     fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                    color: Colors.black87),
               ),
               SizedBox(height: screenWidth * 0.01), // Responsive space
               Text(
                 status,
                 style: TextStyle(
-                    fontSize: screenWidth * 0.03, color: Colors.white70),
+                    fontSize: screenWidth * 0.03, color: Colors.black87),
               ),
             ],
           ),

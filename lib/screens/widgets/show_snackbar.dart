@@ -6,7 +6,7 @@ void showSnackBar(
   String message, {
   bool isError = false, // Whether the message represents an error
   bool isSuccess = false, // Whether the message represents a success
-  Duration duration = const Duration(seconds: 4), // Duration for the SnackBar
+  Duration duration = const Duration(seconds: 1), // Duration for the SnackBar
   String actionLabel = '', // Optional action button label
   VoidCallback? onActionPressed, // Action button handler
 }) {
