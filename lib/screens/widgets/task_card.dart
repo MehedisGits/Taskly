@@ -4,7 +4,7 @@ import 'package:taskly/api/models/network_response.dart';
 import 'package:taskly/api/models/task_model.dart';
 import 'package:taskly/api/services/network_caller.dart';
 import 'package:taskly/api/urls.dart';
-import 'package:taskly/screens/widgets/show_snackbar.dart';
+import 'package:taskly/screens/widgets/show_snack_bar.dart';
 
 class BuildTaskCard extends StatefulWidget {
   const BuildTaskCard({
@@ -25,6 +25,7 @@ class BuildTaskCard extends StatefulWidget {
 class _BuildTaskCardState extends State<BuildTaskCard> {
   String _selectedStatus = '';
   bool _changeStatusInProgress = false;
+  bool _deletedTaskInProgress = false;
 
   @override
   void initState() {
@@ -74,7 +75,7 @@ class _BuildTaskCardState extends State<BuildTaskCard> {
               height: screenHeight * 0.01,
             ),
             Text(
-              'Created date: $formattedDate ' ?? '',
+              'Created date: $formattedDate ',
               style:
                   TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey),
             ),
@@ -135,16 +136,22 @@ class _BuildTaskCardState extends State<BuildTaskCard> {
                         },
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                        size: screenWidth * 0.05, // Responsive icon size
+                    Visibility(
+                      visible: !_deletedTaskInProgress,
+                      replacement: Center(
+                        child: CircularProgressIndicator(),
                       ),
-                      onPressed: () {
-                        // Handle Delete action
-                        _onTapDeleteButton();
-                      },
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                          size: screenWidth * 0.05, // Responsive icon size
+                        ),
+                        onPressed: () {
+                          // Handle Delete action
+                          _onTapDeleteButton();
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -156,12 +163,8 @@ class _BuildTaskCardState extends State<BuildTaskCard> {
     );
   }
 
-  void _onTapDeleteButton() {
-    _deleteTaskFromList();
-  }
-
-  Future<void> _deleteTaskFromList() async {
-    _changeStatusInProgress = false;
+  Future<void> _onTapDeleteButton() async {
+    _deletedTaskInProgress = true;
     setState(() {});
     NetworkResponse response = await NetworkCaller.getRequest(
         url: deleteTask(widget.taskModel.sId ?? ''));
@@ -169,11 +172,10 @@ class _BuildTaskCardState extends State<BuildTaskCard> {
       widget.onRefreshList();
       showSnackBar(context, 'Task Deleted successfully');
     } else {
+      _deletedTaskInProgress = false;
+      setState(() {});
       showSnackBar(context, response.errorMessage);
     }
-    setState(() {
-      _changeStatusInProgress = false;
-    });
   }
 
   void _onTapEditButton() {

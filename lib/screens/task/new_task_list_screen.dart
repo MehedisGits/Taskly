@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:taskly/api/models/network_response.dart';
 import 'package:taskly/api/models/task_list_model.dart';
 import 'package:taskly/api/models/task_model.dart';
+import 'package:taskly/api/models/task_status_count_model.dart';
+import 'package:taskly/api/models/task_status_model.dart';
 import 'package:taskly/api/services/network_caller.dart';
-import 'package:taskly/screens/widgets/show_snackbar.dart';
 import 'package:taskly/screens/widgets/task_card.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
 
+import '../../api/controller.dart';
 import '../../api/urls.dart';
+import '../widgets/show_snack_bar.dart';
 import 'create_new_task_screen.dart';
 
 class Newtasklistscreen extends StatefulWidget {
@@ -20,12 +23,15 @@ class Newtasklistscreen extends StatefulWidget {
 
 class _NewtasklistscreenState extends State<Newtasklistscreen> {
   bool _newTaskListIsInProgress = false;
+  bool _taskStatusListCountInProgress = false;
   List<TaskModel> _newTaskList = [];
+  List<TaskStatusModel> _taskCountList = [];
 
   @override
   void initState() {
     super.initState();
     _getNewTaskList();
+    _getTaskStatusCount();
   }
 
   @override
@@ -45,7 +51,12 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await _getNewTaskList();
+          try {
+            await _getNewTaskList();
+            await _getTaskStatusCount();
+          } catch (e) {
+            showSnackBar(context, 'Failed to refresh data.');
+          }
         },
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -61,13 +72,10 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
                       // Summary Row (Status Cards)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildStatusCard(
-                              _newTaskList.length, 'Cancelled', screenWidth),
-                          _buildStatusCard(12, 'Completed', screenWidth),
-                          _buildStatusCard(20, 'In Progress', screenWidth),
-                          _buildStatusCard(32, 'New Task', screenWidth),
-                        ],
+                        children: _taskCountList.map((taskStatus) {
+                          return _buildStatusCard(taskStatus.sum ?? 0,
+                              taskStatus.sId ?? 'Unknown', screenWidth);
+                        }).toList(),
                       ),
                       SizedBox(height: screenHeight * 0.01),
                       // Dynamic space based on screen height
@@ -90,20 +98,30 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
 
                       // Task List
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: _newTaskList.length,
-                          itemBuilder: (context, index) => GestureDetector(
-                            onTap: () {
-                              // Handle task item tap, maybe navigate to a task detail screen
-                              debugPrint('Task $index clicked');
-                            },
-                            child: BuildTaskCard(
-                              index: index,
-                              taskModel: _newTaskList[index],
-                              onRefreshList: _getNewTaskList,
-                            ),
-                          ),
-                        ),
+                        child: _newTaskList.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'No new tasks available.',
+                                  style: TextStyle(
+                                      fontSize: screenWidth * 0.04,
+                                      color: Colors.black54),
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: _newTaskList.length,
+                                itemBuilder: (context, index) =>
+                                    GestureDetector(
+                                  onTap: () {
+                                    // Handle task item tap, maybe navigate to a task detail screen
+                                    debugPrint('Task $index clicked');
+                                  },
+                                  child: BuildTaskCard(
+                                    index: index,
+                                    taskModel: _newTaskList[index],
+                                    onRefreshList: _getNewTaskList,
+                                  ),
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -112,6 +130,25 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
             )),
       ),
     );
+  }
+
+  Future<void> _getTaskStatusCount() async {
+    setState(() {
+      _newTaskListIsInProgress = true;
+    });
+
+    final NetworkResponse response =
+        await NetworkCaller.getRequest(url: getTaskStatusCount);
+    if (response.isSuccess) {
+      final TaskStatusCountModel taskStatusCountModel =
+          TaskStatusCountModel.fromJson(response.responseData);
+      _taskCountList = taskStatusCountModel.taskStatusCountList ?? [];
+    } else {
+      showSnackBar(context, response.errorMessage);
+    }
+    setState(() {
+      _newTaskListIsInProgress = false;
+    });
   }
 
   Future<void> _onTapAddFAB() async {
@@ -125,6 +162,7 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
       // If a new task was added, refresh the task list
       if (shouldRefresh == true) {
         await _getNewTaskList(); // Refresh the task list
+        _getTaskStatusCount();
       }
     } catch (e) {
       showSnackBar(context, 'Failed to refresh tasks.');
@@ -135,6 +173,7 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
     try {
       setState(() {
         _newTaskListIsInProgress = true;
+        _getTaskStatusCount();
       });
 
       final NetworkResponse response =
@@ -146,6 +185,9 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
         setState(() {
           _newTaskList = taskListModel.taskList ?? [];
         });
+      } else if (response.statusCode == 401) {
+        AuthController.clearUserData();
+        showSnackBar(context, 'Unauthorized user', isError: true);
       } else {
         showSnackBar(
             context, response.errorMessage ?? 'Failed to fetch tasks.');

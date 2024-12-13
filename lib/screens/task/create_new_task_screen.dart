@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/api/controller.dart';
 import 'package:taskly/api/models/network_response.dart';
 import 'package:taskly/api/services/network_caller.dart';
 import 'package:taskly/api/urls.dart';
-import 'package:taskly/screens/widgets/show_snackbar.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
+
+import '../widgets/show_snack_bar.dart';
 
 class TaskCreateScreen extends StatefulWidget {
   const TaskCreateScreen({super.key});
@@ -164,6 +166,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       _titleTEController.clear();
       _descriptionTEController.clear();
     } else if (response.statusCode == 401) {
+      AuthController.clearUserData();
       showSnackBar(context, 'Unauthorized user', isError: true);
     } else {
       showSnackBar(context, response.errorMessage, isError: true);

@@ -4,9 +4,9 @@ import 'package:taskly/api/models/task_list_model.dart';
 import 'package:taskly/api/models/task_model.dart';
 import 'package:taskly/api/services/network_caller.dart';
 import 'package:taskly/api/urls.dart';
-import 'package:taskly/screens/widgets/show_snackbar.dart';
 import 'package:taskly/screens/widgets/task_card.dart';
 
+import '../widgets/show_snack_bar.dart';
 import '../widgets/tm_appBar.dart';
 
 class CompletedTaskListScreen extends StatefulWidget {

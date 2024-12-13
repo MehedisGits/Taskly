@@ -9,7 +9,7 @@ import 'package:taskly/screens/onboarding/email_verification_screen.dart';
 import 'package:taskly/screens/onboarding/registration_screen.dart';
 
 import '../../style/style.dart';
-import '../widgets/show_snackbar.dart';
+import '../widgets/show_snack_bar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

@@ -24,6 +24,7 @@ class NetworkCaller {
       final Response response = await _httpClient.get(uri, headers: reqHeader);
 
       log("GET Response: ${response.body}");
+      log("POST Request Headers: $reqHeader");
 
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);

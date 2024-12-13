@@ -8,7 +8,7 @@ import 'package:taskly/api/urls.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
 import 'package:taskly/style/style.dart';
 
-import '../widgets/show_snackbar.dart';
+import '../widgets/show_snack_bar.dart';
 
 class ProfileUpdateScreen extends StatefulWidget {
   const ProfileUpdateScreen({super.key});

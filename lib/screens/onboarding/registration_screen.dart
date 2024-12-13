@@ -4,7 +4,7 @@ import 'package:taskly/api/services/network_caller.dart';
 import 'package:taskly/api/urls.dart';
 
 import '../../style/style.dart';
-import '../widgets/show_snackbar.dart';
+import '../widgets/show_snack_bar.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
