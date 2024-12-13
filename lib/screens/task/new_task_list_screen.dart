@@ -51,83 +51,81 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          try {
-            await _getNewTaskList();
-            await _getTaskStatusCount();
-          } catch (e) {
-            showSnackBar(context, 'Failed to refresh data.');
-          }
+          await _getNewTaskList();
+          _getTaskStatusCount();
         },
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            child: Stack(
-              children: [
-                screenBackground(context),
-                Visibility(
-                  visible: !_newTaskListIsInProgress,
-                  replacement: Center(child: CircularProgressIndicator()),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Summary Row (Status Cards)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: _taskCountList.map((taskStatus) {
-                          return _buildStatusCard(taskStatus.sum ?? 0,
-                              taskStatus.sId ?? 'Unknown', screenWidth);
-                        }).toList(),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      // Dynamic space based on screen height
+        child: Stack(
+          children: [
+            screenBackground(context),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: screenHeight * 0.01,
+                  horizontal: screenWidth * 0.02),
+              child: Visibility(
+                visible: !_newTaskListIsInProgress,
+                replacement: Center(child: CircularProgressIndicator()),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Summary Row (Status Cards)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: _taskCountList.map((taskStatus) {
+                        return _buildStatusCard(taskStatus.sum ?? 0,
+                            taskStatus.sId ?? 'Unknown', screenWidth);
+                      }).toList(),
+                    ),
+                    SizedBox(height: screenHeight * 0.01),
+                    // Dynamic space based on screen height
 
-                      // Task List Header
-                      Center(
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          'New Tasks',
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.05,
-                            // Responsive font size
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+                    // Task List Header
+                    Center(
+                      child: Text(
+                        textAlign: TextAlign.center,
+                        'New Tasks',
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.05,
+                          // Responsive font size
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.01),
-                      // Dynamic space based on screen height
+                    ),
+                    SizedBox(height: screenHeight * 0.01),
+                    // Dynamic space based on screen height
 
-                      // Task List
-                      Expanded(
-                        child: _newTaskList.isEmpty
-                            ? Center(
-                                child: Text(
-                                  'No new tasks available.',
-                                  style: TextStyle(
-                                      fontSize: screenWidth * 0.04,
-                                      color: Colors.black54),
-                                ),
-                              )
-                            : ListView.builder(
-                                itemCount: _newTaskList.length,
-                                itemBuilder: (context, index) =>
-                                    GestureDetector(
-                                  onTap: () {
-                                    // Handle task item tap, maybe navigate to a task detail screen
-                                    debugPrint('Task $index clicked');
-                                  },
-                                  child: BuildTaskCard(
-                                    index: index,
-                                    taskModel: _newTaskList[index],
-                                    onRefreshList: _getNewTaskList,
-                                  ),
+                    // Task List
+                    Expanded(
+                      child: _newTaskList.isEmpty
+                          ? Center(
+                              child: Text(
+                                'No new tasks available.',
+                                style: TextStyle(
+                                    fontSize: screenWidth * 0.04,
+                                    color: Colors.black54),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: _newTaskList.length,
+                              itemBuilder: (context, index) => GestureDetector(
+                                onTap: () {
+                                  // Handle task item tap, maybe navigate to a task detail screen
+                                  debugPrint('Task $index clicked');
+                                },
+                                child: BuildTaskCard(
+                                  index: index,
+                                  taskModel: _newTaskList[index],
+                                  onRefreshList: _getNewTaskList,
                                 ),
                               ),
-                      ),
-                    ],
-                  ),
+                            ),
+                    ),
+                  ],
                 ),
-              ],
-            )),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
