@@ -1,8 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/api/models/network_response.dart';
+import 'package:taskly/api/models/task_list_model.dart';
+import 'package:taskly/api/models/task_model.dart';
+import 'package:taskly/api/services/network_caller.dart';
+import 'package:taskly/api/urls.dart';
+import 'package:taskly/screens/widgets/show_snack_bar.dart';
+import 'package:taskly/screens/widgets/task_card.dart';
 import 'package:taskly/screens/widgets/tm_appBar.dart';
+import 'package:taskly/style/style.dart';
 
-class CancelledTaskListScreen extends StatelessWidget {
+class CancelledTaskListScreen extends StatefulWidget {
   const CancelledTaskListScreen({super.key});
+
+  @override
+  State<CancelledTaskListScreen> createState() =>
+      _CancelledTaskListScreenState();
+}
+
+class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
+  bool _cancelledTaskListInProgress = false;
+  bool _apiCallFailed = false;
+  List<TaskModel> _cancelledTaskList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getCancelledTaskList();
+  }
+
+  Future<void> _getCancelledTaskList() async {
+    _cancelledTaskListInProgress = true;
+    _apiCallFailed = false;
+    setState(() {});
+    final NetworkResponse response =
+        await NetworkCaller.getRequest(url: getCancelledTaskListUrl);
+    if (response.isSuccess) {
+      final TaskListModel taskListModel =
+          TaskListModel.fromJson(response.responseData);
+      _cancelledTaskList = taskListModel.taskList ?? [];
+    } else {
+      _apiCallFailed = true;
+      showSnackBar(context, response.errorMessage);
+    }
+    _cancelledTaskListInProgress = false;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,28 +54,88 @@ class CancelledTaskListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: TmAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Screen Title
-            Text(
-              'Cancelled Task Overview',
-              style: _getTitleStyle(screenWidth),
-            ),
-            SizedBox(height: screenHeight * 0.01),
+      body: Stack(
+        children: [
+          screenBackground(context),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: screenHeight * 0.01, horizontal: screenWidth * 0.02),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await _getCancelledTaskList();
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Screen Title
+                  Center(
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      'Cancelled Tasks',
+                      style: _getTitleStyle(screenWidth),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.01),
+                  Divider(
+                    color: Colors.grey.shade400,
+                    thickness: 1.0,
+                    height: 1.0,
+                  ),
+                  SizedBox(height: screenHeight * 0.01),
 
-            // Cancelled Task List
-            Expanded(
-              child: ListView.builder(
-                itemCount: 10, // Example task count, replace with dynamic count
-                itemBuilder: (context, index) =>
-                    _buildCancelledTaskCard(screenWidth, screenHeight, index),
+                  // Cancelled Task List with Loading and Error Handling
+                  Expanded(
+                    child: _cancelledTaskListInProgress
+                        ? Center(child: CircularProgressIndicator())
+                        : _apiCallFailed
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Failed to load tasks. Please try again.',
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.05,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    SizedBox(height: screenHeight * 0.02),
+                                    ElevatedButton(
+                                      onPressed: _getCancelledTaskList,
+                                      child: Text('Retry'),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : _cancelledTaskList.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      'No cancelled tasks available.',
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.05,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: _cancelledTaskList.length,
+                                    itemBuilder: (context, index) =>
+                                        GestureDetector(
+                                      onTap: () {},
+                                      child: BuildTaskCard(
+                                        index: index,
+                                        taskModel: _cancelledTaskList[index],
+                                        onRefreshList: _getCancelledTaskList,
+                                      ),
+                                    ),
+                                  ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -44,92 +146,6 @@ class CancelledTaskListScreen extends StatelessWidget {
       fontSize: screenWidth * 0.05,
       fontWeight: FontWeight.bold,
       color: Colors.black87,
-    );
-  }
-
-  // Custom method to get text style for task info
-  TextStyle _getTextStyle(double screenWidth, Color color, {double? fontSize}) {
-    return TextStyle(
-      fontSize: fontSize ?? screenWidth * 0.04,
-      color: color,
-    );
-  }
-
-  // Custom widget for displaying each cancelled task
-  Widget _buildCancelledTaskCard(
-      double screenWidth, double screenHeight, int index) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12), // Rounded corners
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.03),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Task Title
-            Text(
-              'Cancelled Task $index',
-              style: _getTextStyle(screenWidth, Colors.black87,
-                  fontSize: screenWidth * 0.05),
-            ),
-            SizedBox(height: screenHeight * 0.02),
-
-            // Task Description
-            Text(
-              'This task has been cancelled. No further actions will be taken.',
-              style: _getTextStyle(screenWidth, Colors.black54),
-            ),
-            SizedBox(height: screenHeight * 0.02),
-
-            // Task Cancellation Date
-            Text(
-              'Cancelled on: ${DateTime.now().toLocal().toString().split(' ')[0]}',
-              style: _getTextStyle(screenWidth, Colors.grey),
-            ),
-            SizedBox(height: screenHeight * 0.02),
-
-            // Cancelled Task Actions
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Reschedule Button
-                TextButton.icon(
-                  icon: Icon(
-                    Icons.schedule,
-                    color: Colors.green,
-                    size: screenWidth * 0.05,
-                  ),
-                  label: Text(
-                    'Reschedule',
-                    style: _getTextStyle(screenWidth, Colors.green),
-                  ),
-                  onPressed: () {
-                    print('Reschedule Task $index');
-                  },
-                ),
-
-                // Delete Button
-                TextButton.icon(
-                  icon: Icon(
-                    Icons.delete_forever,
-                    color: Colors.red,
-                    size: screenWidth * 0.05,
-                  ),
-                  label: Text(
-                    'Delete',
-                    style: _getTextStyle(screenWidth, Colors.red),
-                  ),
-                  onPressed: () {
-                    print('Delete Task $index');
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

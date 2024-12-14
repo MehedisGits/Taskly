@@ -42,7 +42,7 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
 
     return Scaffold(
       appBar: TmAppBar(),
-      floatingActionButton: FloatingActionButton.small(
+      floatingActionButton: FloatingActionButton(
         onPressed: _onTapAddFAB,
         elevation: 10,
         shape: CircleBorder(),
@@ -68,12 +68,18 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Summary Row (Status Cards)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: _taskCountList.map((taskStatus) {
-                        return _buildStatusCard(taskStatus.sum ?? 0,
-                            taskStatus.sId ?? 'Unknown', screenWidth);
-                      }).toList(),
+                    Visibility(
+                      visible: !_taskStatusListCountInProgress,
+                      replacement: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: _taskCountList.map((taskStatus) {
+                          return _buildStatusCard(taskStatus.sum ?? 0,
+                              taskStatus.sId ?? 'Unknown', screenWidth);
+                        }).toList(),
+                      ),
                     ),
                     SizedBox(height: screenHeight * 0.01),
                     // Dynamic space based on screen height
@@ -90,6 +96,12 @@ class _NewtasklistscreenState extends State<Newtasklistscreen> {
                           color: Colors.black87,
                         ),
                       ),
+                    ),
+                    SizedBox(height: screenHeight * 0.01),
+                    Divider(
+                      color: Colors.grey.shade400,
+                      thickness: 1.0,
+                      height: 1.0,
                     ),
                     SizedBox(height: screenHeight * 0.01),
                     // Dynamic space based on screen height

@@ -31,8 +31,8 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: ClipOval(
             child: Image.network(
               "https://avatars.githubusercontent.com/u/125388734?v=4",
-              height: screenWidth * 0.12, // Adjusting the profile image size
-              width: screenWidth * 0.12,
+              height: 48, // Adjusting the profile image size
+              width: 48,
               fit: BoxFit.cover,
             ),
           ),
@@ -46,7 +46,7 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
               '${greetingMessage()}, $userName',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: screenWidth * 0.045, // More flexible font scaling
+                fontSize: 16, // More flexible font scaling
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -56,7 +56,7 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
               'rakibulislammehedi4@gmail.com',
               style: TextStyle(
                 color: Colors.white70,
-                fontSize: screenWidth * 0.035, // Responsive font size
+                fontSize: 13, // Responsive font size
               ),
             ),
           ],
@@ -94,18 +94,18 @@ class TmAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Expanded(
                   child: _buildGreetingRow(screenWidth, context),
                 ),
-                IconButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("No new notifications"),
-                      duration: Duration(seconds: 2),
-                    ));
-                  },
-                  icon: Icon(Icons.notification_important, color: Colors.white),
-                  tooltip: 'Notifications',
-                  iconSize:
-                      screenWidth * 0.07, // More dynamic icon size in landscape
-                ),
+                // IconButton(
+                //   onPressed: () {
+                //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                //       content: Text("No new notifications"),
+                //       duration: Duration(seconds: 2),
+                //     ));
+                //   },
+                //   icon: Icon(Icons.notification_important, color: Colors.white),
+                //   tooltip: 'Notifications',
+                //   iconSize:
+                //       screenWidth * 0.07, // More dynamic icon size in landscape
+                // ),
               ],
             )
           : _buildGreetingRow(screenWidth, context),
