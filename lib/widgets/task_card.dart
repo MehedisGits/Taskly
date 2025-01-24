@@ -60,7 +60,7 @@ class TaskCard extends StatelessWidget {
                         TextButton(
                           onPressed: () {
                             // Edit Task
-                            Get.snackbar('Edit Task', 'Edit task functionality');
+                            Get.snackbar('Edit Task', 'Edit task');
                           },
                           child: const Text('Edit'),
                         ),
