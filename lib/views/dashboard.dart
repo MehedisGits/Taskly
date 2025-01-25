@@ -28,14 +28,17 @@ class DashboardScreen extends StatelessWidget {
           Get.snackbar('Add a new task', 'Click here to add a new task.',
               margin: const EdgeInsets.all(12));
         },
-        backgroundColor: Colors.grey[400],
+        backgroundColor: Colors.grey,
+        focusColor: Colors.green,
+        hoverColor: Colors.green,
+        focusElevation: 5,
         child: Icon(
           Icons.add,
           size: isMobile
               ? 30
               : isTablet
-              ? 35
-              : 40, // Adjust FAB size dynamically
+                  ? 35
+                  : 40, // Adjust FAB size dynamically
         ),
       ),
       body: SafeArea(
@@ -54,7 +57,8 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   // Responsive Task Category Buttons
-                  buildTaskCategoryButtons(newCount, isMobile, isTablet, isDesktop),
+                  buildTaskCategoryButtons(
+                      newCount, isMobile, isTablet, isDesktop),
                   const SizedBox(height: 12),
                   // Task List View
                   Expanded(
@@ -81,18 +85,23 @@ class DashboardScreen extends StatelessWidget {
   /// Builds a responsive row of task category buttons
   Widget buildTaskCategoryButtons(
       String newCount, bool isMobile, bool isTablet, bool isDesktop) {
-    List<String> categories = ['New', 'Cancelled', 'In Progress', 'Completed'];
-
+    List<String> categories = [
+      'New',
+      'Work',
+      'Personal',
+      'Cancelled',
+      'In Progress',
+      'Completed'
+    ];
     return Obx(() => Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      alignment: isDesktop
-          ? WrapAlignment.center
-          : WrapAlignment.start, // Center on desktop, left-aligned otherwise
-      children: List.generate(categories.length, (index) {
-        return buildCategoryButton(categories[index], index, isMobile);
-      }),
-    ));
+          spacing: 8,
+          runSpacing: 8,
+          alignment: isDesktop ? WrapAlignment.center : WrapAlignment.start,
+          // Center on desktop, left-aligned otherwise
+          children: List.generate(categories.length, (index) {
+            return buildCategoryButton(categories[index], index, isMobile);
+          }),
+        ));
   }
 
   /// Helper to build an individual category button
@@ -102,9 +111,8 @@ class DashboardScreen extends StatelessWidget {
         selectedCategoryIndex.value = index; // Update selected index
       },
       style: TextButton.styleFrom(
-        backgroundColor: selectedCategoryIndex.value == index
-            ? Colors.green
-            : Colors.grey,
+        backgroundColor:
+            selectedCategoryIndex.value == index ? Colors.green : Colors.grey,
         padding: EdgeInsets.symmetric(
           horizontal: isMobile ? 12 : 16,
           vertical: isMobile ? 8 : 12,
