@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  device_preview_plus: ^2.2.4
+  device_preview: ^1.2.0
   get: ^4.6.6
   dio: ^5.7.0
   flutter:
