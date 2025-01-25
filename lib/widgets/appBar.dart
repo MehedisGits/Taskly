@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controllers/app_bar_controller.dart'; // Import your controller
 
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
+  CustomAppBar({super.key});
+
+  final CustomAppBarController controller = Get.put(CustomAppBarController());
 
   @override
   Widget build(BuildContext context) {
@@ -16,67 +19,100 @@ class CustomAppBar extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildIconButton(
-              icon: Icons.more_vert,
-              tooltip: 'More Options',
-              onTap: () => Get.snackbar(
-                'More',
-                'More options selected',
-                margin: const EdgeInsets.all(10),
-              ),
-            ),
-            _buildAppBarTitle(screenWidth),
-            _buildProfileAvatar(
-              onTap: () => Get.snackbar(
-                'Profile Opening',
-                'Profile is being opened',
-                margin: const EdgeInsets.all(10),
-              ),
-            ),
-          ],
-        ),
+        child: Obx(() => AnimatedCrossFade(
+          duration: const Duration(milliseconds: 300),
+          firstChild: _buildDefaultAppBar(screenWidth),
+          secondChild: _buildSearchBar(),
+          crossFadeState: controller.isSearchActive.value
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+        )),
       ),
     );
   }
 
-  /// Builds the IconButton for the left side.
-  Widget _buildIconButton({
-    required IconData icon,
-    required String tooltip,
-    required VoidCallback onTap,
-  }) {
-    return IconButton(
-      onPressed: onTap,
-      icon: Icon(icon),
-      tooltip: tooltip,
-      color: Colors.black87,
-    );
-  }
-
-  /// Builds the title text in the middle.
-  Widget _buildAppBarTitle(double screenWidth) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          // Add logic for title click if needed
-        },
-        child: Text(
-          'Rakibul Islam Mehedi',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: screenWidth < 600 ? 16 : 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+  /// Builds the default app bar with a title and profile avatar
+  Widget _buildDefaultAppBar(double screenWidth) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildIconButton(
+          icon: Icons.more_vert,
+          tooltip: 'More Options',
+          onTap: () => Get.snackbar(
+            'More',
+            'More options selected',
+            margin: const EdgeInsets.all(10),
           ),
         ),
-      ),
+        _buildAppBarTitle(screenWidth),
+        _buildProfileAvatar(
+          onTap: () => Get.snackbar(
+            'Profile Opening',
+            'Profile is being opened',
+            margin: const EdgeInsets.all(10),
+          ),
+        ),
+      ],
     );
   }
 
-  /// Builds the profile avatar on the right side.
+  /// Builds the search bar view
+  Widget _buildSearchBar() {
+    return Row(
+      children: [
+        IconButton(
+          onPressed: controller.deactivateSearch,
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          tooltip: 'Go Back',
+        ),
+        Expanded(
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: Colors.grey[600]),
+            ),
+            style: const TextStyle(fontSize: 16),
+            onChanged: (value) {
+              // Perform search logic if needed
+            },
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            // Perform the search logic when the search icon is clicked
+            Get.snackbar(
+              'Search',
+              'Searching...',
+              margin: const EdgeInsets.all(10),
+            );
+          },
+          icon: const Icon(Icons.search, color: Colors.black87),
+          tooltip: 'Search',
+        ),
+      ],
+    );
+  }
+
+  /// Builds the title text in the default app bar
+  Widget _buildAppBarTitle(double screenWidth) {
+    return GestureDetector(
+      onTap: controller.activateSearch,
+      child: Text(
+        'Discover',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: screenWidth < 600 ? 16 : 20,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      )
+
+    );
+  }
+
+  /// Builds the profile avatar on the right side
   Widget _buildProfileAvatar({required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -105,6 +141,20 @@ class CustomAppBar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// Builds the IconButton for the left side
+  Widget _buildIconButton({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    return IconButton(
+      onPressed: onTap,
+      icon: Icon(icon),
+      tooltip: tooltip,
+      color: Colors.black87,
     );
   }
 }

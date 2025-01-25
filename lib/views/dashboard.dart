@@ -49,7 +49,7 @@ class DashboardScreen extends StatelessWidget {
               return Column(
                 children: [
                   // Floating Custom App Bar
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Expanded(child: CustomAppBar()),
