@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/widgets/appBar.dart';
 
 import '../widgets/task_card.dart';
 
@@ -44,11 +45,11 @@ class DashboardScreen extends StatelessWidget {
               return Column(
                 children: [
                   // Floating App Bar
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: buildFloatingAppBarCard(screenWidth),
+                        child: CustomAppBar(),
                       ),
                     ],
                   ),
@@ -128,56 +129,4 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the floating app bar card with responsive adjustments
-  Card buildFloatingAppBarCard(double screenWidth) {
-    return Card(
-      elevation: 0,
-      shadowColor: Colors.grey,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(99)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        child: SizedBox(
-          child: Row(
-            children: [
-              IconButton(
-                  onPressed: () {
-                    Get.snackbar('More', '', margin: const EdgeInsets.all(10));
-                  },
-                  icon: const Icon(Icons.more_vert)),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    'Rakibul Islam Mehedi',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: screenWidth < 600 ? 16 : 20,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 42,
-                height: 42,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.snackbar('Profile opening', 'This is description',
-                        margin: const EdgeInsets.all(10));
-                  },
-                  child: ClipOval(
-                    child: Image.network(
-                      'https://avatars.githubusercontent.com/u/125388734?v=4',
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

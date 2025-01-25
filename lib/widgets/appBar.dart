@@ -1,116 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const MyAppBar({super.key, this.isProfileScreenOpen = false});
+class CustomAppBar extends StatelessWidget {
+  const CustomAppBar({super.key});
 
-  final String userName = "Mehedi";
-  final bool isProfileScreenOpen;
+  @override
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
 
-  String greetingMessage() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
-
-  Widget _buildGreetingRow(double screenWidth, context) {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () {
-            if (isProfileScreenOpen) {
-              return;
-            }
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => ProfileScreen(),
-            //     ));
-          },
-          child: ClipOval(
-            child: Image.network(
-              "https://avatars.githubusercontent.com/u/125388734?v=4",
-              height: 48, // Adjusting the profile image size
-              width: 48,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        SizedBox(width: screenWidth * 0.03),
-        // Adjusted space for better alignment
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      elevation: 1, // Slight elevation for a professional look
+      shadowColor: Colors.grey.withOpacity(0.2),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(50)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              '${greetingMessage()}, $userName',
-              style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 16, // More flexible font scaling
-                fontWeight: FontWeight.w600,
+            _buildIconButton(
+              icon: Icons.more_vert,
+              tooltip: 'More Options',
+              onTap: () => Get.snackbar(
+                'More',
+                'More options selected',
+                margin: const EdgeInsets.all(10),
               ),
             ),
-            SizedBox(height: screenWidth * 0.015),
-            // Spacing between texts for better readability
-            const Text(
-              'rakibulislammehedi4@gmail.com',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 13, // Responsive font size
+            _buildAppBarTitle(screenWidth),
+            _buildProfileAvatar(
+              onTap: () => Get.snackbar(
+                'Profile Opening',
+                'Profile is being opened',
+                margin: const EdgeInsets.all(10),
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width; // Get screen width
-        MediaQuery.of(context).size.height; // Get screen height
-    bool isLandscape = MediaQuery.of(context).orientation ==
-        Orientation.landscape; // Check for landscape orientation
-    bool canPop = Navigator.canPop(
-        context); // Check if the current screen can pop (back button exists)
+  /// Builds the IconButton for the left side.
+  Widget _buildIconButton({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    return IconButton(
+      onPressed: onTap,
+      icon: Icon(icon),
+      tooltip: tooltip,
+      color: Colors.black87,
+    );
+  }
 
-    return AppBar(
-      automaticallyImplyLeading: canPop,
-      // Show back button if there's a previous screen
-      leading: canPop
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.pop(context); // Navigate back
-              },
-            )
-          : null,
-      // Show back button in navigation stack
-      title: isLandscape
-          ? Row(
-              children: [
-                Expanded(
-                  child: _buildGreetingRow(screenWidth, context),
+  /// Builds the title text in the middle.
+  Widget _buildAppBarTitle(double screenWidth) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          // Add logic for title click if needed
+        },
+        child: Text(
+          'Rakibul Islam Mehedi',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: screenWidth < 600 ? 16 : 20,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the profile avatar on the right side.
+  Widget _buildProfileAvatar({required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 42,
+        height: 42,
+        child: ClipOval(
+          child: Image.network(
+            'https://avatars.githubusercontent.com/u/125388734?v=4',
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                      (loadingProgress.expectedTotalBytes ?? 1)
+                      : null,
                 ),
-                // IconButton(
-                //   onPressed: () {
-                //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                //       content: Text("No new notifications"),
-                //       duration: Duration(seconds: 2),
-                //     ));
-                //   },
-                //   icon: Icon(Icons.notification_important, color: Colors.white),
-                //   tooltip: 'Notifications',
-                //   iconSize:
-                //       screenWidth * 0.07, // More dynamic icon size in landscape
-                // ),
-              ],
-            )
-          : _buildGreetingRow(screenWidth, context),
-      iconTheme: const IconThemeData(color: Colors.white),
-      elevation: 0, // Flat appearance
+              );
+            },
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
+          ),
+        ),
+      ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
