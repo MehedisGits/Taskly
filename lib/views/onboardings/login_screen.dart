@@ -20,56 +20,58 @@ class LoginScreen extends StatelessWidget {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) => Center(
-            child: Card(
-              margin: EdgeInsets.all(20 * screenScale),
-              color: Colors.grey[200],
-              elevation: 0,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: 20 * screenScale, horizontal: 12 * screenScale),
-                child: Form(
-                  key: controller.formKey,
-                  child: Wrap(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Get started with Taskly',
-                                style:
-                                    Theme.of(context).textTheme.headlineLarge,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 16),
-
-                          // Email Field
-                          buildTextFormField(),
-                          SizedBox(height: 14),
-
-                          // Password Field
-                          buildObxPasswordField(),
-                          SizedBox(height: 14 * screenScale),
-
-                          // Login Button
-                          CustomButton(
-                            text: 'Login',
-                            onPressed: () => controller.login(),
-                          ),
-                          SizedBox(height: 20),
-
-                          // Forget Password
-                          buildForgetPassword(context),
-                          SizedBox(height: 10),
-
-                          // Sign Up Row
-                          buildSignUpRow(context),
-                        ],
-                      ),
-                    ],
+            child: SingleChildScrollView(
+              child: Card(
+                margin: EdgeInsets.all(20 * screenScale),
+                color: Colors.grey[200],
+                elevation: 0,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 20 * screenScale, horizontal: 12 * screenScale),
+                  child: Form(
+                    key: controller.formKey,
+                    child: Wrap(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Get started with Taskly',
+                                  style:
+                                      Theme.of(context).textTheme.headlineLarge,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 16),
+              
+                            // Email Field
+                            buildTextFormField(),
+                            SizedBox(height: 14),
+              
+                            // Password Field
+                            buildObxPasswordField(),
+                            SizedBox(height: 14 * screenScale),
+              
+                            // Login Button
+                            CustomButton(
+                              text: 'Login',
+                              onPressed: () => controller.login(),
+                            ),
+                            SizedBox(height: 20),
+              
+                            // Forget Password
+                            buildForgetPassword(context),
+                            SizedBox(height: 10),
+              
+                            // Sign Up Row
+                            buildSignUpRow(context),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

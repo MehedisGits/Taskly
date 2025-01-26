@@ -18,25 +18,10 @@ class SignUpScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Center(
-            child: Card(
-              elevation: 0,
-              margin: EdgeInsets.symmetric(
-                vertical: responsiveSize(
-                  context,
-                  mobileSize: 16,
-                  tabletSize: 24,
-                  desktopSize: 32,
-                ),
-                horizontal: responsiveSize(
-                  context,
-                  mobileSize: 12,
-                  tabletSize: 20,
-                  desktopSize: 28,
-                ),
-              ),
-              color: Colors.grey[200],
-              child: Padding(
-                padding: EdgeInsets.symmetric(
+            child: SingleChildScrollView(
+              child: Card(
+                elevation: 0,
+                margin: EdgeInsets.symmetric(
                   vertical: responsiveSize(
                     context,
                     mobileSize: 16,
@@ -50,98 +35,115 @@ class SignUpScreen extends StatelessWidget {
                     desktopSize: 28,
                   ),
                 ),
-                child: Form(
-                  key: controller.formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Title
-                      Row(
-                        children: [
-                          Text(
-                            'Create a Taskly Account',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineLarge,
+                color: Colors.grey[200],
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: responsiveSize(
+                      context,
+                      mobileSize: 16,
+                      tabletSize: 24,
+                      desktopSize: 32,
+                    ),
+                    horizontal: responsiveSize(
+                      context,
+                      mobileSize: 12,
+                      tabletSize: 20,
+                      desktopSize: 28,
+                    ),
+                  ),
+                  child: Form(
+                    key: controller.formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Title
+                        Row(
+                          children: [
+                            Text(
+                              'Create a Taskly Account',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: responsiveSize(
+                            context,
+                            mobileSize: 16,
+                            tabletSize: 20,
+                            desktopSize: 24,
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: responsiveSize(
-                          context,
-                          mobileSize: 16,
-                          tabletSize: 20,
-                          desktopSize: 24,
                         ),
-                      ),
-
-                      // Name Field
-                      _nameField(),
-
-                      // Email Field
-                      SizedBox(
-                        height: responsiveSize(
-                          context,
-                          mobileSize: 12,
-                          tabletSize: 16,
-                          desktopSize: 20,
+              
+                        // Name Field
+                        _nameField(),
+              
+                        // Email Field
+                        SizedBox(
+                          height: responsiveSize(
+                            context,
+                            mobileSize: 12,
+                            tabletSize: 16,
+                            desktopSize: 20,
+                          ),
                         ),
-                      ),
-                      _emailField(),
-
-                      // Phone Field
-                      SizedBox(
-                        height: responsiveSize(
-                          context,
-                          mobileSize: 12,
-                          tabletSize: 16,
-                          desktopSize: 20,
+                        _emailField(),
+              
+                        // Phone Field
+                        SizedBox(
+                          height: responsiveSize(
+                            context,
+                            mobileSize: 12,
+                            tabletSize: 16,
+                            desktopSize: 20,
+                          ),
                         ),
-                      ),
-                      _phoneField(),
-
-                      // Password Field
-                      SizedBox(
-                        height: responsiveSize(
-                          context,
-                          mobileSize: 12,
-                          tabletSize: 16,
-                          desktopSize: 20,
+                        _phoneField(),
+              
+                        // Password Field
+                        SizedBox(
+                          height: responsiveSize(
+                            context,
+                            mobileSize: 12,
+                            tabletSize: 16,
+                            desktopSize: 20,
+                          ),
                         ),
-                      ),
-                      _passwordField(),
-
-                      // Confirm Password Field
-                      SizedBox(
-                        height: responsiveSize(
-                          context,
-                          mobileSize: 12,
-                          tabletSize: 16,
-                          desktopSize: 20,
+                        _passwordField(),
+              
+                        // Confirm Password Field
+                        SizedBox(
+                          height: responsiveSize(
+                            context,
+                            mobileSize: 12,
+                            tabletSize: 16,
+                            desktopSize: 20,
+                          ),
                         ),
-                      ),
-                      _confirmPasswordField(),
-
-                      // SignUp Button
-                      SizedBox(
-                        height: responsiveSize(
-                          context,
-                          mobileSize: 16,
-                          tabletSize: 20,
-                          desktopSize: 24,
+                        _confirmPasswordField(),
+              
+                        // SignUp Button
+                        SizedBox(
+                          height: responsiveSize(
+                            context,
+                            mobileSize: 16,
+                            tabletSize: 20,
+                            desktopSize: 24,
+                          ),
                         ),
-                      ),
-                      _signUpButton(),
-
-                      SizedBox(
-                        height: responsiveSize(
-                          context,
-                          mobileSize: 16,
-                          tabletSize: 20,
-                          desktopSize: 24,
+                        _signUpButton(),
+              
+                        SizedBox(
+                          height: responsiveSize(
+                            context,
+                            mobileSize: 16,
+                            tabletSize: 20,
+                            desktopSize: 24,
+                          ),
                         ),
-                      ),
-                      _loginRow(context),
-                    ],
+                        _loginRow(context),
+                      ],
+                    ),
                   ),
                 ),
               ),
