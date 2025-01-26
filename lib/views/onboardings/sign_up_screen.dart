@@ -22,34 +22,14 @@ class SignUpScreen extends StatelessWidget {
               child: Card(
                 elevation: 0,
                 margin: EdgeInsets.symmetric(
-                  vertical: responsiveSize(
-                    context,
-                    mobileSize: 16,
-                    tabletSize: 24,
-                    desktopSize: 32,
-                  ),
-                  horizontal: responsiveSize(
-                    context,
-                    mobileSize: 12,
-                    tabletSize: 20,
-                    desktopSize: 28,
-                  ),
+                  vertical: 16 * screenScale(context),
+                  horizontal: 16 * screenScale(context)
                 ),
                 color: Colors.grey[200],
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    vertical: responsiveSize(
-                      context,
-                      mobileSize: 16,
-                      tabletSize: 24,
-                      desktopSize: 32,
-                    ),
-                    horizontal: responsiveSize(
-                      context,
-                      mobileSize: 12,
-                      tabletSize: 20,
-                      desktopSize: 28,
-                    ),
+                    vertical: 16 * screenScale(context),
+                    horizontal: 12 * screenScale(context),
                   ),
                   child: Form(
                     key: controller.formKey,
