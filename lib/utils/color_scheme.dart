@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'responsive_size.dart';
+import 'responsive_size.dart'; // Make sure responsiveSize is defined in your project.
 
 class AppColors {
   static const Color primary = Color(0xFF4CAF50); // Main app theme color
@@ -14,10 +13,9 @@ class AppColors {
 
 class ResponsiveTheme {
   static ThemeData getTheme(BuildContext context) {
-
     return ThemeData(
       // Primary app colors
-      colorScheme: const ColorScheme.light(
+      colorScheme: ColorScheme.light(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.card,
@@ -32,13 +30,13 @@ class ResponsiveTheme {
       scaffoldBackgroundColor: AppColors.background,
 
       // AppBar theme
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.primary,
-        elevation: 2,
+        elevation: responsiveSize(context, mobileSize: 2, tabletSize: 4, desktopSize: 6),
         iconTheme: IconThemeData(color: Colors.white),
         titleTextStyle: TextStyle(
           color: Colors.white,
-          fontSize: 20,
+          fontSize: responsiveSize(context, mobileSize: 20, tabletSize: 22, desktopSize: 24),
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -46,18 +44,18 @@ class ResponsiveTheme {
       // Card styling
       cardTheme: CardTheme(
         color: AppColors.card,
-        elevation: 3,
-        margin: const EdgeInsets.all(8),
+        elevation: responsiveSize(context, mobileSize: 3, tabletSize: 4, desktopSize: 5),
+        margin: EdgeInsets.all(responsiveSize(context, mobileSize: 8, tabletSize: 12, desktopSize: 16)),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(responsiveSize(context, mobileSize: 8, tabletSize: 10, desktopSize: 12)),
         ),
       ),
 
       // FloatingActionButton theme
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.secondary,
         foregroundColor: Colors.white,
-        elevation: 4,
+        elevation: responsiveSize(context, mobileSize: 4, tabletSize: 6, desktopSize: 8),
       ),
 
       // Elevated button theme
@@ -67,10 +65,10 @@ class ResponsiveTheme {
           foregroundColor: Colors.white,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: responsiveSize(context),
+            fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20),
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(responsiveSize(context, mobileSize: 8, tabletSize: 10, desktopSize: 12)),
           ),
         ),
       ),
@@ -81,9 +79,12 @@ class ResponsiveTheme {
           foregroundColor: AppColors.textPrimary,
           textStyle: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: responsiveSize(context),
+            fontSize: responsiveSize(context, mobileSize: 14, tabletSize: 16, desktopSize: 18),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20),
+            vertical: responsiveSize(context, mobileSize: 8, tabletSize: 10, desktopSize: 12),
+          ),
         ),
       ),
 
@@ -91,35 +92,31 @@ class ResponsiveTheme {
       textTheme: TextTheme(
         headlineLarge: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 24,
+          fontSize: responsiveSize(context, mobileSize: 24, tabletSize: 28, desktopSize: 32),
           fontWeight: FontWeight.bold,
         ),
-        // Large headings
         headlineSmall: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 18,
+          fontSize: responsiveSize(context, mobileSize: 18, tabletSize: 22, desktopSize: 26),
           fontWeight: FontWeight.w600,
         ),
         titleMedium: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 16 ,
-          fontWeight: FontWeight.bold
+          fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20),
+          fontWeight: FontWeight.bold,
         ),
-        // Small headings
         bodyLarge: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 16,
+          fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20),
         ),
-        // Main text
         bodyMedium: TextStyle(
           color: AppColors.textSecondary,
-          fontSize: 14,
+          fontSize: responsiveSize(context, mobileSize: 14, tabletSize: 16, desktopSize: 18),
         ),
-        // Secondary text
         bodySmall: TextStyle(
           color: AppColors.textSecondary,
-          fontSize: 12,
-        ), // Captions or small text
+          fontSize: responsiveSize(context, mobileSize: 12, tabletSize: 14, desktopSize: 16),
+        ),
       ),
 
       // Input field styling
@@ -127,25 +124,28 @@ class ResponsiveTheme {
         filled: true,
         fillColor: AppColors.card,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.textSecondary),
+          borderRadius: BorderRadius.circular(responsiveSize(context, mobileSize: 8, tabletSize: 10, desktopSize: 12)),
+          borderSide: BorderSide(color: AppColors.textSecondary),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primary),
+          borderRadius: BorderRadius.circular(responsiveSize(context, mobileSize: 8, tabletSize: 10, desktopSize: 12)),
+          borderSide: BorderSide(color: AppColors.primary),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.danger),
+          borderRadius: BorderRadius.circular(responsiveSize(context, mobileSize: 8, tabletSize: 10, desktopSize: 12)),
+          borderSide: BorderSide(color: AppColors.danger),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20),
+          vertical: responsiveSize(context, mobileSize: 12, tabletSize: 14, desktopSize: 16),
+        ),
         hintStyle: TextStyle(
           color: AppColors.textSecondary,
-          fontSize: 14,
+          fontSize: responsiveSize(context, mobileSize: 14, tabletSize: 16, desktopSize: 18),
         ),
         labelStyle: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 14,
+          fontSize: responsiveSize(context, mobileSize: 14, tabletSize: 16, desktopSize: 18),
         ),
       ),
     );

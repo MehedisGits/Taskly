@@ -12,3 +12,9 @@ double responsiveSize(BuildContext context,
     return desktopSize; // Desktop
   }
 }
+
+double screenScale (BuildContext context) {
+  double screenW = MediaQuery.of(context).size.width;
+  double scaled = screenW / 375;
+  return scaled;
+}

@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/utils/color_scheme.dart';
-import 'package:task_manager/views/login_screen.dart';
+import 'package:task_manager/views/dashboard.dart';
+import 'package:task_manager/views/onboardings/login_screen.dart';
+import 'package:task_manager/views/onboardings/sign_up_screen.dart';
 
 void main() {
   runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp()));
@@ -22,7 +24,21 @@ class MyApp extends StatelessWidget {
       theme: ResponsiveTheme.getTheme(context),
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
-      home: LoginScreen(),
+      home: SignUpScreen(),
+      initialRoute: Routes.login, // Set initial route
+      getPages: [
+        GetPage(name: Routes.home, page: () => DashboardScreen()),
+        GetPage(name: Routes.signUp, page: () => SignUpScreen()),
+        GetPage(name: Routes.login, page: () => LoginScreen()),
+      ],
     );
   }
 }
+
+// routes.dart
+class Routes {
+  static const String home = '/home';
+  static const String signUp = '/sign-up';
+  static const String login = '/login';
+}
+

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/main.dart';
 import 'package:task_manager/utils/responsive_size.dart';
-
-import '../controllers/login_controller.dart';
-import '../widgets/custom_button.dart';
+import '../../controllers/login_controller.dart';
+import '../../widgets/custom_button.dart';
 
 class LoginScreen extends StatelessWidget {
+  // Ensure controller is registered using Get.put()
   final LoginController controller = Get.put(LoginController());
 
   LoginScreen({super.key});
@@ -20,12 +21,12 @@ class LoginScreen extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) => Center(
             child: Card(
-              margin: const EdgeInsets.all(20),
+              margin: EdgeInsets.all(20 * screenScale),
               color: Colors.grey[200],
               elevation: 0,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                padding: EdgeInsets.symmetric(
+                    vertical: 20 * screenScale, horizontal: 12 * screenScale),
                 child: Form(
                   key: controller.formKey,
                   child: Wrap(
@@ -43,7 +44,7 @@ class LoginScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          SizedBox(height: 16 * screenScale),
+                          SizedBox(height: 16),
 
                           // Email Field
                           buildTextFormField(),
@@ -90,14 +91,14 @@ class LoginScreen extends StatelessWidget {
               context,
               mobileSize: 14,
               tabletSize: 16,
-              desktopSize: 20,
+              desktopSize: 18,
             ),
           ),
         ),
         SizedBox(width: 6),
         InkWell(
           onTap: () {
-            Get.snackbar('Sign Up', 'Sign Up Clicked');
+            Get.toNamed(Routes.signUp);
           },
           child: Text(
             'Sign Up',
@@ -107,7 +108,7 @@ class LoginScreen extends StatelessWidget {
                 context,
                 mobileSize: 14,
                 tabletSize: 16,
-                desktopSize: 20,
+                desktopSize: 18,
               ),
               fontWeight: FontWeight.bold,
             ),
