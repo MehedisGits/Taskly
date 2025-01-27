@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/core/routes/routes.dart';
-import 'package:task_manager/services/api_services.dart'; // Import your API services
+
+import '../core/routes/routes.dart';
+import '../services/api_services.dart'; // Import your API services
 
 class LoginController extends GetxController {
   RxBool isPasswordVisible = false.obs;
