@@ -1,10 +1,10 @@
+import 'package:Taskly/views/onboardings/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/utils/responsive_size.dart';
-import 'package:task_manager/views/onboardings/sign_up_screen.dart';
-import 'package:task_manager/widgets/custom_text_field.dart';
-import '../../controllers/login_controller.dart';
+import '../../controllers/user_auth_controllers/login_controller.dart';
+import '../../utils/responsive_size.dart';
 import '../../widgets/custom_button.dart';
+import '../../widgets/custom_text_field.dart';
 
 class LoginScreen extends StatelessWidget {
   // Ensure controller is registered using Get.put()

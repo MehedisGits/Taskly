@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../controllers/app_bar_controller.dart'; // Import your controller
 
 class CustomAppBar extends StatelessWidget {
@@ -20,13 +21,13 @@ class CustomAppBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         child: Obx(() => AnimatedCrossFade(
-          duration: const Duration(milliseconds: 300),
-          firstChild: _buildDefaultAppBar(screenWidth),
-          secondChild: _buildSearchBar(),
-          crossFadeState: controller.isSearchActive.value
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
-        )),
+              duration: const Duration(milliseconds: 300),
+              firstChild: _buildDefaultAppBar(screenWidth),
+              secondChild: _buildSearchBar(),
+              crossFadeState: controller.isSearchActive.value
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+            )),
       ),
     );
   }
@@ -67,6 +68,7 @@ class CustomAppBar extends StatelessWidget {
           tooltip: 'Go Back',
         ),
         Expanded(
+          flex: 1,
           child: TextField(
             decoration: InputDecoration(
               hintText: 'Search...',
@@ -98,18 +100,16 @@ class CustomAppBar extends StatelessWidget {
   /// Builds the title text in the default app bar
   Widget _buildAppBarTitle(double screenWidth) {
     return GestureDetector(
-      onTap: controller.activateSearch,
-      child: Text(
-        'Discover',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: screenWidth < 600 ? 16 : 20,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
-        ),
-      )
-
-    );
+        onTap: controller.activateSearch,
+        child: Text(
+          'Discover',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: screenWidth < 600 ? 16 : 20,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ));
   }
 
   /// Builds the profile avatar on the right side
@@ -129,7 +129,7 @@ class CustomAppBar extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                      (loadingProgress.expectedTotalBytes ?? 1)
+                          (loadingProgress.expectedTotalBytes ?? 1)
                       : null,
                 ),
               );

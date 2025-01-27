@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/widgets/custom_app_bar.dart';
+
 import '../utils/get_device_type.dart';
 import '../utils/responsive_size.dart';
+import '../widgets/custom_app_bar.dart';
 import '../widgets/task_card.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -13,11 +14,9 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // Define breakpoints for responsiveness
-    double taskCategoryButtonSize = responsiveSize(
-        context, mobileSize: 12, tabletSize: 16, desktopSize: 20
-    );
+    double taskCategoryButtonSize = responsiveSize(context,
+        mobileSize: 12, tabletSize: 16, desktopSize: 20);
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -31,7 +30,8 @@ class DashboardScreen extends StatelessWidget {
         focusElevation: 5,
         child: Icon(
           Icons.add,
-          size: screenScale(context) * 40, // Use screen scale here for dynamic size
+          size: screenScale(context) *
+              40, // Use screen scale here for dynamic size
         ),
       ),
       body: SafeArea(
@@ -86,12 +86,12 @@ class DashboardScreen extends StatelessWidget {
       'Completed'
     ];
     return Obx(() => Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: List.generate(categories.length, (index) {
-        return buildCategoryButton(categories[index], index, buttonSize);
-      }),
-    ));
+          spacing: 8,
+          runSpacing: 8,
+          children: List.generate(categories.length, (index) {
+            return buildCategoryButton(categories[index], index, buttonSize);
+          }),
+        ));
   }
 
   /// Helper to build an individual category button
@@ -102,7 +102,7 @@ class DashboardScreen extends StatelessWidget {
       },
       style: TextButton.styleFrom(
         backgroundColor:
-        selectedCategoryIndex.value == index ? Colors.green : Colors.grey,
+            selectedCategoryIndex.value == index ? Colors.green : Colors.grey,
         padding: EdgeInsets.symmetric(
           horizontal: buttonSize,
           vertical: buttonSize,

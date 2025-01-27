@@ -1,12 +1,12 @@
+import 'package:Taskly/views/dashboard.dart';
+import 'package:Taskly/views/onboardings/login_screen.dart';
+import 'package:Taskly/views/onboardings/sign_up_screen.dart';
+import 'package:Taskly/views/onboardings/splash_screen.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/views/dashboard.dart';
-import 'package:task_manager/views/onboardings/login_screen.dart';
-import 'package:task_manager/views/onboardings/sign_up_screen.dart';
-import 'package:task_manager/views/onboardings/splash_screen.dart';
 
 import 'core/routes/routes.dart';
 import 'core/themes/theme_data.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
       home: DashboardScreen(),
-      initialRoute: Routes.signUp,
+      initialRoute: Routes.splash,
       getPages: [
         GetPage(name: Routes.splash, page: () => SplashScreen()),
         GetPage(name: Routes.home, page: () => DashboardScreen()),

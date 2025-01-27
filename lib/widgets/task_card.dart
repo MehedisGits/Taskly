@@ -32,8 +32,8 @@ class TaskCard extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontSize: isMobile ? 16 : 18,
-              ),
+                    fontSize: isMobile ? 16 : 18,
+                  ),
             ),
             const SizedBox(height: 8),
             // Task Description
@@ -42,8 +42,8 @@ class TaskCard extends StatelessWidget {
                 firstChild: Text(
                   description,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: isMobile ? 14 : 16,
-                  ),
+                        fontSize: isMobile ? 14 : 16,
+                      ),
                 ),
                 secondChild: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,8 +51,8 @@ class TaskCard extends StatelessWidget {
                     Text(
                       description,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: isMobile ? 14 : 16,
-                      ),
+                            fontSize: isMobile ? 14 : 16,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -67,7 +67,8 @@ class TaskCard extends StatelessWidget {
                         TextButton(
                           onPressed: () {
                             // Delete Task
-                            Get.snackbar('Delete Task', 'Delete task functionality');
+                            Get.snackbar(
+                                'Delete Task', 'Delete task functionality');
                           },
                           child: const Text('Delete'),
                         ),
