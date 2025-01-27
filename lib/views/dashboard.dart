@@ -36,7 +36,7 @@ class DashboardScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0 * screenScale(context)),
           child: LayoutBuilder(
             builder: (context, constraints) {
               return Column(
