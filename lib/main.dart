@@ -3,10 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/utils/color_scheme.dart';
 import 'package:task_manager/views/dashboard.dart';
 import 'package:task_manager/views/onboardings/login_screen.dart';
 import 'package:task_manager/views/onboardings/sign_up_screen.dart';
+import 'package:task_manager/views/onboardings/splash_screen.dart';
+
+import 'core/routes/routes.dart';
+import 'core/themes/theme_data.dart';
 
 void main() {
   runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp()));
@@ -24,9 +27,10 @@ class MyApp extends StatelessWidget {
       theme: ResponsiveTheme.getTheme(context),
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
-      home: SignUpScreen(),
-      initialRoute: Routes.login, // Set initial route
+      home: DashboardScreen(),
+      initialRoute: Routes.signUp,
       getPages: [
+        GetPage(name: Routes.splash, page: () => SplashScreen()),
         GetPage(name: Routes.home, page: () => DashboardScreen()),
         GetPage(name: Routes.signUp, page: () => SignUpScreen()),
         GetPage(name: Routes.login, page: () => LoginScreen()),
@@ -34,11 +38,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// routes.dart
-class Routes {
-  static const String home = '/home';
-  static const String signUp = '/sign-up';
-  static const String login = '/login';
-}
-

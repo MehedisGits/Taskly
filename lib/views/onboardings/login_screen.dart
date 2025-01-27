@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/main.dart';
 import 'package:task_manager/utils/responsive_size.dart';
+import 'package:task_manager/views/onboardings/sign_up_screen.dart';
+import 'package:task_manager/widgets/custom_text_field.dart';
 import '../../controllers/login_controller.dart';
 import '../../widgets/custom_button.dart';
 
@@ -100,7 +101,7 @@ class LoginScreen extends StatelessWidget {
         SizedBox(width: 6),
         InkWell(
           onTap: () {
-            Get.toNamed(Routes.signUp);
+            Get.to(SignUpScreen(), transition: Transition.zoom);
           },
           child: Text(
             'Sign Up',
@@ -142,40 +143,31 @@ class LoginScreen extends StatelessWidget {
   }
 
   Obx buildObxPasswordField() {
-    return Obx(() => TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: 'Enter your password',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(controller.isPasswordVisible.value
-                  ? Icons.visibility
-                  : Icons.visibility_off),
-              onPressed: () {
-                controller.isPasswordVisible.value =
-                    !controller.isPasswordVisible.value;
-              },
-            ),
-          ),
-          obscureText: !controller.isPasswordVisible.value,
-          onChanged: (value) => controller.password.value = value,
-          validator: controller.validatePassword,
-        ));
+    return Obx(
+      () => CustomTextField(
+        labelText: 'Password',
+        hintText: 'Enter your password',
+        controller: controller.passwordController,
+        obscureText: !controller.isPasswordVisible.value,
+        suffixIcon: IconButton(
+          icon: Icon(!controller.isPasswordVisible.value
+              ? Icons.visibility_off
+              : Icons.visibility),
+          onPressed: controller.togglePasswordVisibility,
+        ),
+        validator: (value) => value != null && value.length < 6
+            ? 'Password must be at least 6 characters long'
+            : null,
+      ),
+    );
   }
 
-  TextFormField buildTextFormField() {
-    return TextFormField(
-      decoration: InputDecoration(
+  Widget buildTextFormField() {
+    return CustomTextField(
         labelText: 'Email',
-        hintText: 'Enter your email address',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      onChanged: (value) => controller.email.value = value,
-      validator: controller.validateEmail,
-    );
+        hintText: 'Enter your email',
+        controller: controller.emailController,
+        keyboardType: TextInputType.emailAddress,
+        validator: (value) => controller.validateEmail(value));
   }
 }

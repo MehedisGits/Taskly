@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'responsive_size.dart'; // Make sure responsiveSize is defined in your project.
+import '../../utils/responsive_size.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFF4CAF50); // Main app theme color
+  static const Color primary = Color(0xFF4CAF50); // Main app themes color
   static const Color secondary = Color(0xFFFF9800); // Accent color
   static const Color background = Color(0xFFF9F9F9); // App background color
   static const Color card = Color(0xFFFFFFFF); // Card and container background
@@ -29,7 +29,7 @@ class ResponsiveTheme {
       // Scaffold background
       scaffoldBackgroundColor: AppColors.background,
 
-      // AppBar theme
+      // AppBar themes
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.primary,
         elevation: responsiveSize(context, mobileSize: 2, tabletSize: 4, desktopSize: 6),
@@ -51,14 +51,14 @@ class ResponsiveTheme {
         ),
       ),
 
-      // FloatingActionButton theme
+      // FloatingActionButton themes
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.secondary,
         foregroundColor: Colors.white,
         elevation: responsiveSize(context, mobileSize: 4, tabletSize: 6, desktopSize: 8),
       ),
 
-      // Elevated button theme
+      // Elevated button themes
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -73,7 +73,7 @@ class ResponsiveTheme {
         ),
       ),
 
-      // TextButton theme
+      // TextButton themes
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.textPrimary,

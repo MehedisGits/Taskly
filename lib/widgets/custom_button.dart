@@ -18,9 +18,9 @@ class CustomButton extends StatelessWidget {
         // Adjust the button layout based on orientation (portrait or landscape)
         double buttonHeight = responsiveSize(
           context,
-          mobileSize: orientation == Orientation.portrait ? 42 : 36,
-          tabletSize: orientation == Orientation.portrait ? 48 : 44,
-          desktopSize: orientation == Orientation.portrait ? 52 : 48,
+          mobileSize: orientation == Orientation.portrait ? 48 : 40,
+          tabletSize: orientation == Orientation.portrait ? 58 : 54,
+          desktopSize: orientation == Orientation.portrait ? 62 : 58,
         );
         double fontSize = responsiveSize(
           context,
@@ -46,11 +46,14 @@ class CustomButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
+            child: Expanded(
+              flex: 1,
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

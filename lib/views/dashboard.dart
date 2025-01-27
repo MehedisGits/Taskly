@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/widgets/appBar.dart';
+import 'package:task_manager/widgets/custom_app_bar.dart';
+import '../utils/get_device_type.dart';
+import '../utils/responsive_size.dart';
 import '../widgets/task_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
 
-  final RxInt selectedCategoryIndex =
-      0.obs; // Reactive index to track selected category
+  final RxInt selectedCategoryIndex = 0.obs;
   final RxBool searchBarClicked = false.obs;
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
 
     // Define breakpoints for responsiveness
-    bool isMobile = screenWidth < 600;
-    bool isTablet = screenWidth >= 600 && screenWidth < 1024;
-    bool isDesktop = screenWidth >= 1024;
-
-    int newTasksCount = 100;
-    String newCount = newTasksCount.toString();
+    double taskCategoryButtonSize = responsiveSize(
+        context, mobileSize: 12, tabletSize: 16, desktopSize: 20
+    );
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -34,16 +31,12 @@ class DashboardScreen extends StatelessWidget {
         focusElevation: 5,
         child: Icon(
           Icons.add,
-          size: isMobile
-              ? 30
-              : isTablet
-                  ? 35
-                  : 40, // Adjust FAB size dynamically
+          size: screenScale(context) * 40, // Use screen scale here for dynamic size
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: LayoutBuilder(
             builder: (context, constraints) {
               return Column(
@@ -52,23 +45,23 @@ class DashboardScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(child: CustomAppBar()),
+                      Expanded(flex: 1, child: CustomAppBar()),
                     ],
                   ),
                   const SizedBox(height: 10),
                   // Responsive Task Category Buttons
-                  buildTaskCategoryButtons(
-                      newCount, isMobile, isTablet, isDesktop),
+                  buildTaskCategoryButtons(taskCategoryButtonSize),
                   const SizedBox(height: 12),
                   // Task List View
                   Expanded(
+                    flex: 1,
                     child: ListView.builder(
                       itemCount: 100,
                       itemBuilder: (context, index) {
                         return TaskCard(
                           title: 'Task title $index',
                           description: 'Task description for task $index.',
-                          isMobile: isMobile,
+                          isMobile: DeviceType.isMobile(context),
                         );
                       },
                     ),
@@ -83,8 +76,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   /// Builds a responsive row of task category buttons
-  Widget buildTaskCategoryButtons(
-      String newCount, bool isMobile, bool isTablet, bool isDesktop) {
+  Widget buildTaskCategoryButtons(double buttonSize) {
     List<String> categories = [
       'New',
       'Work',
@@ -94,28 +86,26 @@ class DashboardScreen extends StatelessWidget {
       'Completed'
     ];
     return Obx(() => Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          alignment: isDesktop ? WrapAlignment.center : WrapAlignment.start,
-          // Center on desktop, left-aligned otherwise
-          children: List.generate(categories.length, (index) {
-            return buildCategoryButton(categories[index], index, isMobile);
-          }),
-        ));
+      spacing: 8,
+      runSpacing: 8,
+      children: List.generate(categories.length, (index) {
+        return buildCategoryButton(categories[index], index, buttonSize);
+      }),
+    ));
   }
 
   /// Helper to build an individual category button
-  Widget buildCategoryButton(String text, int index, bool isMobile) {
+  Widget buildCategoryButton(String text, int index, double buttonSize) {
     return TextButton(
       onPressed: () {
-        selectedCategoryIndex.value = index; // Update selected index
+        selectedCategoryIndex.value = index;
       },
       style: TextButton.styleFrom(
         backgroundColor:
-            selectedCategoryIndex.value == index ? Colors.green : Colors.grey,
+        selectedCategoryIndex.value == index ? Colors.green : Colors.grey,
         padding: EdgeInsets.symmetric(
-          horizontal: isMobile ? 12 : 16,
-          vertical: isMobile ? 8 : 12,
+          horizontal: buttonSize,
+          vertical: buttonSize,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -125,7 +115,7 @@ class DashboardScreen extends StatelessWidget {
         text,
         style: TextStyle(
           color: Colors.white,
-          fontSize: isMobile ? 14 : 16,
+          fontSize: buttonSize,
         ),
       ),
     );
