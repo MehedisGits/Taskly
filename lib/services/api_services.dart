@@ -1,3 +1,6 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+
 import '../api_client.dart';
 
 class ApiServices {
@@ -23,5 +26,30 @@ class ApiServices {
     }
   }
 
-// GET Request for getting tasks data
+  // GET Request for fetching tasks data by status
+  Future<Map<String, dynamic>> fetchTaskByStatus(
+      String endpoint, String token) async {
+    try {
+      // Making the GET request using ApiClient's Dio client with headers
+      final String url = 'listTaskByStatus/$endpoint';
+      final response = await _apiClient.client.get(
+        url,
+        options: Options(
+          headers: {
+            'token': token,
+            // Passing token in Authorization header
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusMessage == 'success') {
+        return response.data;
+      } else {
+        // Handle unexpected status codes
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('An error occurred: $e');
+    }
+  }
 }

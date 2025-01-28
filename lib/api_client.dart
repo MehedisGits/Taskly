@@ -18,7 +18,6 @@ class ApiClient {
   );
 
 
-
   // You can add interceptors to handle requests globally (for example, adding auth tokens)
   void addInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(

@@ -8,6 +8,7 @@ environment:
   sdk: ^3.6.1
 
 dependencies:
+  connectivity_plus: ^6.1.2
   dart_jsonwebtoken: ^2.16.0
   shared_preferences: ^2.4.0
   device_preview: ^1.2.0
