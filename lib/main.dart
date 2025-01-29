@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taskly/views/add_new_tasks.dart';
+import 'package:taskly/views/add_new_tasks_screen.dart';
 
 import 'core/routes/routes.dart';
 import 'core/themes/theme_data.dart';
