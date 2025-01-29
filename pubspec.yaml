@@ -1,4 +1,4 @@
-name: Taskly
+name: taskly
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -13,7 +13,7 @@ dependencies:
   shared_preferences: ^2.4.0
   device_preview: ^1.2.0
   get: ^4.6.6
-  dio: ^5.7.0
+  dio: ^5.8.0
   http: ^1.3.0
   flutter:
     sdk: flutter
