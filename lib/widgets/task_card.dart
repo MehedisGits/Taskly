@@ -54,7 +54,6 @@ class TaskCard extends StatelessWidget {
       onTap: () => Get.to(
             () => AddNewTasksScreen(),
         transition: Transition.zoom,
-        duration: const Duration(milliseconds: 300),
       ),
       child: Card(
         elevation: 0.5,
