@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taskly/controllers/add_new_task_controller.dart';
+import 'package:taskly/modules/add_new_task_controller.dart';
 import 'package:taskly/models/task_model.dart';
 import 'package:taskly/widgets/custom_dropdown.dart';
 
 class AddNewTasksScreen extends StatelessWidget {
   AddNewTasksScreen({super.key, this.taskData});
 
-  final AddNewTaskController controller = Get.put(AddNewTaskController());
+  final TaskController controller = Get.put(TaskController());
   final TaskData? taskData;
 
   @override

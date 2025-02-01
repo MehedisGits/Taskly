@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../models/task_model.dart';
 
-class AddNewTaskController extends GetxController {
+class TaskController extends GetxController {
   // Observable Variables
   final Rx<String> selectedPriority = Rx<String>('Medium');
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);

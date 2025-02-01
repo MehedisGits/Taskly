@@ -1,54 +1,73 @@
 import 'package:dio/dio.dart';
-
 import '../api_client.dart';
 
 class ApiServices {
   final ApiClient _apiClient = ApiClient();
 
-  // POST Request for Authentication
-  Future<Map<String, dynamic>> authPost(
-      String endpoint, Map<String, dynamic> data) async {
+  /// Generic method to handle POST requests
+  Future<Map<String, dynamic>> postRequest({
+    required String endpoint,
+    required Map<String, dynamic> data,
+  }) async {
     try {
-      // Making the POST request using ApiClient's Dio client
       final response = await _apiClient.client.post(endpoint, data: data);
 
-      if (response.statusCode == 200 ||
-          response.statusCode == 201 ||
-          response.statusMessage == 'success') {
+      // Validate response status code
+      if (_isSuccessful(response.statusCode)) {
         return response.data;
       } else {
-        // Handle unexpected status codes
-        throw Exception('Unexpected status code: ${response.statusCode}');
+        throw _handleError(response.statusCode);
       }
     } catch (e) {
-      throw Exception('An error occurred: $e');
+      throw _handleException(e);
     }
   }
 
-  // GET Request for fetching tasks data by status
-  Future<Map<String, dynamic>> fetchTaskByStatus(
-      String endpoint, String token) async {
+  /// Generic method to handle GET requests
+  Future<Map<String, dynamic>> getRequest({
+    required String endpoint,
+    required String token,
+    Map<String, dynamic>? queryParams,
+  }) async {
     try {
-      // Making the GET request using ApiClient's Dio client with headers
-      final String url = 'listTaskByStatus/$endpoint';
       final response = await _apiClient.client.get(
-        url,
-        options: Options(
-          headers: {
-            'token': token,
-            // Passing token in Authorization header
-          },
-        ),
+        endpoint,
+        options: Options(headers: {'token': token}),
+        queryParameters: queryParams,
       );
 
-      if (response.statusCode == 200 || response.statusMessage == 'success') {
+      // Validate response status code
+      if (_isSuccessful(response.statusCode)) {
         return response.data;
       } else {
-        // Handle unexpected status codes
-        throw Exception('Unexpected status code: ${response.statusCode}');
+        throw _handleError(response.statusCode);
       }
     } catch (e) {
-      throw Exception('An error occurred: $e');
+      throw _handleException(e);
     }
+  }
+
+  /// Fetch tasks by status using GET request
+  Future<Map<String, dynamic>> fetchTaskByStatus({
+    required String status,
+    required String token,
+  }) async {
+    final endpoint = 'listTaskByStatus/$status';
+    return getRequest(endpoint: endpoint, token: token);
+  }
+
+  /// Check if the status code indicates a successful request
+  bool _isSuccessful(int? statusCode) {
+    return statusCode == 200 || statusCode == 201;
+  }
+
+  /// Handle API errors based on status code
+  Exception _handleError(int? statusCode) {
+    return Exception('Request failed with status code: $statusCode');
+  }
+
+  /// Handle exceptions during API calls
+  Exception _handleException(dynamic error) {
+    return Exception('An error occurred: $error');
   }
 }

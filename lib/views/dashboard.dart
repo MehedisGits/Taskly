@@ -1,8 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../controllers/task_list_controller.dart';
+import 'package:taskly/core/routes/routes.dart';
+import '../modules/task_list_controller.dart';
 import '../utils/get_device_type.dart';
 import '../utils/responsive_size.dart';
 import '../widgets/custom_app_bar.dart';
@@ -34,8 +34,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.snackbar('Add a new task', 'Click here to add a new task.',
-              margin: const EdgeInsets.all(12));
+          Get.toNamed(Routes.addNewTask);
         },
         backgroundColor: Colors.grey,
         focusColor: Colors.green,

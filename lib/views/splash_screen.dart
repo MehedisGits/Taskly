@@ -2,7 +2,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../core/routes/routes.dart';
+import '../core/routes/routes.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

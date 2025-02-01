@@ -5,4 +5,5 @@ class Routes {
   static const String login = '/login';
   static const String splash = '/splash';
   static const String addNewTask = '/add-new-task';
+  static const String profile = '/user-profile';
 }

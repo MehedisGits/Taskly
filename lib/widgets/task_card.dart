@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taskly/views/add_new_tasks_screen.dart';
+import 'package:taskly/modules/tasks/add_or_edit_tasks.dart';
 
 import '../utils/responsive_size.dart';
 
