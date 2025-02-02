@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taskly/modules/profile/user_controller.dart';
+import 'package:taskly/controllers/user_controller.dart';
 import '../../services/auth_service.dart';
 
 class ProfileScreen extends StatelessWidget {

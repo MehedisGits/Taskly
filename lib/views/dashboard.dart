@@ -1,7 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taskly/core/routes/routes.dart';
+import 'package:taskly/core/routes.dart';
 import '../modules/task_list_controller.dart';
 import '../utils/get_device_type.dart';
 import '../utils/responsive_size.dart';

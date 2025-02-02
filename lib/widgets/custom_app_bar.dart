@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../modules/app_bar_controller.dart'; // Import your controller
+
+import '../modules/app_bar_controller.dart';
 
 class CustomAppBar extends StatelessWidget {
   CustomAppBar({super.key});
@@ -10,11 +11,12 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    // final double appBarHeight = screenWidth < 600 ? 60 : 80;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
-      elevation: 1,
-      shadowColor: Colors.grey.withOpacity(0.2),
+      elevation: 2,
+      color: isDarkMode ? Colors.grey[900] : Colors.white,
+      shadowColor: isDarkMode ? Colors.black54 : Colors.grey.withOpacity(0.2),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(50)),
       ),
@@ -23,10 +25,10 @@ class CustomAppBar extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Obx(
-                () => AnimatedCrossFade(
+            () => AnimatedCrossFade(
               duration: const Duration(milliseconds: 300),
-              firstChild: _buildDefaultAppBar(screenWidth),
-              secondChild: _buildSearchBar(),
+              firstChild: _buildDefaultAppBar(screenWidth, isDarkMode),
+              secondChild: _buildSearchBar(isDarkMode),
               crossFadeState: controller.isSearchActive.value
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
@@ -37,8 +39,8 @@ class CustomAppBar extends StatelessWidget {
     );
   }
 
-  /// Builds the default app bar with a title and profile avatar
-  Widget _buildDefaultAppBar(double screenWidth) {
+  /// Builds the default app bar
+  Widget _buildDefaultAppBar(double screenWidth, bool isDarkMode) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -46,22 +48,25 @@ class CustomAppBar extends StatelessWidget {
           icon: Icons.menu,
           tooltip: 'Menu',
           onTap: controller.showMoreOptions,
+          isDarkMode: isDarkMode,
         ),
-        _buildAppBarTitle(screenWidth),
+        _buildAppBarTitle(screenWidth, isDarkMode),
         _buildProfileAvatar(
           onTap: controller.navigateToProfile,
+          isDarkMode: isDarkMode,
         ),
       ],
     );
   }
 
-  /// Builds the search bar view
-  Widget _buildSearchBar() {
+  /// Builds the search bar
+  Widget _buildSearchBar(bool isDarkMode) {
     return Row(
       children: [
         IconButton(
           onPressed: controller.deactivateSearch,
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back,
+              color: isDarkMode ? Colors.white : Colors.black87),
           tooltip: 'Go Back',
         ),
         Expanded(
@@ -70,23 +75,27 @@ class CustomAppBar extends StatelessWidget {
             curve: Curves.easeInOut,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
               borderRadius: BorderRadius.circular(25),
             ),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search...',
                 border: InputBorder.none,
-                hintStyle: TextStyle(color: Colors.grey[600]),
+                hintStyle: TextStyle(
+                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.black87),
+                  icon: Icon(Icons.clear,
+                      color: isDarkMode ? Colors.white : Colors.black87),
                   onPressed: () {
                     controller.searchController.clear();
                     controller.searchQuery.value = '';
                   },
                 ),
               ),
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(
+                  fontSize: 16,
+                  color: isDarkMode ? Colors.white : Colors.black87),
               controller: controller.searchController,
               onChanged: controller.onSearchChanged,
             ),
@@ -100,15 +109,16 @@ class CustomAppBar extends StatelessWidget {
               margin: const EdgeInsets.all(10),
             );
           },
-          icon: const Icon(Icons.search, color: Colors.black87),
+          icon: Icon(Icons.search,
+              color: isDarkMode ? Colors.white : Colors.black87),
           tooltip: 'Search',
         ),
       ],
     );
   }
 
-  /// Builds the title text in the default app bar
-  Widget _buildAppBarTitle(double screenWidth) {
+  /// Builds the title text
+  Widget _buildAppBarTitle(double screenWidth, bool isDarkMode) {
     return GestureDetector(
       onTap: controller.activateSearch,
       child: Text(
@@ -117,14 +127,15 @@ class CustomAppBar extends StatelessWidget {
         style: TextStyle(
           fontSize: screenWidth < 600 ? 18 : 22,
           fontWeight: FontWeight.w600,
-          color: Colors.black87,
+          color: isDarkMode ? Colors.white : Colors.black87,
         ),
       ),
     );
   }
 
-  /// Builds the profile avatar on the right side
-  Widget _buildProfileAvatar({required VoidCallback onTap}) {
+  /// Builds the profile avatar
+  Widget _buildProfileAvatar(
+      {required VoidCallback onTap, required bool isDarkMode}) {
     return GestureDetector(
       onTap: onTap,
       child: Stack(
@@ -135,7 +146,9 @@ class CustomAppBar extends StatelessWidget {
             height: 42,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade300, width: 2),
+              border: Border.all(
+                  color: isDarkMode ? Colors.white54 : Colors.grey.shade300,
+                  width: 2),
             ),
             child: ClipOval(
               child: Image.network(
@@ -147,7 +160,7 @@ class CustomAppBar extends StatelessWidget {
                     child: CircularProgressIndicator(
                       value: loadingProgress.expectedTotalBytes != null
                           ? loadingProgress.cumulativeBytesLoaded /
-                          (loadingProgress.expectedTotalBytes ?? 1)
+                              (loadingProgress.expectedTotalBytes ?? 1)
                           : null,
                     ),
                   );
@@ -161,41 +174,42 @@ class CustomAppBar extends StatelessWidget {
           ),
           Obx(() => controller.notificationCount.value > 0
               ? Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            constraints: const BoxConstraints(
-              minWidth: 16,
-              minHeight: 16,
-            ),
-            child: Text(
-              controller.notificationCount.value.toString(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          )
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    controller.notificationCount.value.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
               : const SizedBox.shrink()),
         ],
       ),
     );
   }
 
-  /// Builds the IconButton for the left side
+  /// Builds the icon button
   Widget _buildIconButton({
     required IconData icon,
     required String tooltip,
     required VoidCallback onTap,
+    required bool isDarkMode,
   }) {
     return IconButton(
       onPressed: onTap,
       icon: Icon(icon),
       tooltip: tooltip,
-      color: Colors.black87,
+      color: isDarkMode ? Colors.white : Colors.black87,
       splashRadius: 20,
     );
   }

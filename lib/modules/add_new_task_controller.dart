@@ -6,7 +6,7 @@ import '../models/task_model.dart';
 
 class TaskController extends GetxController {
   // Observable Variables
-  final Rx<String> selectedPriority = Rx<String>('Medium');
+  final Rx<String> selectedPriority = 'Medium'.obs;
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
   final Rx<TimeOfDay?> selectedTime = Rx<TimeOfDay?>(null);
   final RxBool isLoading = false.obs;
@@ -17,8 +17,8 @@ class TaskController extends GetxController {
   final TextEditingController descriptionController = TextEditingController();
 
   // Error Observables
-  final RxString titleError = RxString('');
-  final RxString descriptionError = RxString('');
+  final RxString titleError = ''.obs;
+  final RxString descriptionError = ''.obs;
 
   // Priority List
   final List<String> priorities = ['High', 'Medium', 'Low'];
@@ -28,73 +28,87 @@ class TaskController extends GetxController {
       ? DateFormat('MMM dd, yyyy').format(selectedDate.value!)
       : 'No date set';
 
-  String get formattedTime => selectedTime.value != null
-      ? selectedTime.value!.format(Get.context!)
-      : 'No time set';
+  String get formattedTime {
+    // Using Get.context! is acceptable here if called when context is available.
+    return selectedTime.value != null
+        ? selectedTime.value!.format(Get.context!)
+        : 'No time set';
+  }
 
-  // Methods to Toggle Importance and Set Date/Time
+  // -------------------------------
+  // Methods to Toggle & Set Values
+  // -------------------------------
+
+  /// Toggle the importance flag.
   void toggleImportance() => isImportant.toggle();
 
+  /// Set the selected date and time.
   void setDateTime(DateTime date, TimeOfDay time) {
     selectedDate.value = date;
     selectedTime.value = time;
   }
 
+  /// Clears the selected date and time.
+  void clearDateTime() {
+    selectedDate.value = null;
+    selectedTime.value = null;
+  }
+
+  /// Initialize the controller with an existing task.
   void initializeWithTask(TaskData task) {
     titleController.text = task.title;
     descriptionController.text = task.description;
     selectedPriority.value = task.priority ?? 'Medium';
     isImportant.value = task.isImportant;
-
     if (task.dueDate != null) {
       selectedDate.value = task.dueDate;
       selectedTime.value = TimeOfDay.fromDateTime(task.dueDate!);
     }
   }
 
-  // Form Submission Logic with Improved UI/UX
+  // -------------------------------
+  // Form Submission & Validation
+  // -------------------------------
+
+  /// Submits the task form after validating inputs.
   Future<void> submitForm(BuildContext context) async {
     try {
-      // Indicate loading state
       isLoading.value = true;
-      resetErrors();  // Reset error messages before submitting
+      resetErrors();
 
-      // Validate Inputs
+      // Validate Inputs; if not valid, exit early.
       if (!_validateInputs()) return;
 
-      // Simulate API Call to add task (Replace with actual API logic)
+      // Simulate API call (Replace with actual API logic)
       await _addTaskToApi();
 
-      // Success - Clear Form and Show Success Message
+      // On success: clear fields, show success, then close screen.
       _clearFormFields();
       _showSuccessMessage();
-      Get.back(); // Close the screen after successful submission
+      Get.back();
     } catch (e) {
-      // Handle error and show appropriate message
       _showErrorMessage(e.toString());
     } finally {
-      isLoading.value = false; // Reset loading state
+      isLoading.value = false;
     }
   }
 
-  // Reset Error Messages
+  /// Resets error messages.
   void resetErrors() {
     titleError.value = '';
     descriptionError.value = '';
   }
 
-  // Input Validation
+  /// Validate title and description inputs.
   bool _validateInputs() {
     bool isValid = true;
 
-    // Check if Title is Empty
-    if (titleController.text.isEmpty) {
+    if (titleController.text.trim().isEmpty) {
       titleError.value = 'Please enter a task title';
       isValid = false;
     }
 
-    // Check if Description is Empty
-    if (descriptionController.text.isEmpty) {
+    if (descriptionController.text.trim().isEmpty) {
       descriptionError.value = 'Please add task details';
       isValid = false;
     }
@@ -102,31 +116,31 @@ class TaskController extends GetxController {
     return isValid;
   }
 
-  // Simulate API Call to Add Task (Replace with actual API call)
+  /// Simulate an API call to add the task.
   Future<void> _addTaskToApi() async {
     try {
-      // Simulating a delay (Replace with actual API call)
+      // Simulate network delay
       await Future.delayed(const Duration(seconds: 2));
-
-      // Uncomment to simulate a failure:
+      // Uncomment the following line to simulate an error:
       // throw Exception("Failed to add task");
-
-      // Simulate success response
     } catch (error) {
       throw Exception("An error occurred while adding the task. Please try again.");
     }
   }
 
-  // Clear form fields after successful submission
+  /// Clears form fields after a successful submission.
   void _clearFormFields() {
     titleController.clear();
     descriptionController.clear();
     selectedPriority.value = 'Medium';
-    selectedDate.value = null;
-    selectedTime.value = null;
+    clearDateTime();
   }
 
-  // Show Success Snackbar
+  // -------------------------------
+  // Snackbars for Feedback
+  // -------------------------------
+
+  /// Display a success message.
   void _showSuccessMessage() {
     Get.snackbar(
       'Success',
@@ -137,7 +151,7 @@ class TaskController extends GetxController {
     );
   }
 
-  // Show Error Snackbar
+  /// Display an error message.
   void _showErrorMessage(String errorMessage) {
     Get.snackbar(
       'Error',
@@ -148,9 +162,13 @@ class TaskController extends GetxController {
     );
   }
 
+  // -------------------------------
   // Task Deletion Logic
+  // -------------------------------
+
+  /// Delete the current task.
   void deleteTask() {
-    // Implement delete functionality here (replace with actual delete logic)
+    // Implement deletion logic (replace with actual API call if needed)
     Get.back();
     Get.snackbar(
       'Deleted',
@@ -161,7 +179,10 @@ class TaskController extends GetxController {
     );
   }
 
+  // -------------------------------
   // Dispose Controllers
+  // -------------------------------
+
   @override
   void onClose() {
     titleController.dispose();

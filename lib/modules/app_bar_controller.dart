@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../core/routes/routes.dart';
+import '../core/routes.dart';
 
 class CustomAppBarController extends GetxController {
   // Observable to track if the search bar is active

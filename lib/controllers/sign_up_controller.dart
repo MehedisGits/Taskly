@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../services/api_services.dart';
-import 'login_screen.dart';
+import '../services/api_services.dart';
+import '../modules/auth/login_screen.dart';
 
 class SignUpController extends GetxController {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();

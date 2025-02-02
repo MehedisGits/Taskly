@@ -1,292 +1,328 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taskly/modules/add_new_task_controller.dart';
-import 'package:taskly/models/task_model.dart';
-import 'package:taskly/widgets/custom_dropdown.dart';
+import 'package:taskly/controllers/date_time_controller.dart';
+import 'package:taskly/modules/add_new_task_controller.dart'; // Contains TaskController
+import 'package:taskly/models/task_model.dart'; // Contains TaskData and DateTimePair
+import 'package:taskly/widgets/date_time_picker.dart';
+import 'package:taskly/widgets/priority_selector.dart';
+
+import '../../core/strings.dart';
+import '../../core/theme_data.dart';
+import '../../models/dat_time_pair_model.dart';
 
 class AddNewTasksScreen extends StatelessWidget {
   AddNewTasksScreen({super.key, this.taskData});
 
+  // Get instance of TaskController
   final TaskController controller = Get.put(TaskController());
+  final DateTimeController dateTimeController = Get.put(DateTimeController());
   final TaskData? taskData;
+  bool _initialized = false;
 
   @override
   Widget build(BuildContext context) {
-
-    // Initialize controller with task data if provided
-    if (taskData != null) {
+    // Initialize with taskData only once
+    if (!_initialized && taskData != null) {
       controller.initializeWithTask(taskData!);
+      _initialized = true;
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: _buildAppBar(context),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTitleField(),
-            _buildDescriptionField(),
-            const SizedBox(height: 20),
-            _buildDateTimeOption(),
-            _buildPriorityOption(),
-            const Spacer(),
-            _buildSubmitButton(context),
-          ],
+      body: GestureDetector(
+        // Dismiss the keyboard when tapping outside
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTitleField(context),
+              _buildDescriptionField(context),
+              const SizedBox(height: 24),
+              _buildDateTimeOption(context),
+              _buildPriorityOption(context),
+              const Spacer(),
+              _buildSubmitButton(context),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // AppBar with dynamic icon for importance and options
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.green,
-      foregroundColor: Colors.black,
-      title: const Text(
-        'New Task',
-        style: TextStyle(fontWeight: FontWeight.w500),
+      backgroundColor: context.theme.appBarTheme.backgroundColor,
+      title: Text(
+        taskData == null ? AppStrings.newTask : AppStrings.editTask,
+        style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
       ),
-      centerTitle: false,
       actions: [
-        Obx(() => IconButton(
-          icon: Icon(
-            controller.isImportant.value ? Icons.star : Icons.star_border,
-            color: controller.isImportant.value ? Colors.amber : Colors.grey,
-          ),
-          onPressed: controller.toggleImportance,
-        )),
-        IconButton(
-          icon: const Icon(Icons.more_vert),
-          onPressed: () => _showMoreOptions(context),
-        ),
+        _buildImportanceButton(context),
+        _buildMoreOptionsButton(context),
       ],
     );
   }
 
-  // Task Title Input
-  Widget _buildTitleField() {
+  Widget _buildImportanceButton(BuildContext context) {
+    return Obx(
+          () => IconButton(
+        icon: Icon(
+          controller.isImportant.value ? Icons.star_rounded : Icons.star_outline_rounded,
+          color: controller.isImportant.value
+              ? AppColors.importantStar
+              : context.theme.iconTheme.color,
+          size: 28,
+        ),
+        tooltip: AppStrings.markImportant,
+        onPressed: controller.toggleImportance,
+      ),
+    );
+  }
+
+  Widget _buildMoreOptionsButton(BuildContext context) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert_rounded),
+      onSelected: (value) => _handleMoreOptionsSelection(value, context),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'attachment',
+          child: Row(
+            children: [
+              const Icon(Icons.attach_file, size: 20),
+              const SizedBox(width: 12),
+              Text(AppStrings.addAttachment),
+            ],
+          ),
+        ),
+        if (taskData != null)
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                const SizedBox(width: 12),
+                Text(AppStrings.deleteTask, style: const TextStyle(color: Colors.red)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildTitleField(BuildContext context) {
     return TextField(
       controller: controller.titleController,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+      autofocus: true,
+      style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
       decoration: InputDecoration(
-        hintText: "Task Title",
+        hintText: AppStrings.taskTitleHint,
         border: InputBorder.none,
-        errorText: controller.titleError.value.isNotEmpty
-            ? controller.titleError.value
+        hintStyle: context.textTheme.bodyLarge?.copyWith(color: context.theme.hintColor),
+        errorText: controller.titleError.value.isNotEmpty ? controller.titleError.value : null,
+        errorStyle: const TextStyle(color: AppColors.errorRed),
+        focusedErrorBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+        ),
+        suffixIcon: controller.titleError.value.isNotEmpty
+            ? const Icon(Icons.error_outline, color: AppColors.errorRed)
             : null,
       ),
     );
   }
 
-  // Task Description Input
-  Widget _buildDescriptionField() {
+  Widget _buildDescriptionField(BuildContext context) {
     return TextField(
       controller: controller.descriptionController,
       maxLines: 3,
-      style: const TextStyle(fontSize: 16),
+      style: context.textTheme.bodyLarge,
       decoration: InputDecoration(
-        hintText: "Add details",
+        hintText: AppStrings.taskDetailsHint,
         border: InputBorder.none,
-        errorText: controller.descriptionError.value.isNotEmpty
-            ? controller.descriptionError.value
+        hintStyle: context.textTheme.bodyLarge?.copyWith(color: context.theme.hintColor),
+        errorText: controller.descriptionError.value.isNotEmpty ? controller.descriptionError.value : null,
+        errorStyle: const TextStyle(color: AppColors.errorRed),
+        focusedErrorBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+        ),
+        suffixIcon: controller.descriptionError.value.isNotEmpty
+            ? const Icon(Icons.error_outline, color: AppColors.errorRed)
             : null,
       ),
     );
   }
 
-  // Date/Time Selection Option
-  Widget _buildDateTimeOption() {
-    return Obx(() => _taskOption(
-      icon: Icons.access_time,
-      text: controller.selectedDate.value != null
+  Widget _buildDateTimeOption(BuildContext context) {
+    return Obx(() => _TaskOptionRow(
+      icon: Icons.access_time_rounded,
+      label: controller.selectedDate.value != null
           ? "${controller.formattedDate} • ${controller.formattedTime}"
-          : "Add date/time",
-      onTap: _selectDateTime,
+          : AppStrings.addDateTime,
+      onTap: () => _selectDateTime(context),
+      showClear: controller.selectedDate.value != null,
+      onClear: () => controller.clearDateTime(),
     ));
   }
 
-  // Priority Selection Option
-  Widget _buildPriorityOption() {
-    return Obx(() => _taskOption(
-      icon: Icons.priority_high,
-      text: "Priority: ${controller.selectedPriority.value}",
-      onTap: () => _showPriorityDropdown(Get.context!),
+  Widget _buildPriorityOption(BuildContext context) {
+    return Obx(() => _TaskOptionRow(
+      icon: Icons.flag_rounded,
+      label: "${AppStrings.priority}: ${controller.selectedPriority.value}",
+      onTap: () => _showPriorityBottomSheet(context),
     ));
   }
 
-  // Task Option Widget (Date/Time or Priority)
-  Widget _taskOption({
-    required IconData icon,
-    required String text,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.grey[700]),
-            const SizedBox(width: 12),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[700],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+  Widget _buildSubmitButton(BuildContext context) {
+    return Obx(() => SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: controller.isLoading.value
+            ? const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Colors.white,
+          ),
+        )
+            : const Icon(Icons.check_rounded, size: 24),
+        label: Text(
+          controller.isLoading.value ? AppStrings.saving : AppStrings.saveTask,
+          style: context.textTheme.labelLarge?.copyWith(color: Colors.white),
+        ),
+        onPressed: controller.isLoading.value ? null : () => controller.submitForm(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    ));
+  }
+
+  Future<void> _selectDateTime(BuildContext context) async {
+    final result = await showModalBottomSheet<DateTimePair>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DateTimePicker(
+        initialDate: dateTimeController.selectedDate.value,
+        initialTime: dateTimeController.selectedTime.value,
+      ),
+    );
+    if (result != null) {
+      controller.setDateTime(result.date, result.time);
+    }
+  }
+
+  void _showPriorityBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: PrioritySelector(
+          selectedPriority: controller.selectedPriority.value,
+          onPrioritySelected: (priority) {
+            controller.selectedPriority.value = priority;
+            Navigator.pop(context);
+          },
         ),
       ),
     );
   }
 
-  // Submit Button
-  Widget _buildSubmitButton(BuildContext context) {
-    return Obx(() {
-      return SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: controller.isLoading.value
-              ? null  // Disable the button when loading
-              : () => controller.submitForm(context),  // Submit the form if not loading
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: controller.isLoading.value
-              ? const CircularProgressIndicator(
-            color: Colors.white,  // White spinner to match button text color
-          )
-              : const Text(
-            "Save Task",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      );
-    });
-  }
-
-
-  // Date/Time Picker
-  Future<void> _selectDateTime() async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: Get.context!,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null) {
-      final TimeOfDay? pickedTime = await showTimePicker(
-        context: Get.context!,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (pickedTime != null) {
-        controller.setDateTime(pickedDate, pickedTime);
-      }
+  void _handleMoreOptionsSelection(String value, BuildContext context) {
+    switch (value) {
+      case 'attachment':
+        _handleAttachment();
+        break;
+      case 'delete':
+        _confirmDelete(context);
+        break;
     }
   }
 
-  void _showPriorityDropdown(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // Optional: for rounded corners
-          ),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 300, // Adjust as needed
-              minHeight: 200, // Adjust as needed
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min, // To prevent the dialog from taking the full screen
-                children: [
-                  const Text(
-                    "Set Priority",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  CustomDropdown<String>(
-                    label: 'Priority',
-                    items: controller.priorities
-                        .map((priority) => DropdownMenuItem(
-                      value: priority,
-                      child: Text(priority),
-                    ))
-                        .toList(),
-                    value: controller.selectedPriority.value,
-                    onChanged: (newValue) {
-                      controller.selectedPriority.value = newValue!;
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text("Close"),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
+  void _handleAttachment() async {
+    // Implement file attachment logic here
   }
 
-
-  // More Options (Attachment, Delete)
-  void _showMoreOptions(BuildContext context) {
-    showModalBottomSheet(
+  void _confirmDelete(BuildContext context) {
+    showDialog(
       context: context,
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.attach_file),
-              title: const Text('Add Attachment'),
-              onTap: () {
-                // Handle attachment
-                Navigator.pop(context);
-              },
+      builder: (context) => AlertDialog(
+        title: Text(AppStrings.deleteTask),
+        content: Text(AppStrings.deleteTaskConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.deleteTask();
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Delete Task'),
-              onTap: () {
-                controller.deleteTask();
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TaskOptionRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool showClear;
+  final VoidCallback? onClear;
+
+  const _TaskOptionRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.showClear = false,
+    this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          child: Row(
+            children: [
+              Icon(icon, size: 24, color: context.theme.iconTheme.color),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: context.textTheme.bodyLarge?.copyWith(
+                    color: context.theme.textTheme.bodyLarge?.color,
+                  ),
+                ),
+              ),
+              if (showClear)
+                IconButton(
+                  icon: const Icon(Icons.clear_rounded, size: 20),
+                  color: context.theme.iconTheme.color,
+                  onPressed: onClear,
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
