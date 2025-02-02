@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taskly/controllers/date_time_controller.dart';
-import 'package:taskly/modules/add_new_task_controller.dart'; // Contains TaskController
+import 'package:taskly/controllers/add_new_task_controller.dart'; // Contains TaskController
 import 'package:taskly/models/task_model.dart'; // Contains TaskData and DateTimePair
 import 'package:taskly/widgets/date_time_picker.dart';
 import 'package:taskly/widgets/priority_selector.dart';

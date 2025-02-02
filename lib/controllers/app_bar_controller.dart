@@ -67,7 +67,7 @@ class CustomAppBarController extends GetxController {
   @override
   void onClose() {
     // Dispose the TextEditingController when the controller is closed
-    searchController.dispose();
+    // searchController.dispose();
     super.onClose();
   }
 }

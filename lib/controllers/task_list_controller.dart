@@ -19,10 +19,16 @@ class TaskListController extends GetxController {
 
       final String? token = _getToken();
       if (token == null) {
+        print('Token is missing'); // Log the token issue
         throw Exception('Token is missing');
       }
 
+      print('Fetching tasks for category: $endpoint with token: $token'); // Log API request
+
       final response = await _apiServices.fetchTaskByStatus(status: endpoint, token: token);
+
+      print('API Response: $response'); // Log API response
+
       _updateTaskData(response);
     } catch (e) {
       _handleError(e);
@@ -34,16 +40,20 @@ class TaskListController extends GetxController {
   /// Starts the loading state
   void _startLoading() {
     isLoading.value = true;
+    print('Loading started'); // Log loading start
   }
 
   /// Stops the loading state
   void _stopLoading() {
     isLoading.value = false;
+    print('Loading stopped'); // Log loading stop
   }
 
   /// Retrieves the token from SharedPreferences
   String? _getToken() {
-    return _sharedPreferences.getString('token');
+    final token = _sharedPreferences.getString('token');
+    print('Retrieved token: $token'); // Log token retrieval
+    return token;
   }
 
   /// Updates task data and empty state based on the API response
@@ -51,9 +61,11 @@ class TaskListController extends GetxController {
     if (response['data'] == null || response['data'].isEmpty) {
       isEmpty.value = true; // Mark as empty if no tasks are found
       taskData.value = null;
+      print('No tasks found in response'); // Log empty task list
     } else {
       isEmpty.value = false; // Mark as not empty if tasks are found
       taskData.value = response;
+      print('Tasks successfully fetched and updated'); // Log task update
     }
   }
 
@@ -61,6 +73,7 @@ class TaskListController extends GetxController {
   void _handleError(dynamic error) {
     taskData.value = null;
     isEmpty.value = true; // Mark as empty in case of error
+    print('Error occurred while fetching tasks: $error'); // Log error
     Get.snackbar(
       'Error',
       'Failed to fetch task data: $error',
