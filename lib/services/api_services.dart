@@ -1,16 +1,23 @@
 import 'package:dio/dio.dart';
+
 import '../api_client.dart';
 
 class ApiServices {
   final ApiClient _apiClient = ApiClient();
 
   /// Generic method to handle POST requests
-  Future<Map<String, dynamic>> postRequest({
-    required String endpoint,
-    required Map<String, dynamic> data,
-  }) async {
+  Future<Map<String, dynamic>> postRequest(
+      {required String endpoint,
+      required Map<String, dynamic> data,
+      String? token,
+      Map<String, dynamic>? queryParams}) async {
     try {
-      final response = await _apiClient.client.post(endpoint, data: data);
+      final response = await _apiClient.client.post(
+        endpoint,
+        data: data,
+        options: Options(headers: {'token': token}),
+        queryParameters: queryParams,
+      );
 
       // Validate response status code
       if (_isSuccessful(response.statusCode)) {
@@ -57,9 +64,10 @@ class ApiServices {
   }
 
   /// create tasks by status using POST request
-  Future<Map<String, dynamic>> createTask({required Map<String, dynamic> taskData}) async {
+  Future<Map<String, dynamic>> createTask(
+      {required Map<String, dynamic> taskData, String? token}) async {
     final endpoint = 'createTask';
-    return postRequest(endpoint: endpoint, data: taskData);
+    return postRequest(endpoint: endpoint, data: taskData, token: token);
   }
 
   /// Check if the status code indicates a successful request

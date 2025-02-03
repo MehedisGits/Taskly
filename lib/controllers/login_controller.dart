@@ -49,7 +49,8 @@ class LoginController extends GetxController {
       if (response['status'] == 'success' ||
           response['statusCode'] == 200 ||
           response['statusCode'] == 201) {
-        await _authService.login(response['token']);
+        final String token = response['token'];
+        await _authService.login(token: token);
         clearFormFields();
         Get.offAllNamed(Routes.home);
       } else {

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskly/services/api_services.dart';
 
 import '../models/task_model.dart';
 
 class TaskController extends GetxController {
   final ApiServices apiServices = Get.put(ApiServices());
+
   // Observable Variables
   final Rx<String> selectedPriority = 'Medium'.obs;
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
@@ -127,15 +129,19 @@ class TaskController extends GetxController {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(seconds: 2));
-      final Map<String, dynamic> taskData ={
-        'title' : titleController.text.toString(),
-        'description' : descriptionController.text.toString()
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final Map<String, dynamic> taskData = {
+        'title': titleController.text.toString(),
+        'description': descriptionController.text.toString(),
+        'status': 'New'
       };
-      await apiServices.createTask(taskData: taskData);
+      await apiServices.createTask(taskData: taskData, token: token);
       // Uncomment the following line to simulate an error:
       // throw Exception("Failed to add task");
     } catch (error) {
-      throw Exception("An error occurred while adding the task. Please try again.");
+      throw Exception(
+          "An error occurred while adding the task. Please try again.");
     }
   }
 
