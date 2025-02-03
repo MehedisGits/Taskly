@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taskly/controllers/date_time_controller.dart';
 import 'package:taskly/controllers/add_new_task_controller.dart'; // Contains TaskController
+import 'package:taskly/controllers/date_time_controller.dart';
 import 'package:taskly/models/task_model.dart'; // Contains TaskData and DateTimePair
 import 'package:taskly/widgets/date_time_picker.dart';
 import 'package:taskly/widgets/priority_selector.dart';
@@ -39,9 +39,11 @@ class AddNewTasksScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTitleField(context),
+              const SizedBox(height: 14),
               _buildDescriptionField(context),
               const SizedBox(height: 24),
               _buildDateTimeOption(context),
+              const SizedBox(height: 10),
               _buildPriorityOption(context),
               const Spacer(),
               _buildSubmitButton(context),
@@ -58,7 +60,8 @@ class AddNewTasksScreen extends StatelessWidget {
       backgroundColor: context.theme.appBarTheme.backgroundColor,
       title: Text(
         taskData == null ? AppStrings.newTask : AppStrings.editTask,
-        style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        style: context.textTheme.titleMedium
+            ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
       ),
       actions: [
         _buildImportanceButton(context),
@@ -69,9 +72,11 @@ class AddNewTasksScreen extends StatelessWidget {
 
   Widget _buildImportanceButton(BuildContext context) {
     return Obx(
-          () => IconButton(
+      () => IconButton(
         icon: Icon(
-          controller.isImportant.value ? Icons.star_rounded : Icons.star_outline_rounded,
+          controller.isImportant.value
+              ? Icons.star_rounded
+              : Icons.star_outline_rounded,
           color: controller.isImportant.value
               ? AppColors.importantStar
               : context.theme.iconTheme.color,
@@ -105,7 +110,8 @@ class AddNewTasksScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.delete_outline, size: 20, color: Colors.red),
                 const SizedBox(width: 12),
-                Text(AppStrings.deleteTask, style: const TextStyle(color: Colors.red)),
+                Text(AppStrings.deleteTask,
+                    style: const TextStyle(color: Colors.red)),
               ],
             ),
           ),
@@ -114,95 +120,111 @@ class AddNewTasksScreen extends StatelessWidget {
   }
 
   Widget _buildTitleField(BuildContext context) {
-    return TextField(
-      controller: controller.titleController,
-      autofocus: true,
-      style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
-      decoration: InputDecoration(
-        hintText: AppStrings.taskTitleHint,
-        border: InputBorder.none,
-        hintStyle: context.textTheme.bodyLarge?.copyWith(color: context.theme.hintColor),
-        errorText: controller.titleError.value.isNotEmpty ? controller.titleError.value : null,
-        errorStyle: const TextStyle(color: AppColors.errorRed),
-        focusedErrorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+    return Obx(
+      () => TextField(
+        controller: controller.titleController,
+        autofocus: true,
+        style: context.textTheme.titleMedium
+            ?.copyWith(fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          hintText: AppStrings.taskTitleHint,
+          border: InputBorder.none,
+          hintStyle: context.textTheme.bodyLarge
+              ?.copyWith(color: context.theme.hintColor),
+          errorText: controller.titleError.value.isNotEmpty
+              ? controller.titleError.value
+              : null,
+          errorStyle: const TextStyle(color: AppColors.errorRed),
+          focusedErrorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+          ),
+          suffixIcon: controller.titleError.value.isNotEmpty
+              ? const Icon(Icons.error_outline, color: AppColors.errorRed)
+              : null,
         ),
-        suffixIcon: controller.titleError.value.isNotEmpty
-            ? const Icon(Icons.error_outline, color: AppColors.errorRed)
-            : null,
       ),
     );
   }
 
   Widget _buildDescriptionField(BuildContext context) {
-    return TextField(
-      controller: controller.descriptionController,
-      maxLines: 3,
-      style: context.textTheme.bodyLarge,
-      decoration: InputDecoration(
-        hintText: AppStrings.taskDetailsHint,
-        border: InputBorder.none,
-        hintStyle: context.textTheme.bodyLarge?.copyWith(color: context.theme.hintColor),
-        errorText: controller.descriptionError.value.isNotEmpty ? controller.descriptionError.value : null,
-        errorStyle: const TextStyle(color: AppColors.errorRed),
-        focusedErrorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+    return Obx(
+      () => TextField(
+        controller: controller.descriptionController,
+        maxLines: 3,
+        style: context.textTheme.bodyLarge,
+        decoration: InputDecoration(
+          hintText: AppStrings.taskDetailsHint,
+          border: InputBorder.none,
+          hintStyle: context.textTheme.bodyLarge
+              ?.copyWith(color: context.theme.hintColor),
+          errorText: controller.descriptionError.value.isNotEmpty
+              ? controller.descriptionError.value
+              : null,
+          errorStyle: const TextStyle(color: AppColors.errorRed),
+          focusedErrorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+          ),
+          suffixIcon: controller.descriptionError.value.isNotEmpty
+              ? const Icon(Icons.error_outline, color: AppColors.errorRed)
+              : null,
         ),
-        suffixIcon: controller.descriptionError.value.isNotEmpty
-            ? const Icon(Icons.error_outline, color: AppColors.errorRed)
-            : null,
       ),
     );
   }
 
   Widget _buildDateTimeOption(BuildContext context) {
     return Obx(() => _TaskOptionRow(
-      icon: Icons.access_time_rounded,
-      label: controller.selectedDate.value != null
-          ? "${controller.formattedDate} • ${controller.formattedTime}"
-          : AppStrings.addDateTime,
-      onTap: () => _selectDateTime(context),
-      showClear: controller.selectedDate.value != null,
-      onClear: () => controller.clearDateTime(),
-    ));
+          icon: Icons.access_time_rounded,
+          label: controller.selectedDate.value != null
+              ? "${controller.formattedDate} • ${controller.formattedTime}"
+              : AppStrings.addDateTime,
+          onTap: () => _selectDateTime(context),
+          showClear: controller.selectedDate.value != null,
+          onClear: () => controller.clearDateTime(),
+        ));
   }
 
   Widget _buildPriorityOption(BuildContext context) {
     return Obx(() => _TaskOptionRow(
-      icon: Icons.flag_rounded,
-      label: "${AppStrings.priority}: ${controller.selectedPriority.value}",
-      onTap: () => _showPriorityBottomSheet(context),
-    ));
+          icon: Icons.flag_rounded,
+          label: "${AppStrings.priority}: ${controller.selectedPriority.value}",
+          onTap: () => _showPriorityBottomSheet(context),
+        ));
   }
 
   Widget _buildSubmitButton(BuildContext context) {
     return Obx(() => SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: controller.isLoading.value
-            ? const SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Colors.white,
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            icon: controller.isLoading.value
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.check_rounded, size: 24),
+            label: Text(
+              controller.isLoading.value
+                  ? AppStrings.saving
+                  : AppStrings.saveTask,
+              style:
+                  context.textTheme.labelLarge?.copyWith(color: Colors.white),
+            ),
+            onPressed: controller.isLoading.value
+                ? null
+                : () => controller.submitForm(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
-        )
-            : const Icon(Icons.check_rounded, size: 24),
-        label: Text(
-          controller.isLoading.value ? AppStrings.saving : AppStrings.saveTask,
-          style: context.textTheme.labelLarge?.copyWith(color: Colors.white),
-        ),
-        onPressed: controller.isLoading.value ? null : () => controller.submitForm(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      ),
-    ));
+        ));
   }
 
   Future<void> _selectDateTime(BuildContext context) async {
@@ -223,7 +245,8 @@ class AddNewTasksScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: PrioritySelector(
           selectedPriority: controller.selectedPriority.value,
           onPrioritySelected: (priority) {

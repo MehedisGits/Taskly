@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:taskly/services/api_services.dart';
 
 import '../models/task_model.dart';
 
 class TaskController extends GetxController {
+  final ApiServices apiServices = Get.put(ApiServices());
   // Observable Variables
   final Rx<String> selectedPriority = 'Medium'.obs;
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
@@ -53,6 +55,10 @@ class TaskController extends GetxController {
     selectedDate.value = null;
     selectedTime.value = null;
   }
+
+  ////////////////////////////
+  //// If Task Exist
+  ////////////////////////////
 
   /// Initialize the controller with an existing task.
   void initializeWithTask(TaskData task) {
@@ -121,6 +127,11 @@ class TaskController extends GetxController {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(seconds: 2));
+      final Map<String, dynamic> taskData ={
+        'title' : titleController.text.toString(),
+        'description' : descriptionController.text.toString()
+      };
+      await apiServices.createTask(taskData: taskData);
       // Uncomment the following line to simulate an error:
       // throw Exception("Failed to add task");
     } catch (error) {

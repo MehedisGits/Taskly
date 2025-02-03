@@ -56,6 +56,12 @@ class ApiServices {
     return getRequest(endpoint: endpoint, token: token);
   }
 
+  /// create tasks by status using POST request
+  Future<Map<String, dynamic>> createTask({required Map<String, dynamic> taskData}) async {
+    final endpoint = 'createTask';
+    return postRequest(endpoint: endpoint, data: taskData);
+  }
+
   /// Check if the status code indicates a successful request
   bool _isSuccessful(int? statusCode) {
     return statusCode == 200 || statusCode == 201;

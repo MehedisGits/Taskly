@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskly/services/api_services.dart';
 
-class TaskListController extends GetxController {
+class TaskDataController extends GetxController {
   // Observable for task data
   final Rx<Map<String, dynamic>?> taskData = Rx<Map<String, dynamic>?>(null);
   final RxBool isEmpty = false.obs; // To track if the task list is empty

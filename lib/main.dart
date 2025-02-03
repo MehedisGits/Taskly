@@ -9,13 +9,6 @@ import 'core/app_binding.dart';
 import 'core/app_pages.dart';
 import 'core/routes.dart';
 import 'core/theme_data.dart';
-import 'modules/auth/login_screen.dart';
-import 'modules/auth/sign_up_screen.dart';
-import 'modules/profile/profile_screen.dart';
-import 'modules/tasks/add_or_edit_tasks.dart';
-import 'services/auth_service.dart';
-import 'views/dashboard.dart';
-import 'views/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

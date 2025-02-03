@@ -2,7 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taskly/core/routes.dart';
-import '../controllers/task_list_controller.dart';
+import '../controllers/task_data_controller.dart';
 import '../utils/get_device_type.dart';
 import '../utils/responsive_size.dart';
 import '../widgets/custom_app_bar.dart';
@@ -14,8 +14,8 @@ class DashboardScreen extends StatelessWidget {
   final RxInt selectedCategoryIndex = 0.obs;
   final RxBool searchBarClicked = false.obs;
 
-  final TaskListController taskListController =
-      Get.put(TaskListController()); // Initialize TaskListController
+  final TaskDataController taskListController =
+      Get.put(TaskDataController()); // Initialize TaskListController
   final List<String> categories = [
     'New',
     'Cancelled',
