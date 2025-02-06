@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:taskly/utils/responsive_size.dart';
+import 'package:taskly/widgets/custom_button.dart';
+import 'package:taskly/widgets/custom_text_field.dart';
+
 import '../../controllers/sign_up_controller.dart';
-import '../../utils/responsive_size.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_text_field.dart';
+import '../../core/strings.dart';
 import 'login_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -13,16 +15,22 @@ class SignUpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the responsive scale factor based on screen width.
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenScale = screenWidth / 375;
+
     return Scaffold(
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(16 * screenScale(context)),
+            padding: EdgeInsets.all(16 * screenScale),
             child: Card(
+              // Use theme-aware card color
+              color: context.theme.cardColor,
               elevation: 0,
-              color: Colors.grey[200],
               child: Padding(
-                padding: EdgeInsets.all(16 * screenScale(context)),
+                padding: EdgeInsets.all(16 * screenScale),
                 child: Form(
                   key: controller.formKey,
                   child: Column(
@@ -30,8 +38,7 @@ class SignUpScreen extends StatelessWidget {
                     children: [
                       _buildTitle(context),
                       SizedBox(height: responsiveSize(context, mobileSize: 16)),
-
-                      // Form Fields
+                      // First Name Field
                       CustomTextField(
                         labelText: 'First Name',
                         hintText: 'Enter your first name',
@@ -41,7 +48,7 @@ class SignUpScreen extends StatelessWidget {
                             : null,
                       ),
                       SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      // Form Fields
+                      // Last Name Field
                       CustomTextField(
                         labelText: 'Last Name',
                         hintText: 'Enter your last name',
@@ -51,9 +58,10 @@ class SignUpScreen extends StatelessWidget {
                             : null,
                       ),
                       SizedBox(height: responsiveSize(context, mobileSize: 12)),
+                      // Email Field
                       CustomTextField(
-                        labelText: 'Email',
-                        hintText: 'Enter your email',
+                        labelText: AppStrings.email,
+                        hintText: AppStrings.enterYourEmail,
                         controller: controller.emailController,
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) => !GetUtils.isEmail(value ?? '')
@@ -61,6 +69,7 @@ class SignUpScreen extends StatelessWidget {
                             : null,
                       ),
                       SizedBox(height: responsiveSize(context, mobileSize: 12)),
+                      // Phone Number Field
                       CustomTextField(
                         labelText: 'Phone Number',
                         hintText: 'Enter your phone number',
@@ -77,45 +86,46 @@ class SignUpScreen extends StatelessWidget {
                         },
                       ),
                       SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      Obx(
-                        () => CustomTextField(
-                          labelText: 'Password',
-                          hintText: 'Enter your password',
-                          controller: controller.passwordController,
-                          obscureText: controller.isPasswordHidden.value,
-                          suffixIcon: IconButton(
-                            icon: Icon(controller.isPasswordHidden.value
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            onPressed: controller.togglePasswordVisibility,
-                          ),
-                          validator: (value) => value != null &&
-                                  value.length < 6
-                              ? 'Password must be at least 6 characters long'
-                              : null,
-                        ),
-                      ),
+                      // Password Field
+                      Obx(() => CustomTextField(
+                            labelText: AppStrings.password,
+                            hintText: AppStrings.enterYourPassword,
+                            controller: controller.passwordController,
+                            obscureText: controller.isPasswordHidden.value,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                controller.isPasswordHidden.value
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: controller.togglePasswordVisibility,
+                            ),
+                            validator: (value) => value != null &&
+                                    value.length < 6
+                                ? 'Password must be at least 6 characters long'
+                                : null,
+                          )),
                       SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      Obx(
-                        () => CustomTextField(
-                          labelText: 'Confirm Password',
-                          hintText: 'Re-enter your password',
-                          controller: controller.confirmPasswordController,
-                          obscureText: controller.isPasswordHidden.value,
-                          suffixIcon: IconButton(
-                            icon: Icon(controller.isPasswordHidden.value
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            onPressed: controller.togglePasswordVisibility,
-                          ),
-                          validator: (value) =>
-                              value != controller.passwordController.text
-                                  ? 'Passwords do not match'
-                                  : null,
-                        ),
-                      ),
+                      // Confirm Password Field
+                      Obx(() => CustomTextField(
+                            labelText: 'Confirm Password',
+                            hintText: 'Re-enter your password',
+                            controller: controller.confirmPasswordController,
+                            obscureText: controller.isPasswordHidden.value,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                controller.isPasswordHidden.value
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: controller.togglePasswordVisibility,
+                            ),
+                            validator: (value) =>
+                                value != controller.passwordController.text
+                                    ? 'Passwords do not match'
+                                    : null,
+                          )),
                       SizedBox(height: responsiveSize(context, mobileSize: 16)),
-
                       // Sign Up Button
                       CustomButton(
                         onPressed: () {
@@ -123,10 +133,9 @@ class SignUpScreen extends StatelessWidget {
                             controller.signUp();
                           }
                         },
-                        text: 'Sign Up',
+                        text: AppStrings.signUp,
                       ),
                       SizedBox(height: responsiveSize(context, mobileSize: 16)),
-
                       // Login Redirect Row
                       _buildLoginRow(context),
                     ],
