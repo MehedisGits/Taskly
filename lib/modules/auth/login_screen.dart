@@ -90,7 +90,7 @@ class LoginScreen extends StatelessWidget {
           Obx(() {
             if (controller.isLoading.value) {
               return Container(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withAlpha(3),
                 child: const Center(
                   child: CircularProgressIndicator(),
                 ),

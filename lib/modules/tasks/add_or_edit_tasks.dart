@@ -10,6 +10,7 @@ import '../../core/strings.dart';
 import '../../core/theme_data.dart';
 import '../../models/dat_time_pair_model.dart';
 
+// ignore: must_be_immutable
 class AddNewTasksScreen extends StatelessWidget {
   AddNewTasksScreen({super.key, this.taskData});
 
