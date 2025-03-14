@@ -6,16 +6,16 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CustomButton({
+    super.key,
     required this.text,
     required this.onPressed,
-    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return OrientationBuilder(
       builder: (context, orientation) {
-        // Adjust the button layout based on orientation (portrait or landscape)
+        // Calculate responsive sizes based on screen orientation and width.
         double buttonHeight = responsiveSize(
           context,
           mobileSize: orientation == Orientation.portrait ? 48 : 40,
@@ -48,8 +48,7 @@ class CustomButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Expanded(
-              flex: 1,
+            child: Center(
               child: Text(
                 text,
                 style: TextStyle(

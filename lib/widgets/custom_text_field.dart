@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/responsive_size.dart'; // Ensure this utility exists
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
@@ -13,6 +14,7 @@ class CustomTextField extends StatelessWidget {
   final Function(String)? onChanged;
 
   const CustomTextField({
+    super.key,
     required this.labelText,
     this.hintText,
     this.obscureText = false,
@@ -23,11 +25,23 @@ class CustomTextField extends StatelessWidget {
     this.errorText,
     this.enabled = true,
     this.onChanged,
-    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Use the responsiveSize utility to adjust border radius (or other sizes) based on device size.
+    double borderRadius = responsiveSize(
+      context,
+      mobileSize: 8,
+      tabletSize: 10,
+      desktopSize: 12,
+    );
+
+    // Get current theme colors to adapt to dark/light themes
+    final ThemeData theme = Theme.of(context);
+    // Use theme.cardColor as a base for the filled background, or a fallback if disabled.
+    final Color fillColor = enabled ? theme.cardColor : Colors.grey.shade200;
+
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
@@ -38,10 +52,10 @@ class CustomTextField extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
         filled: true,
-        fillColor: enabled ? Colors.white : Colors.grey[200],
+        fillColor: fillColor,
         suffixIcon: suffixIcon,
         errorText: errorText,
       ),

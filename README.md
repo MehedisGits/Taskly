@@ -1,10 +1,6 @@
-# task_manager
+# taskly
 
-**Taskly - Task Manager App:**   Taskly is a sleek and efficient task management
-app built using Flutter in Android Studio. Designed for individuals and teams, it offers task
-creation, categorization, prioritization, and progress tracking. Features include reminders,
-real-time notifications, offline functionality, and cross-platform compatibility. With a modern UI
-and customizable themes, Taskly streamlines productivity and organization.
+A new Flutter project.
 
 ## Getting Started
 
