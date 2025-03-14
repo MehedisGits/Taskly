@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/controllers/sign_up_controller.dart';
-import 'package:task_manager/utils/responsive_size.dart';
-import 'package:task_manager/views/onboardings/login_screen.dart';
-import 'package:task_manager/widgets/custom_button.dart';
-import 'package:task_manager/widgets/custom_text_field.dart';
+
+import '../../controllers/user_auth_controllers/sign_up_controller.dart';
+import '../../utils/responsive_size.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_text_field.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   final SignUpController controller = Get.put(SignUpController());

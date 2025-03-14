@@ -16,7 +16,7 @@ class OtpField extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(
         length,
-            (index) => SizedBox(
+        (index) => SizedBox(
           width: 50,
           child: TextField(
             controller: controller,

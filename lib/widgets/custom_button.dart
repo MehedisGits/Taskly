@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/utils/responsive_size.dart';
+import '../utils/responsive_size.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -41,6 +41,8 @@ class CustomButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: paddingVertical),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),

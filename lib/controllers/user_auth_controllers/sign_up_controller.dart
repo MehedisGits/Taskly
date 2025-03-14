@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../services/api_services.dart';
-import '../views/onboardings/login_screen.dart';
+
+import '../../services/api_services.dart';
+import '../../views/onboardings/login_screen.dart';
 
 class SignUpController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -16,7 +17,7 @@ class SignUpController extends GetxController {
 
   final isPasswordHidden = true.obs;
 
-  final ApiServices apiServices = ApiServices();
+  final ApiService apiServices = ApiService();
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -41,7 +42,7 @@ class SignUpController extends GetxController {
         );
 
         // Call the API for registration
-        final response = await apiServices.authPost('Registration', userData);
+        final response = await apiServices.registerUser(userData);
 
         // Close the loading dialog
         Get.back();

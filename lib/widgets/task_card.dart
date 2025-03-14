@@ -19,80 +19,106 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2, // একটু বেশি elevation দিয়ে শেডিং উন্নত করা হয়েছে
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
       margin: EdgeInsets.symmetric(
         vertical: isMobile ? 5 : 10,
         horizontal: isMobile ? 8 : 16,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Task Title
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontSize: isMobile ? 16 : 18,
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Task Description
-            Obx(() {
-              return AnimatedCrossFade(
-                firstChild: Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: isMobile ? 14 : 16,
-                  ),
-                ),
-                secondChild: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: isMobile ? 14 : 16,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          _isExpanded.value = !_isExpanded.value;
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Task Title Row with conditional Edit/Delete buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w400,
+                        fontSize: isMobile ? 18 : 20,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
+                  ),
+                  Obx(() {
+                    return _isExpanded.value
+                        ? Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextButton(
+                        IconButton(
                           onPressed: () {
-                            // Edit Task
                             Get.snackbar('Edit Task', 'Edit task');
                           },
-                          child: const Text('Edit'),
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.blueAccent,
+                            size: isMobile ? 18 : 22,
+                          ),
                         ),
-                        TextButton(
+                        IconButton(
                           onPressed: () {
-                            // Delete Task
                             Get.snackbar('Delete Task', 'Delete task functionality');
                           },
-                          child: const Text('Delete'),
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.redAccent,
+                            size: isMobile ? 18 : 22,
+                          ),
                         ),
                       ],
-                    ),
-                  ],
-                ),
-                crossFadeState: _isExpanded.value
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 300),
-              );
-            }),
-            const SizedBox(height: 8),
-            // Expand/Collapse Button
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  _isExpanded.value = !_isExpanded.value;
-                },
-                child: Text(_isExpanded.value ? 'Collapse' : 'Expand'),
+                    )
+                        : const SizedBox();
+                  }),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              // Task Description with Expand/Collapse functionality
+              Obx(() {
+                return AnimatedCrossFade(
+                  firstChild: Text(
+                    description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: isMobile ? 14 : 16,
+                    ),
+                  ),
+                  secondChild: Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: isMobile ? 14 : 16,
+                    ),
+                  ),
+                  crossFadeState: _isExpanded.value
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 300),
+                );
+              }),
+              const SizedBox(height: 8),
+              // Expand/Collapse Indicator
+              Align(
+                alignment: Alignment.centerRight,
+                child: Obx(
+                      () => Icon(
+                    _isExpanded.value
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

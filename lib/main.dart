@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
       home: DashboardScreen(),
-      initialRoute: Routes.signUp,
+      initialRoute: Routes.splash,
       getPages: [
         GetPage(name: Routes.splash, page: () => SplashScreen()),
         GetPage(name: Routes.home, page: () => DashboardScreen()),

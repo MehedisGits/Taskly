@@ -39,7 +39,8 @@ class DeviceType {
   }
 
   // Get custom breakpoints if needed (for flexibility)
-  static bool isCustomMobile(BuildContext context, {double maxMobileWidth = 600}) {
+  static bool isCustomMobile(BuildContext context,
+      {double maxMobileWidth = 600}) {
     return MediaQuery.of(context).size.width < maxMobileWidth;
   }
 
@@ -49,7 +50,8 @@ class DeviceType {
     return width >= minTabletWidth && width < maxTabletWidth;
   }
 
-  static bool isCustomDesktop(BuildContext context, {double minDesktopWidth = 1024}) {
+  static bool isCustomDesktop(BuildContext context,
+      {double minDesktopWidth = 1024}) {
     return MediaQuery.of(context).size.width >= minDesktopWidth;
   }
 }
