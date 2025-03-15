@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/controllers/task_data_controller.dart';
 import 'package:task_manager/controllers/task_fetching_controller.dart';
 import '../models/task_model.dart'; // Contains TaskModel and Data classes.
 import '../utils/get_device_type.dart';

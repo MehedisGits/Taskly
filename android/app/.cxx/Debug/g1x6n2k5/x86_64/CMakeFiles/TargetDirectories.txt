@@ -1,0 +1,2 @@
+/home/mehedi/MehediSoft/git clone/Taskly/android/app/.cxx/Debug/g1x6n2k5/x86_64/CMakeFiles/edit_cache.dir
+/home/mehedi/MehediSoft/git clone/Taskly/android/app/.cxx/Debug/g1x6n2k5/x86_64/CMakeFiles/rebuild_cache.dir
