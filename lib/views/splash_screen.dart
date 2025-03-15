@@ -35,7 +35,7 @@ class SplashScreen extends StatelessWidget {
     final storage = await SharedPreferences.getInstance();
 
     try {
-      String? token = storage.getString('auth_token'); // Ensure consistent key usage
+      String? token = storage.getString('token'); // Ensure consistent key usage
       if (token == null) return false; // Token doesn't exist
 
       // Decode the token without verifying signature
