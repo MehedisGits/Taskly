@@ -25,6 +25,12 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+//Taskly Main App
+//This is the main entry point of the Taskly app. It initializes the app with the GetMaterialApp widget and sets the theme, title, and initial route. It also registers the routes for the app using GetPage.
+//The app uses the DevicePreview package to enable device preview for the app. This allows developers to preview the app on different devices and screen sizes during development.
+//The app also registers the SharedPreferences instance using Get.put to make it available throughout the app.
+//The main function initializes the app by calling WidgetsFlutterBinding.ensureInitialized() and then runs the app using runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp())).
+//The MyApp widget is a stateless widget that returns a GetMaterialApp widget with the app configuration and routes.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(

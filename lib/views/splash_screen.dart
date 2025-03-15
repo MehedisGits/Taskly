@@ -1,4 +1,3 @@
-
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,9 +17,13 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  /// Check if token is valid and navigate accordingly
+  /// Check if the token is valid and navigate to the appropriate screen
+  /// based on the token validity.
+  /// If the token is valid, navigate to the home screen.
+  /// If the token is invalid, missing, expired, unauth navigate to the login screen.
   void _checkToken() async {
-    await Future.delayed(Duration(seconds: 1)); // Add a small delay to show the splash screen
+    await Future.delayed(
+        Duration(seconds: 1)); // Add a small delay to show the splash screen
 
     bool isValid = await isTokenValid();
     if (isValid) {
@@ -44,9 +47,11 @@ class SplashScreen extends StatelessWidget {
       final expiration = jwt.payload['exp'] as int?;
       if (expiration == null) return false; // No expiration claim in the token
 
-      final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000; // Get current time in seconds
+      final currentTime = DateTime.now().millisecondsSinceEpoch ~/
+          1000; // Get current time in seconds
 
-      return expiration > currentTime; // Token is valid if expiration is in the future
+      return expiration >
+          currentTime; // Token is valid if expiration is in the future
     } catch (e) {
       print("Error decoding token: $e"); // Log the error for debugging
       return false; // Invalid token or expired
