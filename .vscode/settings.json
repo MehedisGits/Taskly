@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
     "Taskly"
-  ]
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.29.2"
 }

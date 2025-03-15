@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:taskly/services/api_services.dart';
+import 'package:task_manager/models/task_model.dart';
+import '../services/api_services.dart';
 
-class TaskDataController extends GetxController {
-  // Observable for task data
-  final Rx<Map<String, dynamic>?> taskData = Rx<Map<String, dynamic>?>(null);
-  final RxBool isEmpty = false.obs; // To track if the task list is empty
-  final RxBool isLoading = false.obs; // To track loading state
+class TaskController extends GetxController {
+  final ApiService _apiService = ApiService();
 
-  final ApiServices _apiServices = ApiServices();
+  // Observables
+  final Rx<TaskModel?> taskData = Rx<TaskModel?>(null);
+  final RxBool isEmpty = false.obs;
+  final RxBool isLoading = false.obs;
+
   final SharedPreferences _sharedPreferences = Get.find();
 
-  /// Fetches task data based on the provided endpoint
-  Future<void> fetchData(String endpoint) async {
+  /// Fetches tasks by category (endpoint)
+  Future<void> fetchTasks(String category) async {
     try {
       _startLoading();
-
       final String? token = _getToken();
+
       if (token == null) {
-        print('Token is missing'); // Log the token issue
         throw Exception('Token is missing');
       }
 
-      print('Fetching tasks for category: $endpoint with token: $token'); // Log API request
+      print('Fetching tasks for: $category with token: $token');
 
-      final response = await _apiServices.fetchTaskByStatus(status: endpoint, token: token);
-
-      print('API Response: $response'); // Log API response
+      TaskModel response = await _apiService.fetchTasks(category);
+      print('API Response: $response');
 
       _updateTaskData(response);
     } catch (e) {
@@ -37,49 +37,50 @@ class TaskDataController extends GetxController {
     }
   }
 
-  /// Starts the loading state
-  void _startLoading() {
-    isLoading.value = true;
-    print('Loading started'); // Log loading start
-  }
-
-  /// Stops the loading state
-  void _stopLoading() {
-    isLoading.value = false;
-    print('Loading stopped'); // Log loading stop
-  }
-
   /// Retrieves the token from SharedPreferences
   String? _getToken() {
     final token = _sharedPreferences.getString('token');
-    print('Retrieved token: $token'); // Log token retrieval
+    print('Retrieved token: $token');
     return token;
   }
 
-  /// Updates task data and empty state based on the API response
-  void _updateTaskData(Map<String, dynamic> response) {
-    if (response['data'] == null || response['data'].isEmpty) {
-      isEmpty.value = true; // Mark as empty if no tasks are found
+  /// Updates the task data state
+  void _updateTaskData(TaskModel response) {
+    if (response.data == null || response.data!.isEmpty) {
+      isEmpty.value = true;
       taskData.value = null;
-      print('No tasks found in response'); // Log empty task list
+      print('No tasks found');
     } else {
-      isEmpty.value = false; // Mark as not empty if tasks are found
+      isEmpty.value = false;
       taskData.value = response;
-      print('Tasks successfully fetched and updated'); // Log task update
+      print('Tasks successfully updated');
     }
   }
 
-  /// Handles errors during data fetching
+  /// Handles errors and updates UI
   void _handleError(dynamic error) {
+    isEmpty.value = true;
     taskData.value = null;
-    isEmpty.value = true; // Mark as empty in case of error
-    print('Error occurred while fetching tasks: $error'); // Log error
+    print('Error fetching tasks: $error');
+
     Get.snackbar(
       'Error',
-      'Failed to fetch task data: $error',
+      'Failed to fetch tasks: $error',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.red,
       colorText: Colors.white,
     );
+  }
+
+  /// Starts loading
+  void _startLoading() {
+    isLoading.value = true;
+    print('Loading started');
+  }
+
+  /// Stops loading
+  void _stopLoading() {
+    isLoading.value = false;
+    print('Loading stopped');
   }
 }

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/routes/routes.dart';
+import '../../core/routes.dart';
 import '../../services/api_services.dart';
 
 class LoginController extends GetxController {
   RxBool isPasswordVisible = false.obs;
+  RxBool isLoading = false.obs;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -39,6 +40,7 @@ class LoginController extends GetxController {
 
   // Login function to handle user authentication
   Future<void> login() async {
+    isLoading = true.obs;
     // Validate form fields
     if (formKey.currentState!.validate()) {
       // Prepare the user data for the API request
@@ -64,7 +66,7 @@ class LoginController extends GetxController {
         if (response.containsKey("token")) {
           String token = response["token"];
           print("✅ Token received: $token");
-
+          isLoading = false.obs;
           // Store in SharedPreferences
           SharedPreferences sharedPreferences =
               await SharedPreferences.getInstance();

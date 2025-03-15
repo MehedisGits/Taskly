@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/controllers/task_fetching_controller.dart';
-import '../models/task_model.dart'; // Contains TaskModel and Data classes.
+import '../controllers/task_data_controller.dart';
 import '../utils/get_device_type.dart';
 import '../utils/responsive_size.dart';
 import '../widgets/custom_app_bar.dart';
@@ -10,11 +9,8 @@ import '../widgets/task_card.dart';
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
 
-  final TaskFetchingController controller = Get.put(TaskFetchingController());
+  final TaskController controller = Get.put(TaskController());
   final RxInt selectedCategoryIndex = 0.obs;
-  final RxBool isLoading = false.obs;
-  // Change reactive list type to Data (individual tasks), not TaskModel.
-  final RxList<Data> tasks = <Data>[].obs;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +21,8 @@ class DashboardScreen extends StatelessWidget {
       desktopSize: 20,
     );
 
-    // Load tasks when screen opens.
-    // Note: For optimal performance, consider moving loadTasks() to initState() of a StatefulWidget.
-    loadTasks();
+    // Fetch tasks initially for the default category
+    controller.fetchTasks("New");
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -58,19 +53,19 @@ class DashboardScreen extends StatelessWidget {
               // Task List
               Expanded(
                 child: Obx(() {
-                  if (isLoading.value) {
+                  if (controller.isLoading.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (tasks.isEmpty) {
+                  if (controller.isEmpty.value || controller.taskData.value == null) {
                     return const Center(child: Text("No tasks found"));
                   }
                   return ListView.builder(
-                    itemCount: tasks.length,
+                    itemCount: controller.taskData.value!.data!.length,
                     itemBuilder: (context, index) {
-                      // Use dot notation to access properties.
+                      final task = controller.taskData.value!.data![index];
                       return TaskCard(
-                        title: tasks[index].title ?? 'No Title',
-                        description: tasks[index].description ?? 'No Description',
+                        title: task.title ?? 'No Title',
+                        description: task.description ?? 'No Description',
                         isMobile: DeviceType.isMobile(context),
                       );
                     },
@@ -82,29 +77,6 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<void> loadTasks() async {
-    isLoading.value = true;
-    try {
-      // Fetch data from API. Controller returns a TaskModel.
-      TaskModel taskModel = await controller.fetchTasksByCategory('New');
-
-      // Check if there are tasks available and data is not null.
-      if (taskModel.data != null && taskModel.data!.isNotEmpty) {
-        tasks.value = taskModel.data!; // Assign the list of task data.
-      } else {
-        tasks.clear();
-        Get.snackbar('No tasks found', 'No tasks available for this category.',
-            snackPosition: SnackPosition.BOTTOM);
-      }
-    } catch (e) {
-      print("Error: $e");
-      Get.snackbar('Error', 'Failed to load tasks. Please try again.',
-          snackPosition: SnackPosition.BOTTOM);
-    } finally {
-      isLoading.value = false;
-    }
   }
 
   // Category Colors
@@ -130,26 +102,9 @@ class DashboardScreen extends StatelessWidget {
   /// Builds Individual Category Button
   Widget buildCategoryButton(String text, int index, double buttonSize) {
     return Obx(() => TextButton(
-      onPressed: () async {
+      onPressed: () {
         selectedCategoryIndex.value = index;
-        isLoading.value = true; // Show loading.
-        try {
-          TaskModel taskModel = await controller.fetchTasksByCategory(text);
-          // Null check for taskModel and its data before assigning.
-          if (taskModel.data != null && taskModel.data!.isNotEmpty) {
-            tasks.value = taskModel.data!;
-          } else {
-            tasks.clear();
-            Get.snackbar('Error', 'No tasks available for this category.',
-                snackPosition: SnackPosition.BOTTOM);
-          }
-        } catch (e) {
-          print("Error fetching tasks: $e");
-          Get.snackbar('Error', 'Failed to load tasks. Please try again.',
-              snackPosition: SnackPosition.BOTTOM);
-        } finally {
-          isLoading.value = false;
-        }
+        controller.fetchTasks(text); // Fetch tasks when category changes
       },
       style: TextButton.styleFrom(
         backgroundColor: selectedCategoryIndex.value != index

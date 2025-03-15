@@ -5,13 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/views/dashboard.dart';
 import 'package:task_manager/views/onboardings/login_screen.dart';
-import 'package:task_manager/views/onboardings/sign_up_screen.dart';
-import 'package:task_manager/views/onboardings/splash_screen.dart';
+import 'package:task_manager/views/splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'core/routes/routes.dart';
+import 'core/routes.dart';
 import 'core/themes/theme_data.dart';
+import 'modules/auth/sign_up_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize SharedPreferences before running the app
+  final sharedPreferences = await SharedPreferences.getInstance();
+  Get.put(sharedPreferences); // Using Get.put to register SharedPreferences
+
   runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp()));
 }
 
