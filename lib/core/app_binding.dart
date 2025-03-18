@@ -16,7 +16,7 @@ class AppBindings extends Bindings {
 
     // Initialize and register AuthService asynchronously
     Get.putAsync<AuthService>(
-        () async => await AuthService(sharedPreferences).init());
+        () async => AuthService());
 
     // Register UserController only if not already registered
     if (!Get.isRegistered<UserController>()) {

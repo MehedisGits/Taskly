@@ -2,7 +2,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../core/routes.dart';
+import 'package:task_manager/core/routes.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -53,7 +53,7 @@ class SplashScreen extends StatelessWidget {
       return expiration >
           currentTime; // Token is valid if expiration is in the future
     } catch (e) {
-      print("Error decoding token: $e"); // Log the error for debugging
+  
       return false; // Invalid token or expired
     }
   }

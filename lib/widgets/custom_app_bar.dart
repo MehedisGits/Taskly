@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/core/routes.dart';
 
 import '../controllers/app_bar_controller.dart'; // Import your controller
 
@@ -22,7 +23,7 @@ class CustomAppBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         child: Obx(() => AnimatedCrossFade(
               duration: const Duration(milliseconds: 300),
-              firstChild: _buildDefaultAppBar(screenWidth),
+              firstChild: _buildDefaultAppBar(context, screenWidth),
               secondChild: _buildSearchBar(),
               crossFadeState: controller.isSearchActive.value
                   ? CrossFadeState.showSecond
@@ -33,7 +34,7 @@ class CustomAppBar extends StatelessWidget {
   }
 
   /// Builds the default app bar with a title and profile avatar
-  Widget _buildDefaultAppBar(double screenWidth) {
+  Widget _buildDefaultAppBar(BuildContext context, double screenWidth) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -48,11 +49,7 @@ class CustomAppBar extends StatelessWidget {
         ),
         _buildAppBarTitle(screenWidth),
         _buildProfileAvatar(
-          onTap: () => Get.snackbar(
-            'Profile Opening',
-            'Profile is being opened',
-            margin: const EdgeInsets.all(10),
-          ),
+          onTap: () => Navigator.pushNamed(context, Routes.profile),
         ),
       ],
     );

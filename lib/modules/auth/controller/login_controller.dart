@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/routes.dart';
-import '../../services/api_services.dart';
+import '../../../core/routes.dart';
+import '../../../services/api_services.dart';
 
 class LoginController extends GetxController {
   RxBool isPasswordVisible = false.obs;
@@ -40,7 +40,7 @@ class LoginController extends GetxController {
 
   // Login function to handle user authentication
   Future<void> login() async {
-    isLoading = true.obs;
+    isLoading.value = true;
     // Validate form fields
     if (formKey.currentState!.validate()) {
       // Prepare the user data for the API request
@@ -61,17 +61,20 @@ class LoginController extends GetxController {
       try {
         final response = await apiServices.loginUser(userData);
 
-        print("🟢 API Response: $response"); // ✅ Debugging line
+        // print("🟢 API Response: $response"); // ✅ Debugging line
 
         if (response.containsKey("token")) {
+          Get.back(); // Close the loading dialog
+
+          // If the response contains a token, save it and proceed
           String token = response["token"];
-          print("✅ Token received: $token");
-          isLoading = false.obs;
+          // print("✅ Token received: $token");
+          isLoading.value = false;
           // Store in SharedPreferences
           SharedPreferences sharedPreferences =
               await SharedPreferences.getInstance();
           await sharedPreferences.setString('token', token);
-          print("🔐 Token saved in SharedPreferences");
+          // print("🔐 Token saved in SharedPreferences");
 
           // Clear form fields
           clearFormFields();
@@ -82,11 +85,29 @@ class LoginController extends GetxController {
           // Navigate to the home screen
           Get.offAllNamed(Routes.home);
         } else {
-          print("⚠️ Token not found in response: $response");
-          Get.snackbar('Error', response['message'] ?? 'Invalid credentials');
+          // print("⚠️ Token not found in response: $response");
+          Get.snackbar(
+            'Login Failed',
+            response['message'] ??
+                'Unable to log in. Please check your email and password and try again.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            icon: Icon(Icons.error, color: Colors.white),
+            duration: Duration(seconds: 3),
+          );
         }
       } catch (e) {
-        print("❌ Exception during login: $e");
+        // print("❌ Exception during login: $e");
+        Get.snackbar(
+          'Login Error',
+          'An unexpected error occurred while trying to log in. Please check your internet connection and try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          icon: Icon(Icons.error, color: Colors.white),
+          duration: Duration(seconds: 4),
+        );
         Get.snackbar('Error', 'Login failed. Please try again later.');
       }
     } else {

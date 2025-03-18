@@ -1,11 +1,12 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/controllers/task_data_controller.dart';
-import '../models/task_model.dart'; // Contains TaskModel and Data classes.
-import '../utils/get_device_type.dart';
-import '../utils/responsive_size.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/task_card.dart';
+import 'package:task_manager/models/task_model.dart';
+import 'package:task_manager/utils/get_device_type.dart';
+import 'package:task_manager/utils/responsive_size.dart';
+import 'package:task_manager/widgets/custom_app_bar.dart';
+import 'package:task_manager/widgets/task_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
