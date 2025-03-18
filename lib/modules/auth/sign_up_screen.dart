@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/modules/auth/login_screen.dart';
 
 import '../../controllers/user_auth_controllers/sign_up_controller.dart';
 import '../../core/strings.dart';
 import '../../utils/responsive_size.dart';
-import '../../views/onboardings/login_screen.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 

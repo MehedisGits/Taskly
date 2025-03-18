@@ -1,8 +1,11 @@
+// ignore_for_file: unused_import
+
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/modules/auth/login_screen.dart';
 import 'package:task_manager/views/dashboard.dart';
 import 'package:task_manager/views/onboardings/login_screen.dart';
 import 'package:task_manager/views/splash_screen.dart';

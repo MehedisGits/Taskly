@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/controllers/task_fetching_controller.dart';
+import 'package:task_manager/controllers/task_data_controller.dart';
 import '../models/task_model.dart'; // Contains TaskModel and Data classes.
 import '../utils/get_device_type.dart';
 import '../utils/responsive_size.dart';
@@ -10,7 +10,7 @@ import '../widgets/task_card.dart';
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
 
-  final TaskFetchingController controller = Get.put(TaskFetchingController());
+  final TaskController controller = Get.put(TaskController());
   final RxInt selectedCategoryIndex = 0.obs;
   final RxBool isLoading = false.obs;
   final RxMap<String, int> taskCounts = {
@@ -73,8 +73,7 @@ class DashboardScreen extends StatelessWidget {
                       }
 
                       if (snapshot.hasError) {
-                        return Center(
-                            child: Text('Error: ${snapshot.error}'));
+                        return Center(child: Text('Error: ${snapshot.error}'));
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -87,8 +86,8 @@ class DashboardScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           return TaskCard(
                             title: tasks[index].title ?? 'No Title',
-                            description: tasks[index].description ??
-                                'No Description',
+                            description:
+                                tasks[index].description ?? 'No Description',
                             isMobile: DeviceType.isMobile(context),
                           );
                         },
@@ -108,7 +107,7 @@ class DashboardScreen extends StatelessWidget {
   Future<List<Data>> _getTasksForCategory(int selectedCategoryIndex) async {
     String category = _getCategoryByIndex(selectedCategoryIndex);
     try {
-      TaskModel taskModel = await controller.fetchTasksByCategory(category);
+      TaskModel taskModel = await controller.fetchTasks(category);
 
       if (taskModel.data != null) {
         taskCounts[category] = taskModel.data!.length;
@@ -152,10 +151,10 @@ class DashboardScreen extends StatelessWidget {
 
   // Category Colors
   final List<Color> categoryColors = [
-    Colors.blue,   // New
-    Colors.red,    // Cancelled
+    Colors.blue, // New
+    Colors.red, // Cancelled
     Colors.orange, // In Progress
-    Colors.green,  // Completed
+    Colors.green, // Completed
   ];
 
   /// Builds Task Category Buttons with Badge for Task Count
@@ -213,7 +212,7 @@ class DashboardScreen extends StatelessWidget {
           // Floating Badge
           Positioned(
             right: -8, // Slightly outside button
-            top: -8,  // Slightly outside button
+            top: -8, // Slightly outside button
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
@@ -234,5 +233,4 @@ class DashboardScreen extends StatelessWidget {
       );
     });
   }
-
 }
