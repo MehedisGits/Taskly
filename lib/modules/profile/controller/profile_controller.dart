@@ -7,7 +7,8 @@
 //
 // class UserProfileController extends GetxController {
 //   // Observable for user profile data
-//   Rx<UserDetails?> userProfile = Rx<UserDetails?>(null);
+//
+//
 //
 //   // Observable for loading state
 //   RxBool isLoading = false.obs;

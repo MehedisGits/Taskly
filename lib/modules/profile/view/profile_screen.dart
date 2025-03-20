@@ -11,17 +11,8 @@ class ProfileScreen extends StatelessWidget {
   final UserController _userController = Get.find<UserController>();
   final AuthService _authService = Get.find<AuthService>();
 
-  RxInt cancelledTasks = 0.obs;
-  RxInt completedTasks = 0.obs;
-  RxInt totalTasksCount = 0.obs;
-
   @override
   Widget build(BuildContext context) {
-    // Fetch the task counts after the widget is built
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await getTaskCounts();
-    });
-
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: SingleChildScrollView(
@@ -127,26 +118,24 @@ class ProfileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildStatItem(
-                    context, 'Total Tasks', totalTasksCount.value.toString()),
+                  context,
+                  'Total Tasks',
+                  UserController.totalTasksCount.toString(),
+                ),
                 _buildStatItem(
-                    context, 'Total Tasks', cancelledTasks.value.toString()),
+                  context,
+                  'Total Tasks',
+                  UserController.completedTaskCount.toString(),
+                ),
                 _buildStatItem(
-                    context, 'Completed', completedTasks.value.toString()),
+                  context,
+                  'Total Tasks',
+                  UserController.cancelledTaskCount.toString(),
+                ),
               ],
             ),
           )),
     );
-  }
-
-  Future<void> getTaskCounts() async {
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      completedTasks.value = prefs.getInt('CompletedTaskCount') ?? 0;
-      totalTasksCount.value = prefs.getInt('TotalTaskCount') ?? 0;
-      cancelledTasks.value = prefs.getInt('CancelledTaskCount') ?? 0;
-    } catch (e) {
-      print("Error fetching task counts: $e");
-    }
   }
 
   /// 🔹 **Single Stat Item**
