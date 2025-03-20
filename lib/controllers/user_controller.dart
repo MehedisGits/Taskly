@@ -1,18 +1,19 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
+import '../services/api_services.dart';
 
 class UserController extends GetxController {
   // User profile data
-  final Rx<UserProfile> user = UserProfile().obs;
-
-  // Task statistics
-  final RxInt totalTasks = 0.obs;
-  final RxInt completedTasks = 0.obs;
+  final Rx<UserDetails?> user = Rx<UserDetails?>(null);
+  final RxBool isLoading = false.obs;
 
   // Theme settings
   final RxBool isDarkMode = false.obs;
+
+  final ApiService _apiService = ApiService(); // API Service instance
 
   @override
   void onInit() {
@@ -21,41 +22,53 @@ class UserController extends GetxController {
     loadUserProfile(); // Load user profile data
   }
 
-  /// Loads user profile data
+  /// Load user profile data from API or SharedPreferences
   Future<void> loadUserProfile() async {
-    // Simulate a network request or database query
-    await Future.delayed(const Duration(seconds: 1));
+    isLoading.value = true;
 
-    // Set user profile data
-    user.value = UserProfile(
-      name: 'Rakibul Islam Mehedi',
-      email: 'rakibulislammehedi4@gmail.com',
-      profileImage: 'https://avatars.githubusercontent.com/u/125388734?v=4',
-    );
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userData = prefs.getString('userDetails');
+
+      if (userData != null) {
+        // যদি লোকাল ডাটা থাকে, সেটি প্রথমে ব্যবহার করবো
+        user.value = UserDetails.fromJson(jsonDecode(userData));
+      }
+
+      // **API Call to fetch updated user data**
+      UserDetails fetchedUser = await _apiService.fetchUserData();
+      user.value = fetchedUser;
+
+      // **Update SharedPreferences with new data**
+      await prefs.setString('userDetails', jsonEncode(fetchedUser.toJson()));
+    } catch (e) {
+      Get.snackbar("Error", "Failed to load user profile");
+      print("Error fetching user profile: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  /// Updates the user's profile information
-  Future<void> updateProfile(UserProfile updatedProfile) async {
+  /// Update user profile in memory and storage
+  Future<void> updateProfile(UserDetails updatedProfile) async {
     user.value = updatedProfile;
-    // Optionally, save the updated profile to a database or API
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("userDetails", jsonEncode(updatedProfile.toJson()));
   }
 
-  /// Toggles dark mode and saves preference
+  /// Toggle dark mode and save preference
   Future<void> toggleDarkMode(bool value) async {
     isDarkMode.value = value;
     Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
 
-    // Save the theme preference
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDarkMode', value);
   }
 
-  /// Loads the saved theme preference
+  /// Load the saved theme preference
   Future<void> _loadTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isDarkMode.value = prefs.getBool('isDarkMode') ?? false;
-
-    // Apply the theme
     Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
   }
 }

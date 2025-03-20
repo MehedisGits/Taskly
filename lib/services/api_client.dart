@@ -31,7 +31,8 @@ class ApiClient {
           } else if (e.type == DioExceptionType.receiveTimeout) {
             print('⏳ Receive Timeout');
           } else if (e.response != null) {
-            print('❌ Error: ${e.response?.statusCode} - ${e.response?.statusMessage}');
+            print(
+                '❌ Error: ${e.response?.statusCode} - ${e.response?.statusMessage}');
           } else {
             print('⚠️ Unexpected Error: ${e.message}');
           }

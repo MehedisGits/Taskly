@@ -94,7 +94,7 @@ class LoginController extends GetxController {
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
             icon: Icon(Icons.error, color: Colors.white),
-            duration: Duration(seconds: 3),
+            duration: Duration(seconds: 2),
           );
         }
       } catch (e) {

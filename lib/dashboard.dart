@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/controllers/task_data_controller.dart';
 import 'package:task_manager/models/task_model.dart';
 import 'package:task_manager/utils/get_device_type.dart';
@@ -14,6 +14,8 @@ class DashboardScreen extends StatelessWidget {
   final TaskController controller = Get.put(TaskController());
   final RxInt selectedCategoryIndex = 0.obs;
   final RxBool isLoading = false.obs;
+
+  // Maintain task counts for each category in an RxMap
   final RxMap<String, int> taskCounts = {
     'New': 0,
     'Cancelled': 0,
@@ -30,8 +32,11 @@ class DashboardScreen extends StatelessWidget {
       desktopSize: 20,
     );
 
-    // Load tasks when screen opens
-    loadTasks();
+    // Load tasks when screen opens.
+    // Using addPostFrameCallback ensures it runs after the build.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await loadTasks();
+    });
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -43,9 +48,9 @@ class DashboardScreen extends StatelessWidget {
         focusColor: Colors.green,
         hoverColor: Colors.green,
         focusElevation: 5,
-        child: Icon(
+        child: const Icon(
           Icons.add,
-          size: screenScale(context) * 40,
+          size: 40,
         ),
       ),
       body: SafeArea(
@@ -66,21 +71,17 @@ class DashboardScreen extends StatelessWidget {
                     return const Center(child: CircularProgressIndicator());
                   }
                   return FutureBuilder<List<Data>>(
-                    future: _getTasksForCategory(
-                        selectedCategoryIndex.value), // Fetch tasks
+                    future: _getTasksForCategory(selectedCategoryIndex.value),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-
                       if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       }
-
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return const Center(child: Text("No tasks found"));
                       }
-
                       final tasks = snapshot.data!;
                       return ListView.builder(
                         itemCount: tasks.length,
@@ -104,17 +105,32 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // Fetch tasks for a selected category and update task counts
+  /// Save Task Counts for Completed, Cancelled, and Total Task Count
+  Future<void> saveTaskCounts() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt("CompletedTaskCount", taskCounts["Completed"]!);
+    await prefs.setInt("CancelledTaskCount", taskCounts["Cancelled"]!);
+    int total = taskCounts['New']! +
+        taskCounts['Cancelled']! +
+        taskCounts['InProgress']! +
+        taskCounts['Completed']!;
+    await prefs.setInt("TotalTaskCount", total);
+    print("TotalTaskCount saved: $total");
+  }
+
+  /// Fetch tasks for a selected category and update task counts.
   Future<List<Data>> _getTasksForCategory(int selectedCategoryIndex) async {
     String category = _getCategoryByIndex(selectedCategoryIndex);
     try {
       TaskModel taskModel = await controller.fetchTasks(category);
-
       if (taskModel.data != null) {
         taskCounts[category] = taskModel.data!.length;
+        // Save counts for specific categories if applicable.
+        await saveTaskCounts();
         return taskModel.data!;
       } else {
         taskCounts[category] = 0;
+        await saveTaskCounts();
         return [];
       }
     } catch (e) {
@@ -124,7 +140,7 @@ class DashboardScreen extends StatelessWidget {
     }
   }
 
-  // Helper function to map category index to category name
+  /// Helper function to map category index to category name.
   String _getCategoryByIndex(int index) {
     switch (index) {
       case 0:
@@ -140,7 +156,7 @@ class DashboardScreen extends StatelessWidget {
     }
   }
 
-  // Load tasks for all categories when the screen is opened
+  /// Load tasks for all categories when the screen is opened.
   Future<void> loadTasks() async {
     await Future.wait([
       _getTasksForCategory(0), // New
@@ -150,7 +166,7 @@ class DashboardScreen extends StatelessWidget {
     ]);
   }
 
-  // Category Colors
+  // Category Colors for category buttons.
   final List<Color> categoryColors = [
     Colors.blue, // New
     Colors.red, // Cancelled
@@ -158,7 +174,7 @@ class DashboardScreen extends StatelessWidget {
     Colors.green, // Completed
   ];
 
-  /// Builds Task Category Buttons with Badge for Task Count
+  /// Builds Task Category Buttons with Badge for Task Count.
   Widget buildTaskCategoryButtons(double buttonSize) {
     List<String> categories = ['New', 'Cancelled', 'InProgress', 'Completed'];
     return Wrap(
@@ -170,11 +186,11 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  /// Builds Individual Category Button with Floating Badge
+  /// Builds Individual Category Button with Floating Badge.
   Widget buildCategoryButton(String text, int index, double buttonSize) {
     return Obx(() {
       return Stack(
-        clipBehavior: Clip.none, // Ensure badge overflows properly
+        clipBehavior: Clip.none,
         children: [
           TextButton(
             onPressed: () async {
@@ -205,15 +221,17 @@ class DashboardScreen extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.black,
+                color: selectedCategoryIndex.value != index
+                    ? Colors.black
+                    : Colors.white,
                 fontSize: buttonSize,
               ),
             ),
           ),
           // Floating Badge
           Positioned(
-            right: -8, // Slightly outside button
-            top: -8, // Slightly outside button
+            right: -8,
+            top: -8,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(

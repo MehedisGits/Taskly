@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/core/routes.dart';
+import 'package:task_manager/services/api_client.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,8 @@ class SplashScreen extends StatelessWidget {
 
     bool isValid = await isTokenValid();
     if (isValid) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
       Get.offAllNamed(Routes.home); // Navigate to home if valid
     } else {
       Get.offAllNamed(Routes.login); // Navigate to login if invalid
@@ -39,6 +43,14 @@ class SplashScreen extends StatelessWidget {
 
     try {
       String? token = storage.getString('token'); // Ensure consistent key usage
+      if (token != null) {
+        // Use the Authorization header with the Bearer token format
+        final ApiClient apiClient = ApiClient();
+        apiClient.dio.options.headers['Authorization'] = 'Bearer $token';
+        apiClient.dio.options.headers['token'] = token;
+        print("Request Headers: ${apiClient.dio.options.headers}");
+      }
+
       if (token == null) return false; // Token doesn't exist
 
       // Decode the token without verifying signature
