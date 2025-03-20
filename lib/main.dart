@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_manager/controllers/user_controller.dart';
+import 'package:task_manager/modules/profile/controller/user_controller.dart';
 import 'package:task_manager/core/routes.dart';
 import 'package:task_manager/core/themes/theme_data.dart';
 import 'package:task_manager/dashboard.dart';

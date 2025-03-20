@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../controllers/user_controller.dart';
+import '../modules/profile/controller/user_controller.dart';
 import '../services/auth_service.dart';
 
 class AppBindings extends Bindings {

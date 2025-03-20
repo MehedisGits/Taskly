@@ -2,13 +2,18 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/user_model.dart';
-import '../services/api_services.dart';
+import '../../../models/user_model.dart';
+import '../../../services/api_services.dart';
 
 class UserController extends GetxController {
   // User profile data
   final Rx<UserDetails?> user = Rx<UserDetails?>(null);
   final RxBool isLoading = false.obs;
+
+  Rx<UserDetails?> userProfile = Rx<UserDetails?>(null);
+  static RxInt cancelledTaskCount = 0.obs;
+  static RxInt completedTaskCount = 0.obs;
+  static RxInt totalTasksCount = 0.obs;
 
   // Theme settings
   final RxBool isDarkMode = false.obs;
@@ -20,6 +25,18 @@ class UserController extends GetxController {
     super.onInit();
     _loadTheme(); // Load theme settings
     loadUserProfile(); // Load user profile data
+    getTaskCounts();
+  }
+
+  Future<void> getTaskCounts() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      completedTaskCount.value = prefs.getInt('CompletedTaskCount') ?? 0;
+      totalTasksCount.value = prefs.getInt('TotalTaskCount') ?? 0;
+      cancelledTaskCount.value = prefs.getInt('CancelledTaskCount') ?? 0;
+    } catch (e) {
+      print("Error fetching task counts: $e");
+    }
   }
 
   /// Load user profile data from API or SharedPreferences
