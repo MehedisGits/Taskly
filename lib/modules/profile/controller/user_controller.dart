@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,57 +7,58 @@ import '../../../models/user_model.dart';
 import '../../../services/api_services.dart';
 
 class UserController extends GetxController {
-  // User profile data
+  // 🔹 User profile and status
   final Rx<UserDetails?> user = Rx<UserDetails?>(null);
   final RxBool isLoading = false.obs;
 
-  Rx<UserDetails?> userProfile = Rx<UserDetails?>(null);
-  static RxInt cancelledTaskCount = 0.obs;
-  static RxInt completedTaskCount = 0.obs;
-  static RxInt totalTasksCount = 0.obs;
+  // 🔹 Task counters
+  final RxInt cancelledTaskCount = 0.obs;
+  final RxInt completedTaskCount = 0.obs;
+  final RxInt totalTasksCount = 0.obs;
 
-  // Theme settings
+  // 🔹 Theme settings
   final RxBool isDarkMode = false.obs;
 
-  final ApiService _apiService = ApiService(); // API Service instance
+  // 🔹 API Service instance
+  final ApiService _apiService = ApiService();
 
   @override
   void onInit() {
     super.onInit();
     _loadTheme(); // Load theme settings
-    loadUserProfile(); // Load user profile data
-    getTaskCounts();
+    loadUserProfile(); // Load user profile
+    loadTaskCounts(); // Load task counts
   }
 
-  Future<void> getTaskCounts() async {
+  /// 🔹 Fetch task counts from SharedPreferences
+  Future<void> loadTaskCounts() async {
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
       completedTaskCount.value = prefs.getInt('CompletedTaskCount') ?? 0;
       totalTasksCount.value = prefs.getInt('TotalTaskCount') ?? 0;
       cancelledTaskCount.value = prefs.getInt('CancelledTaskCount') ?? 0;
     } catch (e) {
-      print("Error fetching task counts: $e");
+      print("Error loading task counts: $e");
     }
   }
 
-  /// Load user profile data from API or SharedPreferences
+  /// 🔹 Load user profile from SharedPreferences or API
   Future<void> loadUserProfile() async {
     isLoading.value = true;
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? userData = prefs.getString('userDetails');
+      String? storedUserData = prefs.getString('userDetails');
 
-      if (userData != null) {
-        // যদি লোকাল ডাটা থাকে, সেটি প্রথমে ব্যবহার করবো
-        user.value = UserDetails.fromJson(jsonDecode(userData));
+      if (storedUserData != null) {
+        user.value = UserDetails.fromJson(jsonDecode(storedUserData));
       }
 
-      // **API Call to fetch updated user data**
+      // 🔹 Fetch latest data from API
       UserDetails fetchedUser = await _apiService.fetchUserData();
       user.value = fetchedUser;
 
-      // **Update SharedPreferences with new data**
+      // 🔹 Save updated data to local storage
       await prefs.setString('userDetails', jsonEncode(fetchedUser.toJson()));
     } catch (e) {
       Get.snackbar("Error", "Failed to load user profile");
@@ -66,14 +68,14 @@ class UserController extends GetxController {
     }
   }
 
-  /// Update user profile in memory and storage
+  /// 🔹 Update user profile in memory and SharedPreferences
   Future<void> updateProfile(UserDetails updatedProfile) async {
     user.value = updatedProfile;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("userDetails", jsonEncode(updatedProfile.toJson()));
   }
 
-  /// Toggle dark mode and save preference
+  /// 🔹 Toggle dark mode and persist preference
   Future<void> toggleDarkMode(bool value) async {
     isDarkMode.value = value;
     Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
@@ -82,7 +84,7 @@ class UserController extends GetxController {
     await prefs.setBool('isDarkMode', value);
   }
 
-  /// Load the saved theme preference
+  /// 🔹 Load saved theme preference from SharedPreferences
   Future<void> _loadTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isDarkMode.value = prefs.getBool('isDarkMode') ?? false;

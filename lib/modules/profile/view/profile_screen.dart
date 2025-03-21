@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/modules/profile/controller/user_controller.dart';
 import 'package:task_manager/services/auth_service.dart';
 import 'package:task_manager/utils/responsive_size.dart';
@@ -16,23 +15,16 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(responsiveSize(context,
-            mobileSize: 16, tabletSize: 24, desktopSize: 32)),
+        padding: EdgeInsets.all(responsiveSize(context, mobileSize: 16, tabletSize: 24, desktopSize: 32)),
         child: Column(
           children: [
             _buildProfileHeader(context),
-            SizedBox(
-                height: responsiveSize(context,
-                    mobileSize: 16, tabletSize: 24, desktopSize: 32)),
+            _spacer(context),
             _buildStatsCard(context),
-            SizedBox(
-                height: responsiveSize(context,
-                    mobileSize: 16, tabletSize: 24, desktopSize: 32)),
+            _spacer(context),
             _buildSettingsList(context),
-            SizedBox(
-                height: responsiveSize(context,
-                    mobileSize: 16, tabletSize: 24, desktopSize: 32)),
-            _buildLogoutButton(context, _authService),
+            _spacer(context),
+            _buildLogoutButton(context),
           ],
         ),
       ),
@@ -44,97 +36,54 @@ class ProfileScreen extends StatelessWidget {
     return Obx(() {
       final userDetails = _userController.user.value;
 
-      if (userDetails == null ||
-          userDetails.data == null ||
-          userDetails.data!.isEmpty) {
+      if (userDetails?.data?.isEmpty ?? true) {
         return const Center(child: Text('No user data available'));
       }
 
-      final user = userDetails.data!.first;
+      final user = userDetails!.data!.first;
 
       return Column(
         children: [
-          SizedBox(
-              width: screenScale(context) * 120,
-              height: screenScale(context) * 120,
-              child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://avatars.githubusercontent.com/u/125388734?v=4"),
-                  radius: 24)),
-          SizedBox(
-              height: responsiveSize(context,
-                  mobileSize: 16, tabletSize: 20, desktopSize: 24)),
+          CircleAvatar(
+            backgroundImage: NetworkImage("https://avatars.githubusercontent.com/u/125388734?v=4"),
+            radius: screenScale(context) * 60,
+          ),
+          _spacer(context, size: 16),
           Text(
-            "${user.firstName ?? ''} ${user.lastName ?? ''}".trim().isEmpty
-                ? 'No Name'
-                : "${user.firstName} ${user.lastName}",
+            "${user.firstName ?? ''} ${user.lastName ?? ''}".trim().isEmpty ? 'No Name' : "${user.firstName} ${user.lastName}",
             style: TextStyle(
-              fontSize: responsiveSize(context,
-                  mobileSize: 24, tabletSize: 28, desktopSize: 32),
+              fontSize: responsiveSize(context, mobileSize: 24, tabletSize: 28, desktopSize: 32),
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(
-              height: responsiveSize(context,
-                  mobileSize: 4, tabletSize: 6, desktopSize: 8)),
-          Text(
-            user.email ?? 'No Email',
-            style: TextStyle(
-              fontSize: responsiveSize(context,
-                  mobileSize: 16, tabletSize: 18, desktopSize: 20),
-              color: Colors.grey[600],
-            ),
-          ),
-          SizedBox(
-              height: responsiveSize(context,
-                  mobileSize: 4, tabletSize: 6, desktopSize: 8)),
-          Text(
-            user.mobile ?? 'No Mobile',
-            style: TextStyle(
-              fontSize: responsiveSize(context,
-                  mobileSize: 16, tabletSize: 18, desktopSize: 20),
-              color: Colors.grey[600],
-            ),
-          ),
+          _spacer(context, size: 4),
+          Text(user.email ?? 'No Email', style: _infoTextStyle(context)),
+          _spacer(context, size: 4),
+          Text(user.mobile ?? 'No Mobile', style: _infoTextStyle(context)),
         ],
       );
     });
   }
 
-  /// 🔹 **Stats Card (Total Tasks, Completed Tasks)**
+  /// 🔹 **Stats Card (Total Tasks, Completed Tasks, Cancelled Tasks)**
   Widget _buildStatsCard(BuildContext context) {
     return Card(
       elevation: 2.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: responsiveSize(context,
-                mobileSize: 20, tabletSize: 24, desktopSize: 28),
-            horizontal: responsiveSize(context,
-                mobileSize: 16, tabletSize: 20, desktopSize: 24),
-          ),
-          child: Obx(
-            () => Row(
+        padding: EdgeInsets.symmetric(
+          vertical: responsiveSize(context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
+          horizontal: responsiveSize(context, mobileSize: 16, tabletSize: 20, desktopSize: 24),
+        ),
+        child: Obx(() => Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatItem(
-                  context,
-                  'Total Tasks',
-                  UserController.totalTasksCount.toString(),
-                ),
-                _buildStatItem(
-                  context,
-                  'Total Tasks',
-                  UserController.completedTaskCount.toString(),
-                ),
-                _buildStatItem(
-                  context,
-                  'Total Tasks',
-                  UserController.cancelledTaskCount.toString(),
-                ),
+                _buildStatItem(context, 'Total Tasks', _userController.totalTasksCount.value.toString()),
+                _buildStatItem(context, 'Completed', _userController.completedTaskCount.value.toString()),
+                _buildStatItem(context, 'Cancelled', _userController.cancelledTaskCount.value.toString()),
               ],
-            ),
-          )),
+            )),
+      ),
     );
   }
 
@@ -145,22 +94,12 @@ class ProfileScreen extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontSize: responsiveSize(context,
-                mobileSize: 20, tabletSize: 24, desktopSize: 28),
+            fontSize: responsiveSize(context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(
-            height: responsiveSize(context,
-                mobileSize: 4, tabletSize: 6, desktopSize: 8)),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: responsiveSize(context,
-                mobileSize: 14, tabletSize: 16, desktopSize: 18),
-            color: Colors.grey[600],
-          ),
-        ),
+        _spacer(context, size: 4),
+        Text(label, style: _infoTextStyle(context)),
       ],
     );
   }
@@ -174,16 +113,12 @@ class ProfileScreen extends StatelessWidget {
         leading: const Icon(Icons.dark_mode),
         title: Text(
           'Dark Mode',
-          style: TextStyle(
-              fontSize: responsiveSize(context,
-                  mobileSize: 16, tabletSize: 18, desktopSize: 20)),
+          style: TextStyle(fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20)),
         ),
         trailing: Obx(() {
           return Switch(
             value: _userController.isDarkMode.value,
-            onChanged: (value) {
-              _userController.toggleDarkMode(value);
-            },
+            onChanged: _userController.toggleDarkMode,
           );
         }),
       ),
@@ -191,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   /// 🔹 **Logout Button**
-  Widget _buildLogoutButton(BuildContext context, AuthService authService) {
+  Widget _buildLogoutButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -206,10 +141,11 @@ class ProfileScreen extends StatelessWidget {
             buttonColor: Theme.of(context).primaryColor,
             onConfirm: () async {
               try {
-                await authService.logout();
+                await _authService.logout();
                 Get.back();
                 Get.offAllNamed('/login');
               } catch (e) {
+                print('Logout Error: $e');
                 Get.back();
                 Get.snackbar(
                   'Logout Failed',
@@ -224,20 +160,26 @@ class ProfileScreen extends StatelessWidget {
           );
         },
         icon: const Icon(Icons.logout),
-        label: Text(
-          'Logout',
-          style: TextStyle(
-              fontSize: responsiveSize(context,
-                  mobileSize: 16, tabletSize: 18, desktopSize: 20)),
-        ),
+        label: Text('Logout', style: TextStyle(fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20))),
         style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(
-            vertical: responsiveSize(context,
-                mobileSize: 12, tabletSize: 14, desktopSize: 16),
-          ),
+          padding: EdgeInsets.symmetric(vertical: responsiveSize(context, mobileSize: 12, tabletSize: 14, desktopSize: 16)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
+    );
+  }
+
+  /// 🔹 **Helper Functions**
+  /// Adds space between widgets dynamically
+  Widget _spacer(BuildContext context, {double? size}) {
+    return SizedBox(height: size ?? responsiveSize(context, mobileSize: 16, tabletSize: 24, desktopSize: 32));
+  }
+
+  /// Style for profile info text
+  TextStyle _infoTextStyle(BuildContext context) {
+    return TextStyle(
+      fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20),
+      color: Colors.grey[600],
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_manager/controllers/task_data_controller.dart';
+import 'package:task_manager/controllers/dashboard_controller.dart';
 import 'package:task_manager/models/task_model.dart';
 import 'package:task_manager/utils/get_device_type.dart';
 import 'package:task_manager/utils/responsive_size.dart';
@@ -11,17 +10,9 @@ import 'package:task_manager/widgets/task_card.dart';
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
 
-  final TaskController controller = Get.put(TaskController());
+  final DashboardController controller = Get.put(DashboardController());
   final RxInt selectedCategoryIndex = 0.obs;
   final RxBool isLoading = false.obs;
-
-  // Maintain task counts for each category in an RxMap
-  final RxMap<String, int> taskCounts = {
-    'New': 0,
-    'Cancelled': 0,
-    'InProgress': 0,
-    'Completed': 0,
-  }.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +26,7 @@ class DashboardScreen extends StatelessWidget {
     // Load tasks when screen opens.
     // Using addPostFrameCallback ensures it runs after the build.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await loadTasks();
+      await controller.loadTasks();
     });
 
     return Scaffold(
@@ -71,7 +62,8 @@ class DashboardScreen extends StatelessWidget {
                     return const Center(child: CircularProgressIndicator());
                   }
                   return FutureBuilder<List<Data>>(
-                    future: _getTasksForCategory(selectedCategoryIndex.value),
+                    future: controller
+                        .getTasksForCategory(selectedCategoryIndex.value),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -105,67 +97,6 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  /// Save Task Counts for Completed, Cancelled, and Total Task Count
-  Future<void> saveTaskCounts() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt("CompletedTaskCount", taskCounts["Completed"]!);
-    await prefs.setInt("CancelledTaskCount", taskCounts["Cancelled"]!);
-    int total = taskCounts['New']! +
-        taskCounts['Cancelled']! +
-        taskCounts['InProgress']! +
-        taskCounts['Completed']!;
-    await prefs.setInt("TotalTaskCount", total);
-    print("TotalTaskCount saved: $total");
-  }
-
-  /// Fetch tasks for a selected category and update task counts.
-  Future<List<Data>> _getTasksForCategory(int selectedCategoryIndex) async {
-    String category = _getCategoryByIndex(selectedCategoryIndex);
-    try {
-      TaskModel taskModel = await controller.fetchTasks(category);
-      if (taskModel.data != null) {
-        taskCounts[category] = taskModel.data!.length;
-        // Save counts for specific categories if applicable.
-        await saveTaskCounts();
-        return taskModel.data!;
-      } else {
-        taskCounts[category] = 0;
-        await saveTaskCounts();
-        return [];
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to load tasks. Please try again.',
-          snackPosition: SnackPosition.BOTTOM);
-      return [];
-    }
-  }
-
-  /// Helper function to map category index to category name.
-  String _getCategoryByIndex(int index) {
-    switch (index) {
-      case 0:
-        return 'New';
-      case 1:
-        return 'Cancelled';
-      case 2:
-        return 'InProgress';
-      case 3:
-        return 'Completed';
-      default:
-        return '';
-    }
-  }
-
-  /// Load tasks for all categories when the screen is opened.
-  Future<void> loadTasks() async {
-    await Future.wait([
-      _getTasksForCategory(0), // New
-      _getTasksForCategory(1), // Cancelled
-      _getTasksForCategory(2), // In Progress
-      _getTasksForCategory(3), // Completed
-    ]);
-  }
-
   // Category Colors for category buttons.
   final List<Color> categoryColors = [
     Colors.blue, // New
@@ -197,7 +128,7 @@ class DashboardScreen extends StatelessWidget {
               selectedCategoryIndex.value = index;
               isLoading.value = true;
               try {
-                await _getTasksForCategory(index);
+                await controller.getTasksForCategory(index);
               } catch (e) {
                 print("Error fetching tasks: $e");
                 Get.snackbar('Error', 'Failed to load tasks. Please try again.',
@@ -239,7 +170,7 @@ class DashboardScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                taskCounts[text].toString(),
+                controller.taskCounts[text].toString(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: buttonSize * 0.8,
