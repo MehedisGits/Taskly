@@ -9,14 +9,14 @@ class UserDetails {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -53,14 +53,14 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['email'] = this.email;
-    data['firstName'] = this.firstName;
-    data['lastName'] = this.lastName;
-    data['mobile'] = this.mobile;
-    data['password'] = this.password;
-    data['createdDate'] = this.createdDate;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['email'] = email;
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['mobile'] = mobile;
+    data['password'] = password;
+    data['createdDate'] = createdDate;
     return data;
   }
 }
