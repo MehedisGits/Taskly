@@ -22,6 +22,9 @@ class DashboardController extends GetxController {
   /// Current visible task list
   final RxList<Data> visibleTasks = <Data>[].obs;
 
+  /// All tasks sorted by time
+  final RxList<Data> allTasks = <Data>[].obs;
+
   /// Save Task Counts (persisted using SharedPreferences)
   Future<void> saveTaskCounts() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -38,6 +41,49 @@ class DashboardController extends GetxController {
 
     print("✅ Task Counts Saved: Completed: $completed, Cancelled: $cancelled, Total: $total");
   }
+
+  Future<List<Data>> getAllTasksSortedByTime() async {
+    try {
+      List<String> categories = ['New', 'Cancelled', 'InProgress', 'Completed'];
+      List<Data> combinedTasks = [];
+
+      for (String category in categories) {
+        TaskModel taskModel = await controller.fetchTasks(category);
+        if (taskModel.data != null) {
+          combinedTasks.addAll(taskModel.data!);
+
+        }
+      }
+
+      // 🔽 Safe sort by createdAt (latest first)
+      combinedTasks.sort((a, b) {
+        DateTime dateA = _safeParseDate(a.createdDate);
+        DateTime dateB = _safeParseDate(b.createdDate);
+        return dateB.compareTo(dateA);
+      });
+
+      allTasks.assignAll(combinedTasks);
+      return combinedTasks;
+    } catch (e) {
+      print("❌ Error loading all tasks: $e");
+      Get.snackbar("Error", "Failed to load all tasks");
+      return [];
+    }
+  }
+
+// Helper method to safely parse date
+  DateTime _safeParseDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) {
+      return DateTime(1970); // fallback
+    }
+    try {
+      return DateTime.parse(dateStr);
+    } catch (_) {
+      print("⚠️ Invalid date format: $dateStr");
+      return DateTime(1970);
+    }
+  }
+
 
   /// Fetch and update tasks for a specific category
   Future<void> fetchTasksForCategory(int index) async {
@@ -76,8 +122,8 @@ class DashboardController extends GetxController {
         fetchTasksSilent(2),
         fetchTasksSilent(3),
       ]);
-      // Load tasks for currently selected category as visible
       await fetchTasksForCategory(selectedCategoryIndex.value);
+      await getAllTasksSortedByTime();
     } finally {
       isLoading.value = false;
     }

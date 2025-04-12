@@ -14,6 +14,7 @@ class TaskController extends GetxController {
 
   final SharedPreferences _sharedPreferences = Get.find();
 
+
   // Fetch tasks by category
   Future<TaskModel> fetchTasks(String category) async {
     try {

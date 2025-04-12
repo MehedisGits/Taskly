@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';  // For date formatting
 
 class TaskCard extends StatelessWidget {
   final String title;
   final String description;
   final bool isMobile;
+  final String createdDate;
+  final String category;
 
   TaskCard({
     required this.title,
     required this.description,
     required this.isMobile,
+    required this.createdDate,
+    required this.category,
     super.key,
   });
 
@@ -18,14 +23,18 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Format created date using intl package
+    DateTime parsedDate = DateTime.parse(createdDate);
+    String formattedDate = DateFormat('MMM dd, yyyy').format(parsedDate);
+
     return Card(
-      elevation: 2, // একটু বেশি elevation দিয়ে শেডিং উন্নত করা হয়েছে
+      elevation: 4, // Increased elevation for better shadow effect
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       margin: EdgeInsets.symmetric(
-        vertical: isMobile ? 5 : 10,
-        horizontal: isMobile ? 8 : 16,
+        vertical: isMobile ? 8 : 12,
+        horizontal: isMobile ? 12 : 20,
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -43,8 +52,8 @@ class TaskCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w400,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
                         fontSize: isMobile ? 18 : 20,
                       ),
                     ),
@@ -56,7 +65,7 @@ class TaskCard extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () {
-                            Get.snackbar('Edit Task', 'Edit task');
+                            Get.snackbar('Edit Task', 'Edit task functionality');
                           },
                           icon: Icon(
                             Icons.edit,
@@ -81,6 +90,30 @@ class TaskCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
+
+              // Created Date and Category Row
+              Row(
+                children: [
+                  Text(
+                    formattedDate,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: isMobile ? 12 : 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    category,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: isMobile ? 12 : 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
               // Task Description with Expand/Collapse functionality
               Obx(() {
                 return AnimatedCrossFade(
@@ -92,10 +125,14 @@ class TaskCard extends StatelessWidget {
                       fontSize: isMobile ? 14 : 16,
                     ),
                   ),
-                  secondChild: Text(
-                    description,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: isMobile ? 14 : 16,
+                  secondChild: AnimatedSize(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    child: Text(
+                      description,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontSize: isMobile ? 14 : 16,
+                      ),
                     ),
                   ),
                   crossFadeState: _isExpanded.value
@@ -105,6 +142,7 @@ class TaskCard extends StatelessWidget {
                 );
               }),
               const SizedBox(height: 8),
+
               // Expand/Collapse Indicator
               Align(
                 alignment: Alignment.centerRight,

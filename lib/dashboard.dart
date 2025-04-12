@@ -63,6 +63,8 @@ class DashboardScreen extends StatelessWidget {
                           title: task.title ?? 'No Title',
                           description: task.description ?? 'No Description',
                           isMobile: DeviceType.isMobile(context),
+                          createdDate: task.createdDate ?? '', // Pass createdDate here
+                          category: task.status ?? 'Uncategorized', // Pass category here
                         );
                       },
                     );
@@ -77,14 +79,15 @@ class DashboardScreen extends StatelessWidget {
   }
 
   final List<Color> categoryColors = [
-    Colors.blue,
-    Colors.red,
-    Colors.orange,
-    Colors.green,
+    Colors.purple, // All
+    Colors.blue, // New
+    Colors.red, // Cancelled
+    Colors.orange, // InProgress
+    Colors.green, // Completed
   ];
 
   Widget buildTaskCategoryButtons(double buttonSize) {
-    List<String> categories = ['New', 'Cancelled', 'InProgress', 'Completed'];
+    List<String> categories = ['All', 'New', 'Cancelled', 'InProgress', 'Completed'];
 
     return Obx(() => Wrap(
       spacing: 8,
@@ -96,7 +99,18 @@ class DashboardScreen extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             TextButton(
-              onPressed: () => controller.fetchTasksForCategory(index),
+              onPressed: () async {
+                if (index == 0) {
+                  // All tasks
+                  controller.isLoading.value = true;
+                  controller.visibleTasks.value = await controller.getAllTasksSortedByTime();
+                  controller.isLoading.value = false;
+                } else {
+                  // Category-based tasks
+                  await controller.fetchTasksForCategory(index - 1); // -1 because All is at index 0
+                }
+                controller.selectedCategoryIndex.value = index;
+              },
               style: TextButton.styleFrom(
                 backgroundColor: isSelected
                     ? categoryColors[index]
@@ -121,15 +135,15 @@ class DashboardScreen extends StatelessWidget {
               right: -8,
               top: -8,
               child: Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  controller.taskCounts[categories[index]]?.toString() ??
-                      '0',
+                  index == 0
+                      ? controller.taskCounts.values.fold(0, (sum, count) => sum + count).toString()
+                      : controller.taskCounts[categories[index]]?.toString() ?? '0',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: buttonSize * 0.8,
