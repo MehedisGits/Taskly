@@ -74,7 +74,7 @@ class LoginController extends GetxController {
           SharedPreferences sharedPreferences =
               await SharedPreferences.getInstance();
           await sharedPreferences.setString('token', token);
-          // print("🔐 Token saved in SharedPreferences");
+          print("🔐 Token saved in SharedPreferences");
 
           // Clear form fields
           clearFormFields();

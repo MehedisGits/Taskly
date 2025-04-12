@@ -33,7 +33,8 @@ class _SplashScreenState extends State<SplashScreen> {
   /// If the token is valid, navigate to the home screen.
   /// If the token is invalid, missing, expired, unauth navigate to the login screen.
   void _checkToken() async {
-    await Future.delayed(Duration(seconds: 1)); // Add a small delay to show the splash screen
+    await Future.delayed(
+        Duration(seconds: 1)); // Add a small delay to show the splash screen
 
     bool isValid = await isTokenValid();
     if (isValid) {
@@ -49,21 +50,27 @@ class _SplashScreenState extends State<SplashScreen> {
 
     try {
       String? token = storage.getString('token'); // Ensure consistent key usage
+
       if (token != null) {
         // Use the Authorization header with the Bearer token format
+
         final ApiClient apiClient = ApiClient();
+
         apiClient.dio.options.headers['Authorization'] = 'Bearer $token';
+
         apiClient.dio.options.headers['token'] = token;
-        print("Request Headers: ${apiClient.dio.options.headers}");
+
+        // print("Request Headers: ${apiClient.dio.options.headers}");
       }
 
       if (token == null) return false; // Token doesn't exist
 
-      // Verify and decode the token
-      final secretKey = 'your-secret-key'; // Replace with your actual secret key
-      final jwt = JWT.verify(token, SecretKey(secretKey));
+      // Decode the token without verifying signature
+
+      final jwt = JWT.decode(token);
 
       final expiration = jwt.payload['exp'] as int?;
+
       if (expiration == null) return false; // No expiration claim in the token
 
       final currentTime = DateTime.now().millisecondsSinceEpoch ~/
@@ -72,7 +79,6 @@ class _SplashScreenState extends State<SplashScreen> {
       return expiration >
           currentTime; // Token is valid if expiration is in the future
     } catch (e) {
-      print("Token validation error: $e");
       return false; // Invalid token or expired
     }
   }
