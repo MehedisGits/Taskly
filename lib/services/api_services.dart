@@ -91,6 +91,20 @@ class ApiService {
 
       // Parse and return TaskModel if data exists.
       if (response.data != null) {
+        // Save the total task count in SharedPreferences.
+        final totalTasks = response.data['totalTasks'] ?? 0;
+        await sharedPreferences.setInt('totalTasks', totalTasks);
+
+        // Save category-specific counts if available.
+        if (response.data['completedCount'] != null) {
+          await sharedPreferences.setInt(
+              '${category}_completedCount', response.data['completedCount']);
+        }
+        if (response.data['cancelledCount'] != null) {
+          await sharedPreferences.setInt(
+              '${category}_cancelledCount', response.data['cancelledCount']);
+        }
+
         return TaskModel.fromJson(response.data);
       } else {
         throw Exception('No data found');

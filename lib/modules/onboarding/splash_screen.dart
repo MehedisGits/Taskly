@@ -5,13 +5,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/core/routes.dart';
 import 'package:task_manager/services/api_client.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkToken(); // Call token check function in initState
+  }
 
   @override
   Widget build(BuildContext context) {
-    _checkToken(); // Call token check function
     return Scaffold(
       body: Center(
         child: FlutterLogo(size: 100),
@@ -24,13 +33,10 @@ class SplashScreen extends StatelessWidget {
   /// If the token is valid, navigate to the home screen.
   /// If the token is invalid, missing, expired, unauth navigate to the login screen.
   void _checkToken() async {
-    await Future.delayed(
-        Duration(seconds: 1)); // Add a small delay to show the splash screen
+    await Future.delayed(Duration(seconds: 1)); // Add a small delay to show the splash screen
 
     bool isValid = await isTokenValid();
     if (isValid) {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-
       Get.offAllNamed(Routes.home); // Navigate to home if valid
     } else {
       Get.offAllNamed(Routes.login); // Navigate to login if invalid
@@ -53,8 +59,9 @@ class SplashScreen extends StatelessWidget {
 
       if (token == null) return false; // Token doesn't exist
 
-      // Decode the token without verifying signature
-      final jwt = JWT.decode(token);
+      // Verify and decode the token
+      final secretKey = 'your-secret-key'; // Replace with your actual secret key
+      final jwt = JWT.verify(token, SecretKey(secretKey));
 
       final expiration = jwt.payload['exp'] as int?;
       if (expiration == null) return false; // No expiration claim in the token
@@ -65,7 +72,7 @@ class SplashScreen extends StatelessWidget {
       return expiration >
           currentTime; // Token is valid if expiration is in the future
     } catch (e) {
-  
+      print("Token validation error: $e");
       return false; // Invalid token or expired
     }
   }

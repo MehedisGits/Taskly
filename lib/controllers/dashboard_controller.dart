@@ -1,12 +1,17 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_manager/controllers/task_data_controller.dart';
-import 'package:task_manager/models/task_model.dart';
+
+import '../models/task_model.dart';
+import 'task_data_controller.dart';
 
 class DashboardController extends GetxController {
   final TaskController controller = Get.put(TaskController());
 
-// Maintain task counts for each category in an RxMap
+  /// State Observables
+  final RxInt selectedCategoryIndex = 0.obs;
+  final RxBool isLoading = false.obs;
+
+  /// Task counts by category
   final RxMap<String, int> taskCounts = {
     'New': 0,
     'Cancelled': 0,
@@ -14,51 +19,82 @@ class DashboardController extends GetxController {
     'Completed': 0,
   }.obs;
 
-  /// Save Task Counts for Completed, Cancelled, and Total Task Count
+  /// Current visible task list
+  final RxList<Data> visibleTasks = <Data>[].obs;
+
+  /// Save Task Counts (persisted using SharedPreferences)
   Future<void> saveTaskCounts() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // 🔹 taskCounts ম্যাপে key না থাকলে, 0 ধরে নেওয়া হবে
     int completed = taskCounts["Completed"] ?? 0;
     int cancelled = taskCounts["Cancelled"] ?? 0;
     int newTasks = taskCounts["New"] ?? 0;
     int inProgress = taskCounts["InProgress"] ?? 0;
-
-    // 🔹 মোট টাস্ক কাউন্ট বের করা
     int total = newTasks + cancelled + inProgress + completed;
 
-    // 🔹 SharedPreferences-এ মান সংরক্ষণ
     await prefs.setInt("CompletedTaskCount", completed);
     await prefs.setInt("CancelledTaskCount", cancelled);
     await prefs.setInt("TotalTaskCount", total);
 
-    print(
-        "✅ Task Counts Saved: Completed: $completed, Cancelled: $cancelled, Total: $total");
+    print("✅ Task Counts Saved: Completed: $completed, Cancelled: $cancelled, Total: $total");
   }
 
-  /// Fetch tasks for a selected category and update task counts.
-  Future<List<Data>> getTasksForCategory(int selectedCategoryIndex) async {
-    String category = _getCategoryByIndex(selectedCategoryIndex);
+  /// Fetch and update tasks for a specific category
+  Future<void> fetchTasksForCategory(int index) async {
+    selectedCategoryIndex.value = index;
+    isLoading.value = true;
+
+    String category = _getCategoryByIndex(index);
     try {
       TaskModel taskModel = await controller.fetchTasks(category);
+
       if (taskModel.data != null) {
         taskCounts[category] = taskModel.data!.length;
-        // Save counts for specific categories if applicable.
-        await saveTaskCounts();
-        return taskModel.data!;
+        visibleTasks.assignAll(taskModel.data!);
       } else {
         taskCounts[category] = 0;
-        await saveTaskCounts();
-        return [];
+        visibleTasks.clear();
       }
+
+      await saveTaskCounts();
     } catch (e) {
       Get.snackbar('Error', 'Failed to load tasks. Please try again.',
           snackPosition: SnackPosition.BOTTOM);
-      return [];
+      visibleTasks.clear();
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  /// Helper function to map category index to category name.
+  /// Load all tasks and update counts
+  Future<void> loadTasks() async {
+    isLoading.value = true;
+    try {
+      await Future.wait([
+        fetchTasksSilent(0),
+        fetchTasksSilent(1),
+        fetchTasksSilent(2),
+        fetchTasksSilent(3),
+      ]);
+      // Load tasks for currently selected category as visible
+      await fetchTasksForCategory(selectedCategoryIndex.value);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Silent fetching for count updates only
+  Future<void> fetchTasksSilent(int index) async {
+    String category = _getCategoryByIndex(index);
+    try {
+      TaskModel taskModel = await controller.fetchTasks(category);
+      taskCounts[category] = taskModel.data?.length ?? 0;
+    } catch (_) {
+      taskCounts[category] = 0;
+    }
+  }
+
+  /// Index to category string mapper
   String _getCategoryByIndex(int index) {
     switch (index) {
       case 0:
@@ -72,15 +108,5 @@ class DashboardController extends GetxController {
       default:
         return '';
     }
-  }
-
-  /// Load tasks for all categories when the screen is opened.
-  Future<void> loadTasks() async {
-    await Future.wait([
-      getTasksForCategory(0), // New
-      getTasksForCategory(1), // Cancelled
-      getTasksForCategory(2), // In Progress
-      getTasksForCategory(3), // Completed
-    ]);
   }
 }
