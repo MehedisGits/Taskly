@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/models/task_model.dart';
-import '../services/api_services.dart';
+import '../../../services/api_services.dart';
 
 class TaskController extends GetxController {
   final ApiService _apiService = ApiService();
@@ -18,15 +18,16 @@ class TaskController extends GetxController {
   // Fetch tasks by category
   Future<TaskModel> fetchTasks(String category) async {
     try {
-      _startLoading();
 
       // Get the token from SharedPreferences
       final token = _getToken();
       if (token == null) {
         throw Exception('Token is missing');
+      } else {
+        _startLoading();
       }
 
-      print('Fetching tasks for: $category');
+      // print('Fetching tasks for: $category');
 
       // Call the API to fetch tasks
       TaskModel response = await _apiService.fetchTasks(category);
@@ -62,14 +63,14 @@ class TaskController extends GetxController {
     } else {
       isEmpty.value = false;
       taskData.value = response;
-      print('Tasks successfully updated');
+      // print('Tasks successfully updated');
     }
   }
 
   // Handle errors and show an appropriate snackbar
   void _handleError(dynamic error, String category) {
     isEmpty.value = true;
-    taskData.value = null;
+    // taskData.value = null;
     print('Error fetching tasks for $category: $error');
 
     Get.snackbar(
@@ -78,18 +79,21 @@ class TaskController extends GetxController {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.red,
       colorText: Colors.white,
+      isDismissible: true,
+       duration: Duration(seconds: 2),
+      snackStyle: SnackStyle.FLOATING
     );
   }
 
   // Start loading state
   void _startLoading() {
     isLoading.value = true;
-    print('Loading started');
+    // print('Loading started');
   }
 
   // Stop loading state
   void _stopLoading() {
     isLoading.value = false;
-    print('Loading stopped');
+    // print('Loading stopped');
   }
 }

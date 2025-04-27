@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/core/theme_data.dart';
 import 'package:task_manager/utils/get_device_type.dart';
 import 'package:task_manager/widgets/bottom_sheet_form.dart';
 import '../controllers/dashboard_controller.dart';
@@ -25,11 +26,10 @@ class DashboardScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.grey[150],
       floatingActionButton: FloatingActionButton(
         elevation: 15,
         onPressed: () {
-          // Open bottom sheet with form
+          // Open bottom sheet with form to add task
           Get.bottomSheet(BottomSheetForm(
             heading: 'Add Task',
           ));
@@ -47,13 +47,24 @@ class DashboardScreen extends StatelessWidget {
           TaskCategoryBottomNavigationBar(buttonSize: taskCategoryButtonSize),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: controller.loadTasks,
+          onRefresh: () async {
+            // Before refreshing, mark isLoading as true to show loading
+            controller.isLoading.value = true;
+
+            // Trigger task refresh for the selected category
+            await controller
+                .fetchTasksForCategory(controller.selectedCategoryIndex.value);
+
+            // After refreshing, mark isLoading as false to stop loading
+            controller.isLoading.value = false;
+          },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
                 CustomAppBar(),
-                // 👇 New Task Summary Card
+                const SizedBox(height: 12),
+                // 👇 Task Summary Card
                 Obx(() => TaskSummaryCard(
                       totalTasks: controller.taskCounts['New']! +
                           controller.taskCounts['Cancelled']! +
@@ -67,6 +78,7 @@ class DashboardScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 Expanded(
                   child: Obx(() {
+                    // Show loading indicator while data is being fetched
                     if (controller.isLoading.value) {
                       return ListView.builder(
                         itemCount: 5,

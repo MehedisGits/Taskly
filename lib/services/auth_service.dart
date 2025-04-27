@@ -29,9 +29,17 @@ class AuthService extends GetxService {
   /// Logout user by removing token and redirecting to login screen
   Future<void> logout() async {
     try {
-      await _sharedPreferences.remove('token');
-      isLoggedIn.value = false;
-      Get.offAllNamed('/login'); // Redirect to login screen
+      // Clear all SharedPreferences
+      await _sharedPreferences.clear();
+
+      // Reset any GetX states or controllers
+      Get.deleteAll(force: true);
+
+      // Optionally reset other singleton services if you have any (example: AuthService)
+      Get.reset(); // Reset GetX (controller + services) if you want even harder reset
+
+      // Navigate to Login screen with a fresh clean start
+      Get.offAllNamed('/login');
     } catch (e) {
       Get.snackbar(
         'Logout Error',

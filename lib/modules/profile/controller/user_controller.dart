@@ -77,9 +77,10 @@ class UserController extends GetxController {
 
   /// 🔹 Toggle dark mode and persist preference
   Future<void> toggleDarkMode(bool value) async {
-    isDarkMode.value = value;
-    Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+    isDarkMode.value = value; // Update the theme value
+    Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light); // Change the theme
 
+    // Save the theme preference
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDarkMode', value);
   }
@@ -87,7 +88,7 @@ class UserController extends GetxController {
   /// 🔹 Load saved theme preference from SharedPreferences
   Future<void> _loadTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    isDarkMode.value = prefs.getBool('isDarkMode') ?? false;
-    Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
+    isDarkMode.value = prefs.getBool('isDarkMode') ?? false; // Default to light mode if not set
+    Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light); // Apply theme on load
   }
 }

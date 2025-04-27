@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_manager/core/strings.dart';
 import 'package:task_manager/modules/profile/controller/user_controller.dart';
 import 'package:task_manager/core/routes.dart';
 import 'package:task_manager/core/themes/theme_data.dart';
@@ -37,8 +38,10 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
-      title: 'Taskly',
-      theme: ResponsiveTheme.getTheme(context),
+      title: AppStrings.appName,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      //ResponsiveTheme.getTheme(context),
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
       home: DashboardScreen(), // Ensure this class is defined

@@ -1,0 +1,2 @@
+/home/rakibul-islam-mehedi/StudioProjects/Taskly/android/app/.cxx/Debug/3y234u25/x86_64/CMakeFiles/edit_cache.dir
+/home/rakibul-islam-mehedi/StudioProjects/Taskly/android/app/.cxx/Debug/3y234u25/x86_64/CMakeFiles/rebuild_cache.dir

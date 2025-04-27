@@ -5,89 +5,91 @@ import '../controllers/dashboard_controller.dart';
 
 class TaskCategoryBottomNavigationBar extends StatelessWidget {
   final double buttonSize;
-  TaskCategoryBottomNavigationBar({super.key, required this.buttonSize});
-
   final DashboardController controller = Get.find();
 
-  final List<Color> categoryColors = [
-    Colors.purple, // All
-    Colors.blue, // New
+  TaskCategoryBottomNavigationBar({super.key, required this.buttonSize});
+
+  static const List<String> categories = [
+    'Cancelled',
+    'New',
+    'All',
+    'InProgress',
+    'Completed',
+  ];
+
+  static const List<Color> categoryColors = [
     Colors.red, // Cancelled
+    Colors.blue, // New
+    Colors.purple, // All
     Colors.orange, // InProgress
     Colors.green, // Completed
   ];
 
+  static const List<IconData> categoryIcons = [
+    Icons.cancel, // Cancelled
+    Icons.new_releases, // New
+    Icons.all_inclusive, // All
+    Icons.timelapse, // InProgress
+    Icons.check_circle, // Completed
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<String> categories = ['All', 'New', 'Cancelled', 'InProgress', 'Completed'];
-
     return Obx(() {
+      // Determine whether to show a loading indicator for the selected tab
+      bool isLoading = controller.isLoading.value;
+
       return BottomNavigationBar(
         elevation: 4,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w500),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
         currentIndex: controller.selectedCategoryIndex.value,
-        onTap: (index) async {
-          // Reset loading state for the new index
-          controller.isLoading.value = true;
-          // Update the tasks based on the selected category
-          if (index == 0) {
-            controller.visibleTasks.value = await controller.getAllTasksSortedByTime();
-          } else {
-            await controller.fetchTasksForCategory(controller.selectedCategoryIndex.value);
-          }
-          controller.selectedCategoryIndex.value = index;
-          controller.isLoading.value = false; // Reset loading state after the operation
-        },
-        selectedItemColor: AppColors.primary, // Color for selected label
-        unselectedItemColor: Colors.black, // Color for unselected label
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textSecondary,
+        type: BottomNavigationBarType.fixed,
+        onTap: _onCategorySelected,
         items: List.generate(categories.length, (index) {
-          bool isSelected = controller.selectedCategoryIndex.value == index;
-
+          final isSelected = controller.selectedCategoryIndex.value == index;
           return BottomNavigationBarItem(
-            icon: Container(
+            icon: isLoading && isSelected
+                ? CircularProgressIndicator(
+              color: AppColors.primary,
+              strokeWidth: 2,
+            )
+                : Container(
               width: buttonSize,
               height: buttonSize,
               decoration: BoxDecoration(
-                color: isSelected ? categoryColors[index] : categoryColors[index].withOpacity(0.3),
+                color: isSelected
+                    ? categoryColors[index]
+                    : categoryColors[index].withOpacity(0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: index == 33 // Show progress indicator for selected index only
-                  ? controller.isLoading.value && controller.selectedCategoryIndex.value == index
-                  ? const CircularProgressIndicator(
-                strokeWidth: 3,
-                color: AppColors.primary,
-              )
-                  : Icon(
-                Icons.timelapse, // Use 'timelapse' icon for in-progress state
-                color: isSelected ? Colors.white : Colors.black,
-                size: buttonSize * 0.6,
-              )
-                  : Icon(
-                _getIconForCategory(index),
+              child: Icon(
+                categoryIcons[index],
                 color: isSelected ? Colors.white : Colors.black,
                 size: buttonSize * 0.6,
               ),
             ),
-            label: categories[index], // Pass the category name directly as a string
+            label: categories[index],
+            tooltip: categories[index], // Show a tooltip when the user hovers over a tab
           );
         }),
       );
     });
   }
 
-  IconData _getIconForCategory(int index) {
-    switch (index) {
-      case 0:
-        return Icons.all_inclusive; // Icon for 'All'
-      case 1:
-        return Icons.new_releases; // Icon for 'New'
-      case 2:
-        return Icons.cancel; // Icon for 'Cancelled'
-      case 4:
-        return Icons.check_circle; // Icon for 'Completed'
-      default:
-        return Icons.incomplete_circle; // Default icon
+  Future<void> _onCategorySelected(int index) async {
+    controller.isLoading.value = true;
+    controller.selectedCategoryIndex.value = index;
+
+    try {
+      await controller.fetchTasksForCategory(index);
+    } catch (e) {
+      // Handle error (e.g., show a Snackbar or a dialog)
+      Get.snackbar('Error', 'Failed to load tasks for the selected category');
+    } finally {
+      controller.isLoading.value = false;
     }
   }
+
 }

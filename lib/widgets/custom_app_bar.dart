@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/core/routes.dart';
-
-import '../controllers/app_bar_controller.dart'; // Import your controller
+import '../controllers/app_bar_controller.dart';
+import '../core/routes.dart'; // Import your controller
 
 class CustomAppBar extends StatelessWidget {
   CustomAppBar({super.key});
@@ -12,29 +11,28 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context); // Access the global theme
 
     return Card(
-      elevation: 1, // Slight elevation for a professional look
+      elevation: theme.cardTheme.elevation, // Use the theme elevation
       shadowColor: Colors.grey.withOpacity(0.2),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(50)),
-      ),
+      shape: theme.cardTheme.shape, // Use the theme shape
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         child: Obx(() => AnimatedCrossFade(
-              duration: const Duration(milliseconds: 300),
-              firstChild: _buildDefaultAppBar(context, screenWidth),
-              secondChild: _buildSearchBar(),
-              crossFadeState: controller.isSearchActive.value
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-            )),
+          duration: const Duration(milliseconds: 300),
+          firstChild: _buildDefaultAppBar(context, screenWidth, theme),
+          secondChild: _buildSearchBar(theme),
+          crossFadeState: controller.isSearchActive.value
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+        )),
       ),
     );
   }
 
   /// Builds the default app bar with a title and profile avatar
-  Widget _buildDefaultAppBar(BuildContext context, double screenWidth) {
+  Widget _buildDefaultAppBar(BuildContext context, double screenWidth, ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -46,22 +44,25 @@ class CustomAppBar extends StatelessWidget {
             'More options selected',
             margin: const EdgeInsets.all(10),
           ),
+          theme: theme,
         ),
-        _buildAppBarTitle(screenWidth),
+        _buildAppBarTitle(screenWidth, theme),
         _buildProfileAvatar(
           onTap: () => Navigator.pushNamed(context, Routes.profile),
+          theme: theme,
         ),
       ],
     );
   }
 
   /// Builds the search bar view
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(ThemeData theme) {
+
     return Row(
       children: [
         IconButton(
           onPressed: controller.deactivateSearch,
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color), // Use theme icon color
           tooltip: 'Go Back',
         ),
         Expanded(
@@ -70,9 +71,13 @@ class CustomAppBar extends StatelessWidget {
             decoration: InputDecoration(
               hintText: 'Search...',
               border: InputBorder.none,
-              hintStyle: TextStyle(color: Colors.grey[600]),
+              hintStyle: theme.inputDecorationTheme.hintStyle?.copyWith(
+                color: theme.hintColor, // Use theme hint color
+              ),
             ),
-            style: const TextStyle(fontSize: 16),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontSize: 16, // Ensure consistent font size from the theme
+            ),
             onChanged: (value) {
               // Perform search logic if needed
             },
@@ -87,30 +92,30 @@ class CustomAppBar extends StatelessWidget {
               margin: const EdgeInsets.all(10),
             );
           },
-          icon: const Icon(Icons.search, color: Colors.black87),
+          icon: Icon(Icons.search, color: theme.iconTheme.color), // Use theme icon color
           tooltip: 'Search',
         ),
       ],
     );
   }
 
+
   /// Builds the title text in the default app bar
-  Widget _buildAppBarTitle(double screenWidth) {
+  Widget _buildAppBarTitle(double screenWidth, ThemeData theme) {
     return GestureDetector(
-        onTap: controller.activateSearch,
-        child: Text(
-          'Discover',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: screenWidth < 600 ? 16 : 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ));
+      onTap: controller.activateSearch,
+      child: Text(
+        'Discover',
+        textAlign: TextAlign.center,
+        style: theme.textTheme.titleLarge?.copyWith(
+          fontSize: screenWidth < 600 ? 16 : 20, // More responsive title size
+        ),
+      ),
+    );
   }
 
   /// Builds the profile avatar on the right side
-  Widget _buildProfileAvatar({required VoidCallback onTap}) {
+  Widget _buildProfileAvatar({required VoidCallback onTap, required ThemeData theme}) {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
@@ -126,7 +131,7 @@ class CustomAppBar extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                          (loadingProgress.expectedTotalBytes ?? 1)
+                      (loadingProgress.expectedTotalBytes ?? 1)
                       : null,
                 ),
               );
@@ -146,12 +151,13 @@ class CustomAppBar extends StatelessWidget {
     required IconData icon,
     required String tooltip,
     required VoidCallback onTap,
+    required ThemeData theme,
   }) {
     return IconButton(
       onPressed: onTap,
       icon: Icon(icon),
       tooltip: tooltip,
-      color: Colors.black87,
+      color: theme.iconTheme.color, // Use the theme icon color
     );
   }
 }
