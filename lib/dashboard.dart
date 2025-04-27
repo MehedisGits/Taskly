@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'controllers/dashboard_controller.dart';
-import 'utils/get_device_type.dart';
+import 'package:task_manager/utils/get_device_type.dart';
+import 'package:task_manager/widgets/bottom_sheet_form.dart';
+import '../controllers/dashboard_controller.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/task_category_buttons.dart';
+import '../widgets/task_card.dart';
+import '../widgets/shimmer_task_card.dart';
 import 'utils/responsive_size.dart';
-import 'widgets/custom_app_bar.dart';
-import 'widgets/task_card.dart';
+import 'widgets/task_summury_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
@@ -16,24 +19,32 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     double taskCategoryButtonSize = responsiveSize(
       context,
-      mobileSize: 12,
-      tabletSize: 16,
-      desktopSize: 20,
+      mobileSize: 28,
+      tabletSize: 36,
+      desktopSize: 42,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await controller.loadTasks();
-    });
-
     return Scaffold(
+      backgroundColor: Colors.grey[150],
       floatingActionButton: FloatingActionButton(
+        elevation: 15,
         onPressed: () {
-          Get.snackbar('Add a new task', 'Click here to add a new task.',
-              margin: const EdgeInsets.all(12));
+          // Open bottom sheet with form
+          Get.bottomSheet(BottomSheetForm(
+            heading: 'Add Task',
+          ));
         },
-        backgroundColor: Colors.grey,
-        child: const Icon(Icons.add, size: 40),
+        backgroundColor: Colors.blueAccent,
+        isExtended: true,
+        tooltip: 'Add Task',
+        child: const Icon(
+          Icons.add,
+          size: 32,
+          color: Colors.white,
+        ),
       ),
+      bottomNavigationBar:
+          TaskCategoryBottomNavigationBar(buttonSize: taskCategoryButtonSize),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: controller.loadTasks,
@@ -42,13 +53,30 @@ class DashboardScreen extends StatelessWidget {
             child: Column(
               children: [
                 CustomAppBar(),
-                const SizedBox(height: 10),
-                buildTaskCategoryButtons(taskCategoryButtonSize),
+                // 👇 New Task Summary Card
+                Obx(() => TaskSummaryCard(
+                      totalTasks: controller.taskCounts['New']! +
+                          controller.taskCounts['Cancelled']! +
+                          controller.taskCounts['InProgress']! +
+                          controller.taskCounts['Completed']!,
+                      completed: controller.taskCounts['Completed'] ?? 0,
+                      cancelled: controller.taskCounts['Cancelled'] ?? 0,
+                      inProgress: controller.taskCounts['InProgress'] ?? 0,
+                    )),
+
                 const SizedBox(height: 12),
                 Expanded(
                   child: Obx(() {
                     if (controller.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
+                      return ListView.builder(
+                        itemCount: 5,
+                        // Display a shimmer for 5 items while loading
+                        itemBuilder: (context, index) {
+                          return const ShimmerTaskCard(
+                            isMobile: true,
+                          );
+                        },
+                      );
                     }
 
                     if (controller.visibleTasks.isEmpty) {
@@ -63,8 +91,8 @@ class DashboardScreen extends StatelessWidget {
                           title: task.title ?? 'No Title',
                           description: task.description ?? 'No Description',
                           isMobile: DeviceType.isMobile(context),
-                          createdDate: task.createdDate ?? '', // Pass createdDate here
-                          category: task.status ?? 'Uncategorized', // Pass category here
+                          createdDate: task.createdDate ?? '',
+                          category: task.status ?? 'Uncategorized',
                         );
                       },
                     );
@@ -76,85 +104,5 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  final List<Color> categoryColors = [
-    Colors.purple, // All
-    Colors.blue, // New
-    Colors.red, // Cancelled
-    Colors.orange, // InProgress
-    Colors.green, // Completed
-  ];
-
-  Widget buildTaskCategoryButtons(double buttonSize) {
-    List<String> categories = ['All', 'New', 'Cancelled', 'InProgress', 'Completed'];
-
-    return Obx(() => Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: List.generate(categories.length, (index) {
-        bool isSelected = controller.selectedCategoryIndex.value == index;
-
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            TextButton(
-              onPressed: () async {
-                if (index == 0) {
-                  // All tasks
-                  controller.isLoading.value = true;
-                  controller.visibleTasks.value = await controller.getAllTasksSortedByTime();
-                  controller.isLoading.value = false;
-                } else {
-                  // Category-based tasks
-                  await controller.fetchTasksForCategory(index - 1); // -1 because All is at index 0
-                }
-                controller.selectedCategoryIndex.value = index;
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: isSelected
-                    ? categoryColors[index]
-                    : categoryColors[index].withOpacity(0.3),
-                padding: EdgeInsets.symmetric(
-                  horizontal: buttonSize,
-                  vertical: buttonSize,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                categories[index],
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
-                  fontSize: buttonSize,
-                ),
-              ),
-            ),
-            Positioned(
-              right: -8,
-              top: -8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  index == 0
-                      ? controller.taskCounts.values.fold(0, (sum, count) => sum + count).toString()
-                      : controller.taskCounts[categories[index]]?.toString() ?? '0',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: buttonSize * 0.8,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      }),
-    ));
   }
 }
