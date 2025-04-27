@@ -18,6 +18,7 @@ class DashboardController extends GetxController {
     'InProgress': 0,
     'Completed': 0,
     'All': 0,
+
   }.obs;
   final RxList<Data> visibleTasks = <Data>[].obs;
 
