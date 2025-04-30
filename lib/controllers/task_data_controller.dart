@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/models/task_model.dart';
-import '../../../services/api_services.dart';
+import '../services/api_services.dart';
 
 class TaskController extends GetxController {
   final ApiService _apiService = ApiService();

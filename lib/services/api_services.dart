@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/models/task_model.dart';
 import 'package:task_manager/models/user_model.dart';
@@ -7,62 +8,54 @@ import 'package:task_manager/services/api_client.dart';
 
 class ApiService {
   final ApiClient apiClient = ApiClient();
-  static String? token;
+  static String? _token;
 
   /// ----------------------------
   /// Token Management
   /// ----------------------------
 
-  /// Ensure token is loaded before making API requests.
   Future<void> _ensureToken() async {
-    if (token == null) {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      token = prefs.getString('token');
+    if (_token == null) {
+      final prefs = await SharedPreferences.getInstance();
+      _token = prefs.getString('token');
+    }
 
-      if (token != null) {
-        _setTokenHeaders(token!);
-      }
+    if (_token != null) {
+      apiClient.dio.options.headers['Authorization'] = 'Bearer $_token';
+      apiClient.dio.options.headers['token'] = _token;
+    } else {
+      throw Exception("Missing token! Please login again.");
     }
   }
 
-  /// Set token headers in the API client.
-  void _setTokenHeaders(String token) {
-    apiClient.dio.options.headers['Authorization'] = 'Bearer $token';
-    apiClient.dio.options.headers['token'] = token;
-  }
-
   /// ----------------------------
-  /// User Authentication
+  /// Authentication
   /// ----------------------------
 
-  /// Registers a new user.
   Future<dynamic> registerUser(Map<String, dynamic> userData) async {
     try {
       final response = await apiClient.post('Registration', userData);
       return response.data;
     } catch (e) {
-      print('Error registering user: $e');
+      print('❌ Error registering user: $e');
       throw Exception('Failed to register user');
     }
   }
 
-  /// Logs in the user and saves the token.
   Future<dynamic> loginUser(Map<String, dynamic> userData) async {
     try {
       final response = await apiClient.post('Login', userData);
 
-      // Save token in SharedPreferences
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      token = response.data['token'];
-      await prefs.setString('token', token!);
-
-      // Update API Client Header with new Token
-      _setTokenHeaders(token!);
+      final prefs = await SharedPreferences.getInstance();
+      _token = response.data['token'];
+      await prefs.setString('token', _token!);
+      apiClient.dio.options.headers['Authorization'] = 'Bearer $_token';
+      apiClient.dio.options.headers['token'] = _token;
 
       return response.data;
     } catch (e) {
-      print('Error logging in user: $e');
-      throw Exception('Failed to log in');
+      print('❌ Login error: $e');
+      throw Exception('Login failed');
     }
   }
 
@@ -70,77 +63,126 @@ class ApiService {
   /// Task Management
   /// ----------------------------
 
-  /// Fetches all tasks by category.
-  /// Saves category-specific counts for "Completed" and "Cancelled"
-  /// and always saves the total task count from the fetched response.
   Future<TaskModel> fetchTasks(String category) async {
     try {
-      // Ensure token is set before request.
       await _ensureToken();
-      print("Token ✅ : $token");
-
-      // Update token headers.
-      _setTokenHeaders(token!);
-      print("Request Headers: ${apiClient.dio.options.headers}");
 
       final response = await apiClient.get('listTaskByStatus/$category');
+      final prefs = await SharedPreferences.getInstance();
 
-      // Get SharedPreferences instance.
-      final SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-
-      // Parse and return TaskModel if data exists.
       if (response.data != null) {
-        // Save the total task count in SharedPreferences.
-        final totalTasks = response.data['totalTasks'] ?? 0;
-        await sharedPreferences.setInt('totalTasks', totalTasks);
+        final data = response.data;
 
-        // Save category-specific counts if available.
-        if (response.data['completedCount'] != null) {
-          await sharedPreferences.setInt(
-              '${category}_completedCount', response.data['completedCount']);
-        }
-        if (response.data['cancelledCount'] != null) {
-          await sharedPreferences.setInt(
-              '${category}_cancelledCount', response.data['cancelledCount']);
-        }
+        // Save total task count
+        prefs.setInt('totalTasks', data['totalTasks'] ?? 0);
 
-        return TaskModel.fromJson(response.data);
+        // Optional: Save category-wise counts if available
+        prefs.setInt('${category}_completedCount', data['completedCount'] ?? 0);
+        prefs.setInt('${category}_cancelledCount', data['cancelledCount'] ?? 0);
+
+        return TaskModel.fromJson(data);
       } else {
-        throw Exception('No data found');
+        throw Exception('No task data found for $category');
       }
     } catch (e) {
-      print('Error fetching tasks: $e');
+      print('❌ Error fetching tasks for $category: $e');
       throw Exception('Failed to fetch tasks');
     }
   }
 
+  Future<void> createTask(String title, String desc, String status) async {
+    try {
+      await _ensureToken();
+
+      final body = {
+        'title': title,
+        'description': desc,
+        'status': status,
+      };
+
+      final response = await apiClient.post('createTask', body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ Task added to $status');
+      } else {
+        print("❌ Response: ${response.data}");
+        throw Exception('Failed to create task');
+      }
+    } catch (e) {
+      print('❌ Create task error: $e');
+      throw Exception('Could not create task');
+    }
+  }
+
+  Future<void> updateTaskStatus(String taskId, String taskStatus) async {
+    try {
+      await _ensureToken();
+
+      final String endpoint = 'updateTaskStatus/$taskId/$taskStatus';
+      final response = await apiClient.get(endpoint);
+
+      if (response.statusCode == 200) {
+        print('✅ Task status updated to $taskStatus');
+      } else {
+        print("❌ Server response: ${response.data}");
+        throw Exception('Update failed');
+      }
+    } catch (e) {
+      print('❌ Update task error: $e');
+      throw Exception('Failed to update task status');
+    }
+  }
+
+  Future<void> deleteTask(String taskId) async {
+    try {
+      await _ensureToken();
+      final String endpoint = 'deleteTask/$taskId';
+
+      final response = await apiClient.delete(endpoint);
+      if (response.statusCode == 200) {
+        print('✅ Task deleted successfully');
+      } else {
+        print("❌ Server response: ${response.data}");
+        throw Exception('Delete failed');
+      }
+    } catch (e) {
+      print('❌ Update task error: $e');
+      throw Exception('Failed to Delete task');
+    }
+  }
+
   /// ----------------------------
-  /// User Data Management
+  /// User Data
   /// ----------------------------
 
-  /// Fetches user details from the API and saves them in SharedPreferences.
   Future<UserDetails> fetchUserData() async {
     try {
       await _ensureToken();
 
       final response = await apiClient.get('ProfileDetails');
+      final prefs = await SharedPreferences.getInstance();
 
       if (response.data != null) {
-        final SharedPreferences preferences =
-            await SharedPreferences.getInstance();
-
-        // Save user details as a JSON string.
-        await preferences.setString('userDetails', jsonEncode(response.data));
-
-        // Return the UserDetails object parsed from the response.
+        prefs.setString('userDetails', jsonEncode(response.data));
         return UserDetails.fromJson(response.data);
       } else {
-        throw Exception('No data found');
+        throw Exception('User data missing');
       }
     } catch (e) {
-      print('Error fetching details: $e');
-      throw Exception('Failed to fetch details');
+      print('❌ User fetch error: $e');
+      throw Exception('Could not fetch user details');
     }
+  }
+
+  /// ----------------------------
+  /// Logout
+  /// ----------------------------
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clears all data
+    _token = null;
+    apiClient.dio.options.headers.clear();
+    print("🧹 User logged out and local data cleared.");
   }
 }

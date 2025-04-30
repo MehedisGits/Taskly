@@ -1,4 +1,4 @@
- // Corrected import path
+// Corrected import path
 
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/core/strings.dart';
 import 'package:task_manager/modules/profile/controller/user_controller.dart';
 import 'package:task_manager/core/routes.dart';
-import 'package:task_manager/core/themes/theme_data.dart';
 import 'package:task_manager/dashboard.dart';
 import 'package:task_manager/modules/auth/controller/login_controller.dart';
 import 'package:task_manager/modules/auth/views/login_screen.dart';
@@ -44,14 +43,17 @@ class MyApp extends StatelessWidget {
       //ResponsiveTheme.getTheme(context),
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
-      home: DashboardScreen(), // Ensure this class is defined
+      home: DashboardScreen(),
+      // Ensure this class is defined
       initialRoute: Routes.splash,
       getPages: [
         GetPage(name: Routes.splash, page: () => SplashScreen()),
-        GetPage(name: Routes.home, page: () => DashboardScreen()), // Ensure this class is defined
+        GetPage(name: Routes.home, page: () => DashboardScreen()),
+        // Ensure this class is defined
         GetPage(name: Routes.signUp, page: () => SignUpScreen()),
         GetPage(name: Routes.login, page: () => LoginScreen()),
-        GetPage(name: Routes.profile, page: () => ProfileScreen()), // Ensure this class is defined
+        GetPage(name: Routes.profile, page: () => ProfileScreen()),
+        // Ensure this class is defined
       ],
     );
   }

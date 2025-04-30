@@ -1,16 +1,23 @@
-import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_manager/controllers/task_data_controller.dart';
+import 'package:task_manager/services/api_services.dart';
+
 import '../models/task_model.dart';
-import '../modules/tasks/controller/task_data_controller.dart';
+import '../services/task_storage_service.dart';
 import '../utils/check_internet_connection.dart';
 import '../utils/date_utils.dart';
 import '../utils/error_utils.dart';
 
 class DashboardController extends GetxController {
   final TaskController controller = Get.put(TaskController());
+  late TaskStorageService storage;
 
-  final RxInt selectedCategoryIndex = 2.obs; // Default 'All' category (index 2)
+  final RxInt selectedCategoryIndex =
+      2.obs; // 0=Cancelled,1=New,2=All,3=InProgress,4=Completed
   final RxBool isLoading = false.obs;
   final RxMap<String, int> taskCounts = {
     'New': 0,
@@ -18,12 +25,11 @@ class DashboardController extends GetxController {
     'InProgress': 0,
     'Completed': 0,
     'All': 0,
-
   }.obs;
   final RxList<Data> visibleTasks = <Data>[].obs;
 
-  // Cache invalidation flags for each category
-  final RxMap<String, bool> categoryCacheInvalidationFlags = {
+  /// Flags to force refetch from API for each category
+  final RxMap<String, bool> refetchFlags = {
     'New': false,
     'Cancelled': false,
     'InProgress': false,
@@ -32,189 +38,184 @@ class DashboardController extends GetxController {
   }.obs;
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
-    loadTasks();
-  }
-
-  Future<void> saveTaskCounts() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    int completed = taskCounts["Completed"] ?? 0;
-    int cancelled = taskCounts["Cancelled"] ?? 0;
-    int newTasks = taskCounts["New"] ?? 0;
-    int inProgress = taskCounts["InProgress"] ?? 0;
-    int total = newTasks + cancelled + inProgress + completed;
-
-    await prefs.setInt("CompletedTaskCount", completed);
-    await prefs.setInt("CancelledTaskCount", cancelled);
-    await prefs.setInt("TotalTaskCount", total);
-  }
-
-  // Fetch tasks for a category from the API and save to local storage
-  Future<List<Data>> fetchTasksForCategoryFromApi(String category) async {
-    try {
-      TaskModel taskModel = await controller.fetchTasks(category);
-      if (taskModel.data != null) {
-        await saveTasksForCategory(category, taskModel.data!);
-        return taskModel.data!;
-      }
-    } catch (e) {
-      showError('Error', 'Failed to fetch tasks for $category from API.');
-    }
-    return [];
-  }
-
-  // Save tasks to SharedPreferences (Local storage)
-  Future<void> saveTasksForCategory(String category, List<Data> tasks) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = jsonEncode(tasks.map((e) => e.toJson()).toList());
-    await prefs.setString(category, jsonString);
+    storage = TaskStorageService(prefs);
+    await _initializeDashboard();
   }
 
-  // Load tasks for a category from SharedPreferences (Local storage)
-  Future<List<Data>> loadTasksForCategoryFromLocal(String category) async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(category);
-    if (jsonString != null) {
-      final List decoded = jsonDecode(jsonString);
-      return decoded.map<Data>((json) => Data.fromJson(json)).toList();
-    }
-    return [];
-  }
-
-  // Fetch tasks based on category, cache them, and update the UI
-  Future<void> fetchTasksForCategory(int index) async {
-    selectedCategoryIndex.value = index;
+  Future<void> _initializeDashboard() async {
     isLoading.value = true;
-
-    String category = _getCategoryByIndex(index);
     try {
-      List<Data> tasks = [];
-
-      if (category == 'All') {
-        // For "All" category, combine tasks from all categories
-        tasks = await _getAllCategoryTasks();
-
-        // If data is missing for any category, load from API
-        if (tasks.isEmpty) {
-          await loadTasks();
-          tasks = await _getAllCategoryTasks();
-        }
-
-        // Sort tasks by creation date
-        tasks.sort((a, b) {
-          DateTime dateA = safeParseDate(a.createdDate);
-          DateTime dateB = safeParseDate(b.createdDate);
-          return dateB.compareTo(dateA); // Sort by creation date
-        });
-      } else {
-        // For other categories, load data from local storage
-        tasks = await loadTasksForCategoryFromLocal(category);
-
-        // If no data found, fetch from API
-        if (tasks.isEmpty) {
-          tasks = await fetchTasksForCategoryFromApi(category);
-        }
-      }
-
-      // Update task counts
-      taskCounts[category] = tasks.length;
-      // Update the task counts for "All" category as well
-      if (category == 'All') {
-        taskCounts['New'] = await loadTasksForCategoryFromLocal('New').then((tasks) => tasks.length);
-        taskCounts['Cancelled'] = await loadTasksForCategoryFromLocal('Cancelled').then((tasks) => tasks.length);
-        taskCounts['InProgress'] = await loadTasksForCategoryFromLocal('InProgress').then((tasks) => tasks.length);
-        taskCounts['Completed'] = await loadTasksForCategoryFromLocal('Completed').then((tasks) => tasks.length);
-      }
-
-      // Update visible tasks
-      visibleTasks.assignAll(tasks);
-
+      await _updateTaskCounts();
+      await fetchTasksForCategory(selectedCategoryIndex.value);
     } catch (e) {
-      showError('Error', 'Failed to load $category tasks.');
+      print("💥 Init Error: $e");
+      showError('Error', 'Failed to load initial tasks.');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Public: fetch tasks by category index
+  Future<void> fetchTasksForCategory(int idx) async {
+    selectedCategoryIndex.value = idx;
+    isLoading.value = true;
+    try {
+      final cat = _getCategoryByIndex(idx);
+      final tasks = await _loadTasksForCategory(cat);
+      visibleTasks.assignAll(tasks);
+      visibleTasks.refresh();
+    } catch (e) {
+      print("❌ Category Load Error: $e");
+      showError('Error', 'Failed to load tasks.');
       visibleTasks.clear();
     } finally {
       isLoading.value = false;
     }
   }
 
-
-  // Helper method to get tasks for a specific category
-  Future<List<Data>> _getTasksForCategory(String category) async {
-    List<Data> tasks = [];
-
-    // Check if the cache is invalidated for this category
-    if (categoryCacheInvalidationFlags[category] == true) {
-      // Fetch fresh data from the API
-      tasks = await fetchTasksForCategoryFromApi(category);
-      categoryCacheInvalidationFlags[category] = false; // Reset flag
-    } else {
-      // Load from cache if data is available
-      tasks = await loadTasksForCategoryFromLocal(category);
-      if (tasks.isEmpty) {
-        tasks = await fetchTasksForCategoryFromApi(category);
-      }
+  /// Core loading logic, respects refetchFlags and handles 'All' specially
+  Future<List<Data>> _loadTasksForCategory(String category) async {
+    if (category == 'All') {
+// Always combine all subcategories; if flag, force API for each
+      final force = refetchFlags['All'] == true;
+      refetchFlags['All'] = false;
+      return _loadAllTasks(forceApi: force);
     }
 
+// For individual category, if flagged, fetch fresh
+    if (refetchFlags[category] == true) {
+      refetchFlags[category] = false;
+      return _fetchAndSaveCategory(category);
+    }
+
+// Otherwise load local, then fallback to API if empty
+    var tasks = await storage.loadTasks(category);
+    if (tasks.isEmpty && await checkInternetConnection()) {
+      tasks = await _fetchAndSaveCategory(category);
+    }
+    taskCounts[category] = tasks.length;
     return tasks;
   }
 
-  // Handle tasks for the 'All' category
-  Future<List<Data>> _getAllCategoryTasks() async {
-    List<Data> allTasks = [];
-    List<String> categories = ['New', 'Cancelled', 'InProgress', 'Completed'];
-
-    for (String category in categories) {
-      List<Data> categoryTasks = await loadTasksForCategoryFromLocal(category);
-      if (categoryTasks.isNotEmpty) {
-        allTasks.addAll(categoryTasks);
+  /// Load all categories, optionally forcing API fetch for each
+  Future<List<Data>> _loadAllTasks({bool forceApi = false}) async {
+    final cats = ['New', 'Cancelled', 'InProgress', 'Completed'];
+    List<Data> all = [];
+    for (var c in cats) {
+      List<Data> part;
+      if (forceApi) {
+        part = await _fetchAndSaveCategory(c);
       } else {
-        categoryCacheInvalidationFlags[category] = true; // Mark as needing to fetch
+        part = await _loadTasksForCategory(c);
       }
+      all.addAll(part);
     }
-
-    if (allTasks.isEmpty) {
-      // Load tasks from API if no data is available
-      await loadTasks();
-      return await _getAllCategoryTasks();
-    }
-
-    return allTasks;
+    all.sort((a, b) =>
+        safeParseDate(b.createdDate).compareTo(safeParseDate(a.createdDate)));
+    taskCounts['All'] = all.length;
+    return all;
   }
 
-  // Load tasks for all categories (cached or from API)
-  Future<void> loadTasks() async {
-    isLoading.value = true;
-
-    if (!(await checkInternetConnection())) {
-      showError("No Internet", "Please check your internet connection.");
-      isLoading.value = false;
-      return;
-    }
-
+  Future<List<Data>> _fetchAndSaveCategory(String category) async {
     try {
-      // Fetch tasks for all categories
-      await Future.wait([
-        fetchTasksForCategory(0),
-        fetchTasksForCategory(1),
-        fetchTasksForCategory(3),
-        fetchTasksForCategory(4),
-      ]);
-      await fetchTasksForCategory(selectedCategoryIndex.value);
-    } finally {
-      isLoading.value = false;
+      final model = await controller.fetchTasks(category);
+      if (model.data != null) {
+        await storage.saveTasks(category, model.data!);
+        taskCounts[category] = model.data!.length;
+        return model.data!;
+      }
+    } catch (e) {
+      print("❌ API Fetch Error: $e");
+      showError('API Error', 'Could not fetch $category tasks.');
+    }
+    return [];
+  }
+  Future<void> deleteTask(String taskId) async{
+    try{
+      ApiService apiService = ApiService();
+      await apiService.deleteTask(taskId);
+      onTaskSaved();
+    } catch(e){
+      print("❌ Task Delete Error: $e");
+      showError('API Error', 'Could not delete $selectedCategoryIndex tasks.');
     }
   }
 
-  // Utility to map index to category
-  String _getCategoryByIndex(int index) {
-    switch (index) {
-      case 0: return 'Cancelled';
-      case 1: return 'New';
-      case 2: return 'All';
-      case 3: return 'InProgress';
-      case 4: return 'Completed';
-      default: return '';
+  Future<void> taskMarkCompleted(String taskId) async {
+    try {
+      ApiService apiService = ApiService();
+      await apiService.updateTaskStatus(taskId, 'Completed');
+
+      // 🔁 Identify current category
+      final currentCategory = _getCategoryByIndex(selectedCategoryIndex.value);
+
+      // 🧹 Remove from current list if present (for instant UI feedback)
+      visibleTasks.removeWhere((task) => task.sId == taskId);
+      visibleTasks.refresh();
+
+      // ✅ Mark 'Completed' and 'All' to be refetched
+      refetchFlags['Completed'] = true;
+      refetchFlags['All'] = true;
+
+      // ✅ If the current tab is not 'Completed', also mark current category for update
+      if (currentCategory != 'Completed') {
+        refetchFlags[currentCategory] = true;
+      }
+
+      // 🧭 Switch to 'Completed' tab (index 4)
+      selectedCategoryIndex.value = 4;
+
+      // 🔄 Fetch completed tasks and update counts
+      await fetchTasksForCategory(4);
+      await _updateTaskCounts();
+
+      // ✅ Confirm to user
+      Get.snackbar('Task Completed', 'Task marked as completed ✅',
+          snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      print("❌ Task Mark Completed Error: $e");
+      showError('API Error', 'Could not update task status.');
+    }
+  }
+
+
+
+  Future<void> _updateTaskCounts() async {
+    final cats = ['New', 'Cancelled', 'InProgress', 'Completed'];
+    for (var c in cats) {
+      taskCounts[c] = storage.loadTaskCount(c);
+    }
+    taskCounts['All'] = taskCounts.values.fold(0, (sum, v) => sum + v);
+  }
+
+  /// Call after creating/updating a task
+  Future<void> onTaskSaved() async {
+    final cat = _getCategoryByIndex(selectedCategoryIndex.value);
+// mark this category and 'All' to refetch from API next time
+    refetchFlags[cat] = true;
+    refetchFlags['All'] = true;
+
+    await fetchTasksForCategory(selectedCategoryIndex.value);
+    await _updateTaskCounts();
+  }
+
+  String _getCategoryByIndex(int i) {
+    switch (i) {
+      case 0:
+        return 'Cancelled';
+      case 1:
+        return 'New';
+      case 2:
+        return 'All';
+      case 3:
+        return 'InProgress';
+      case 4:
+        return 'Completed';
+      default:
+        return 'All';
     }
   }
 }

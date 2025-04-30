@@ -3,10 +3,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:task_manager/widgets/bottom_sheet_form.dart';
+import 'package:task_manager/widgets/task_categories.dart'; // Make sure it's the correct import
 
 class TaskCard extends StatelessWidget {
+  final String taskId;
   final String title;
   final String description;
+  final String taskStatus;
   final bool isMobile;
   final String createdDate;
   final String category;
@@ -15,8 +18,10 @@ class TaskCard extends StatelessWidget {
   final VoidCallback? onComplete;
 
   TaskCard({
+    required this.taskId,
     required this.title,
     required this.description,
+    required this.taskStatus,
     required this.isMobile,
     required this.createdDate,
     required this.category,
@@ -46,17 +51,22 @@ class TaskCard extends StatelessWidget {
       );
     }
 
+    // Get the matched category
+    final matchedCategory = taskCategories.firstWhere(
+          (cat) => cat.name.toLowerCase() == category.toLowerCase(),
+      orElse: () => taskCategories.last, // Fallback if not found
+    );
+
     return Dismissible(
       key: UniqueKey(),
       background: _slideRightBackground(),
       secondaryBackground: _slideLeftBackground(),
       onDismissed: (direction) {
-        // Call the appropriate callback based on the swipe direction
         if (direction == DismissDirection.startToEnd) {
-          onComplete?.call();  // Called when swiped from left to right (Complete Task)
+          onComplete?.call(); // Swipe right = Complete
         }
         if (direction == DismissDirection.endToStart) {
-          onDelete?.call();  // Called when swiped from right to left (Delete Task)
+          onDelete?.call(); // Swipe left = Delete
         }
       },
       child: Card(
@@ -74,6 +84,7 @@ class TaskCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Title + action buttons
                 Row(
                   children: [
                     Expanded(
@@ -91,7 +102,14 @@ class TaskCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            onPressed: () => Get.bottomSheet(BottomSheetForm(heading: 'Update task',)),
+                            onPressed: () => Get.bottomSheet(
+                              BottomSheetForm(
+                                heading: 'Update task',
+                                id: taskId,
+                                title: title,
+                                description: description,
+                              ),
+                            ),
                             icon: const Icon(Icons.edit, color: Colors.blue),
                           ),
                           IconButton(
@@ -104,24 +122,43 @@ class TaskCard extends StatelessWidget {
                     }),
                   ],
                 ),
+
                 const SizedBox(height: 12),
+
+                // Date + Category with icon and color
                 Row(
                   children: [
                     Text(
                       formattedDate,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: Colors.grey),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      category,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent,
-                      ),
+                    const SizedBox(width: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          matchedCategory.icon,
+                          color: matchedCategory.color,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          matchedCategory.name,
+                          style: TextStyle(
+                            color: matchedCategory.color,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 12),
+
+                // Description
                 Obx(() {
                   return AnimatedCrossFade(
                     firstChild: Text(
@@ -140,7 +177,10 @@ class TaskCard extends StatelessWidget {
                     duration: const Duration(milliseconds: 300),
                   );
                 }),
+
                 const SizedBox(height: 8),
+
+                // Expand/Collapse icon
                 Align(
                   alignment: Alignment.centerRight,
                   child: Obx(

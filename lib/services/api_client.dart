@@ -59,6 +59,6 @@ class ApiClient {
 
   // DELETE Request
   Future<Response> delete(String endpoint) async {
-    return await dio.delete(endpoint);
+    return await dio.get(endpoint);
   }
 }

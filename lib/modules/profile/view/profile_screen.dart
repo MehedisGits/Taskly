@@ -7,83 +7,72 @@ import 'package:task_manager/utils/responsive_size.dart';
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
 
-  final UserController _userController = Get.find<UserController>();
-  final AuthService _authService = Get.find<AuthService>();
+  final _userController = Get.find<UserController>();
+  final _authService = Get.find<AuthService>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(responsiveSize(context, mobileSize: 16, tabletSize: 24, desktopSize: 32)),
-        child: Column(
-          children: [
-            _buildProfileHeader(context),
-            _buildSpacer(context),
-            _buildStatsCard(context),
-            _buildSpacer(context),
-            _buildSettingsList(context),
-            _buildSpacer(context),
-            _buildLogoutButton(context),
-          ],
-        ),
-      ),
-    );
-  }
+      body: Obx(() {
+        if (_userController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-  /// 🔹 **Profile Header (Name, Email, Mobile)**
-  Widget _buildProfileHeader(BuildContext context) {
-    return Obx(() {
-      final userDetails = _userController.user.value;
+        final userDetails = _userController.user.value?.data?.first;
 
-      if (userDetails?.data?.isEmpty ?? true) {
-        return const Center(child: Text('No user data available'));
-      }
+        if (userDetails == null) {
+          return const Center(child: Text('User data not available'));
+        }
 
-      final user = userDetails!.data!.first;
-
-      return Column(
-        children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage("https://avatars.githubusercontent.com/u/125388734?v=4"),
-            radius: screenScale(context) * 60,
+        return SingleChildScrollView(
+          padding: EdgeInsets.all(responsiveSize(context, mobileSize: 16, tabletSize: 24, desktopSize: 32)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildProfileHeader(context, userDetails),
+              _buildSpacer(context),
+              _buildStatsCard(context),
+              _buildSpacer(context),
+              _buildSettingsList(context),
+              _buildSpacer(context),
+              _buildLogoutButton(context),
+            ],
           ),
-          _buildSpacer(context, size: 16),
-          _buildUserName(context, user),
-          _buildSpacer(context, size: 4),
-          _buildUserInfo(context, user.email, user.mobile),
-        ],
-      );
-    });
-  }
-
-  /// 🔹 **User Name** Text Widget
-  Widget _buildUserName(BuildContext context, dynamic user) {
-    return Text(
-      "${user.firstName ?? ''} ${user.lastName ?? ''}".trim().isEmpty ? 'No Name' : "${user.firstName} ${user.lastName}",
-      style: TextStyle(
-        fontSize: responsiveSize(context, mobileSize: 24, tabletSize: 28, desktopSize: 32),
-        fontWeight: FontWeight.w600,
-      ),
+        );
+      }),
     );
   }
 
-  /// 🔹 **User Info (Email & Mobile)** Text Widgets
-  Widget _buildUserInfo(BuildContext context, String? email, String? mobile) {
+  Widget _buildProfileHeader(BuildContext context, dynamic user) {
     return Column(
       children: [
-        Text(email ?? 'No Email', style: _infoTextStyle(context)),
+        CircleAvatar(
+          backgroundImage: NetworkImage("https://avatars.githubusercontent.com/u/125388734?v=4"),
+          radius: screenScale(context) * 60,
+        ),
+        _buildSpacer(context, size: 16),
+        Text(
+          "${user.firstName ?? ''} ${user.lastName ?? ''}".trim().isNotEmpty
+              ? "${user.firstName} ${user.lastName}"
+              : 'No Name',
+          style: TextStyle(
+            fontSize: responsiveSize(context, mobileSize: 24, tabletSize: 28, desktopSize: 32),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         _buildSpacer(context, size: 4),
-        Text(mobile ?? 'No Mobile', style: _infoTextStyle(context)),
+        Text(user.email ?? 'No Email', style: _infoTextStyle(context)),
+        _buildSpacer(context, size: 2),
+        Text(user.mobile ?? 'No Mobile', style: _infoTextStyle(context)),
       ],
     );
   }
 
-  /// 🔹 **Stats Card (Total Tasks, Completed Tasks, Cancelled Tasks)**
   Widget _buildStatsCard(BuildContext context) {
     return Card(
-      elevation: 2.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
       child: Padding(
         padding: EdgeInsets.symmetric(
           vertical: responsiveSize(context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
@@ -92,37 +81,35 @@ class ProfileScreen extends StatelessWidget {
         child: Obx(() => Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildStatItem(context, 'Total Tasks', _userController.totalTasksCount.value.toString()),
-            _buildStatItem(context, 'Completed', _userController.completedTaskCount.value.toString()),
-            _buildStatItem(context, 'Cancelled', _userController.cancelledTaskCount.value.toString()),
+            _buildStatItem(context, "Total Tasks", _userController.totalTasksCount.value),
+            _buildStatItem(context, "Completed", _userController.completedTaskCount.value),
+            _buildStatItem(context, "Cancelled", _userController.cancelledTaskCount.value),
           ],
         )),
       ),
     );
   }
 
-  /// 🔹 **Single Stat Item**
-  Widget _buildStatItem(BuildContext context, String label, String value) {
+  Widget _buildStatItem(BuildContext context, String label, int value) {
     return Column(
       children: [
         Text(
-          value,
+          value.toString(),
           style: TextStyle(
             fontSize: responsiveSize(context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
             fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        _buildSpacer(context, size: 4),
+        const SizedBox(height: 4),
         Text(label, style: _infoTextStyle(context)),
       ],
     );
   }
 
-  /// 🔹 **Settings List (Dark Mode)**
   Widget _buildSettingsList(BuildContext context) {
     return Card(
-      elevation: 2.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: const Icon(Icons.dark_mode),
         title: Text(
@@ -132,32 +119,34 @@ class ProfileScreen extends StatelessWidget {
         trailing: Obx(() {
           return Switch(
             value: _userController.isDarkMode.value,
-            onChanged: (bool value) {
-              _userController.toggleDarkMode(value); // Toggle theme on change
-            },
+            onChanged: _userController.toggleDarkMode,
           );
         }),
       ),
     );
   }
 
-  /// 🔹 **Logout Button**
   Widget _buildLogoutButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: () => _showLogoutDialog(context),
         icon: const Icon(Icons.logout),
-        label: Text('Logout', style: TextStyle(fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20))),
+        label: Text(
+          'Logout',
+          style: TextStyle(fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20)),
+        ),
         style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: responsiveSize(context, mobileSize: 12, tabletSize: 14, desktopSize: 16)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: EdgeInsets.symmetric(
+            vertical: responsiveSize(context, mobileSize: 12, tabletSize: 14, desktopSize: 16),
+          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          backgroundColor: Colors.redAccent,
         ),
       ),
     );
   }
 
-  /// 🔹 **Logout Dialog**
   void _showLogoutDialog(BuildContext context) {
     Get.defaultDialog(
       title: 'Logout',
@@ -166,40 +155,36 @@ class ProfileScreen extends StatelessWidget {
       textCancel: 'No',
       confirmTextColor: Colors.white,
       cancelTextColor: Colors.black,
-      buttonColor: Theme.of(context).primaryColor,
+      buttonColor: Colors.redAccent,
       onConfirm: _handleLogout,
       onCancel: () => Get.back(),
     );
   }
 
-  /// 🔹 **Handle Logout**
   Future<void> _handleLogout() async {
     try {
       await _authService.logout();
-      Get.back();
+      Get.back(); // Close dialog
       Get.offAllNamed('/login');
     } catch (e) {
       Get.back();
       Get.snackbar(
         'Logout Failed',
-        'An error occurred while logging out. Please try again.',
+        'Something went wrong. Try again.',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
     }
   }
 
-  /// 🔹 **Helper Functions**
-  /// Adds space between widgets dynamically
   Widget _buildSpacer(BuildContext context, {double? size}) {
     return SizedBox(height: size ?? responsiveSize(context, mobileSize: 16, tabletSize: 24, desktopSize: 32));
   }
 
-  /// Style for profile info text
   TextStyle _infoTextStyle(BuildContext context) {
     return TextStyle(
-      fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20),
+      fontSize: responsiveSize(context, mobileSize: 14, tabletSize: 16, desktopSize: 18),
       color: Colors.grey[600],
     );
   }

@@ -1,95 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/core/themes/theme_data.dart';
+import 'package:task_manager/widgets/task_categories.dart';
 import '../controllers/dashboard_controller.dart';
+import '../core/themes/theme_data.dart';
+import '../models/task_category.dart';
 
 class TaskCategoryBottomNavigationBar extends StatelessWidget {
   final double buttonSize;
   final DashboardController controller = Get.find();
 
-  TaskCategoryBottomNavigationBar({super.key, required this.buttonSize});
-
-  static const List<String> categories = [
-    'Cancelled',
-    'New',
-    'All',
-    'InProgress',
-    'Completed',
-  ];
-
-  static const List<Color> categoryColors = [
-    Colors.red, // Cancelled
-    Colors.blue, // New
-    Colors.purple, // All
-    Colors.orange, // InProgress
-    Colors.green, // Completed
-  ];
-
-  static const List<IconData> categoryIcons = [
-    Icons.cancel, // Cancelled
-    Icons.new_releases, // New
-    Icons.all_inclusive, // All
-    Icons.timelapse, // InProgress
-    Icons.check_circle, // Completed
-  ];
+  TaskCategoryBottomNavigationBar({
+    super.key,
+    required this.buttonSize,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Determine whether to show a loading indicator for the selected tab
-      bool isLoading = controller.isLoading.value;
-
       return BottomNavigationBar(
         elevation: 4,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
-        currentIndex: controller.selectedCategoryIndex.value,
+        type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textSecondary,
-        type: BottomNavigationBarType.fixed,
-        onTap: _onCategorySelected,
-        items: List.generate(categories.length, (index) {
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        currentIndex: controller.selectedCategoryIndex.value,
+        onTap: controller.fetchTasksForCategory,
+        items: List.generate(taskCategories.length, (index) {
+          final category = taskCategories[index];
           final isSelected = controller.selectedCategoryIndex.value == index;
-          return BottomNavigationBarItem(
-            icon: isLoading && isSelected
-                ? CircularProgressIndicator(
-              color: AppColors.primary,
-              strokeWidth: 2,
-            )
-                : Container(
-              width: buttonSize,
-              height: buttonSize,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? categoryColors[index]
-                    : categoryColors[index].withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                categoryIcons[index],
-                color: isSelected ? Colors.white : Colors.black,
-                size: buttonSize * 0.6,
-              ),
-            ),
-            label: categories[index],
-            tooltip: categories[index], // Show a tooltip when the user hovers over a tab
-          );
+          return _buildBottomNavigationBarItem(category, isSelected, index);
         }),
       );
     });
   }
 
-  Future<void> _onCategorySelected(int index) async {
-    controller.isLoading.value = true;
-    controller.selectedCategoryIndex.value = index;
-
-    try {
-      await controller.fetchTasksForCategory(index);
-    } catch (e) {
-      // Handle error (e.g., show a Snackbar or a dialog)
-      Get.snackbar('Error', 'Failed to load tasks for the selected category');
-    } finally {
-      controller.isLoading.value = false;
-    }
+  BottomNavigationBarItem _buildBottomNavigationBarItem(
+      TaskCategory category, bool isSelected, int index) {
+    return BottomNavigationBarItem(
+      icon: controller.isLoading.value && isSelected
+          ? const SizedBox(
+        width: 24,
+        height: 24,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      )
+          : _buildCategoryIcon(category, isSelected),
+      label: category.name,
+      tooltip: category.name,
+    );
   }
 
+  Widget _buildCategoryIcon(TaskCategory category, bool isSelected) {
+    return Container(
+      width: buttonSize,
+      height: buttonSize,
+      decoration: BoxDecoration(
+        color: isSelected
+            ? category.color
+            : category.color.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(
+        category.icon,
+        size: buttonSize * 0.5,
+        color: isSelected ? Colors.white : Colors.black,
+      ),
+    );
+  }
 }
