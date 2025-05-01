@@ -50,7 +50,7 @@ class DashboardScreen extends StatelessWidget {
     return FloatingActionButton(
       elevation: 12,
       onPressed: () => Get.bottomSheet(
-        BottomSheetForm(heading: 'Add Task'),
+        BottomSheetForm(heading: 'Add Task', status: 'New',),
         isScrollControlled: true,
       ).whenComplete(() {
         // 🧹 Clear form controller state after bottom sheet closes

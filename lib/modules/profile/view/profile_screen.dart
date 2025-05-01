@@ -4,12 +4,25 @@ import 'package:task_manager/modules/profile/controller/user_controller.dart';
 import 'package:task_manager/services/auth_service.dart';
 import 'package:task_manager/utils/responsive_size.dart';
 
-class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
-  final _userController = Get.find<UserController>();
-  final _authService = Get.find<AuthService>();
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
 
+class _ProfileScreenState extends State<ProfileScreen> {
+  final UserController _userController = Get.find<UserController>();
+
+  final AuthService _authService = Get.find<AuthService>();
+
+  final RxBool isLoggingOut = false.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    _userController.refreshAllTaskCounts();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +39,8 @@ class ProfileScreen extends StatelessWidget {
         }
 
         return SingleChildScrollView(
-          padding: EdgeInsets.all(responsiveSize(context, mobileSize: 16, tabletSize: 24, desktopSize: 32)),
+          padding: EdgeInsets.all(responsiveSize(
+              context, mobileSize: 16, tabletSize: 24, desktopSize: 32)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -48,16 +62,21 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          backgroundImage: NetworkImage("https://avatars.githubusercontent.com/u/125388734?v=4"),
+          backgroundImage: NetworkImage(
+              "https://avatars.githubusercontent.com/u/125388734?v=4"),
+          onBackgroundImageError: (_, __) => const Icon(Icons.error),
           radius: screenScale(context) * 60,
         ),
         _buildSpacer(context, size: 16),
         Text(
-          "${user.firstName ?? ''} ${user.lastName ?? ''}".trim().isNotEmpty
+          "${user.firstName ?? ''} ${user.lastName ?? ''}"
+              .trim()
+              .isNotEmpty
               ? "${user.firstName} ${user.lastName}"
               : 'No Name',
           style: TextStyle(
-            fontSize: responsiveSize(context, mobileSize: 24, tabletSize: 28, desktopSize: 32),
+            fontSize: responsiveSize(
+                context, mobileSize: 24, tabletSize: 28, desktopSize: 32),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -75,17 +94,23 @@ class ProfileScreen extends StatelessWidget {
       elevation: 3,
       child: Padding(
         padding: EdgeInsets.symmetric(
-          vertical: responsiveSize(context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
-          horizontal: responsiveSize(context, mobileSize: 16, tabletSize: 20, desktopSize: 24),
+          vertical: responsiveSize(
+              context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
+          horizontal: responsiveSize(
+              context, mobileSize: 16, tabletSize: 20, desktopSize: 24),
         ),
-        child: Obx(() => Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildStatItem(context, "Total Tasks", _userController.totalTasksCount.value),
-            _buildStatItem(context, "Completed", _userController.completedTaskCount.value),
-            _buildStatItem(context, "Cancelled", _userController.cancelledTaskCount.value),
-          ],
-        )),
+        child: Obx(() =>
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem(context, "Total Tasks",
+                    _userController.totalTasksCount.value),
+                _buildStatItem(context, "Completed",
+                    _userController.completedTaskCount.value),
+                _buildStatItem(context, "Cancelled",
+                    _userController.cancelledTaskCount.value),
+              ],
+            )),
       ),
     );
   }
@@ -96,9 +121,13 @@ class ProfileScreen extends StatelessWidget {
         Text(
           value.toString(),
           style: TextStyle(
-            fontSize: responsiveSize(context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
+            fontSize: responsiveSize(
+                context, mobileSize: 20, tabletSize: 24, desktopSize: 28),
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme
+                .of(context)
+                .colorScheme
+                .primary,
           ),
         ),
         const SizedBox(height: 4),
@@ -114,7 +143,8 @@ class ProfileScreen extends StatelessWidget {
         leading: const Icon(Icons.dark_mode),
         title: Text(
           'Dark Mode',
-          style: TextStyle(fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20)),
+          style: TextStyle(fontSize: responsiveSize(
+              context, mobileSize: 16, tabletSize: 18, desktopSize: 20)),
         ),
         trailing: Obx(() {
           return Switch(
@@ -129,21 +159,26 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildLogoutButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: () => _showLogoutDialog(context),
-        icon: const Icon(Icons.logout),
-        label: Text(
-          'Logout',
-          style: TextStyle(fontSize: responsiveSize(context, mobileSize: 16, tabletSize: 18, desktopSize: 20)),
-        ),
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(
-            vertical: responsiveSize(context, mobileSize: 12, tabletSize: 14, desktopSize: 16),
+      child: Obx(() {
+        return isLoggingOut.value ? CircularProgressIndicator() : ElevatedButton.icon(
+          onPressed: () => _showLogoutDialog(context),
+          icon: const Icon(Icons.logout),
+          label: Text(
+            'Logout',
+            style: TextStyle(fontSize: responsiveSize(
+                context, mobileSize: 16, tabletSize: 18, desktopSize: 20)),
           ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          backgroundColor: Colors.redAccent,
-        ),
-      ),
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              vertical: responsiveSize(
+                  context, mobileSize: 12, tabletSize: 14, desktopSize: 16),
+            ),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }),
     );
   }
 
@@ -162,6 +197,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Future<void> _handleLogout() async {
+    isLoggingOut.value = true;
     try {
       await _authService.logout();
       Get.back(); // Close dialog
@@ -175,16 +211,20 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoggingOut.value = false;
     }
   }
 
   Widget _buildSpacer(BuildContext context, {double? size}) {
-    return SizedBox(height: size ?? responsiveSize(context, mobileSize: 16, tabletSize: 24, desktopSize: 32));
+    return SizedBox(height: size ?? responsiveSize(
+        context, mobileSize: 16, tabletSize: 24, desktopSize: 32));
   }
 
   TextStyle _infoTextStyle(BuildContext context) {
     return TextStyle(
-      fontSize: responsiveSize(context, mobileSize: 14, tabletSize: 16, desktopSize: 18),
+      fontSize: responsiveSize(
+          context, mobileSize: 14, tabletSize: 16, desktopSize: 18),
       color: Colors.grey[600],
     );
   }

@@ -10,7 +10,7 @@ class BottomSheetForm extends StatelessWidget {
   final String? id;
   final String? title;
   final String? description;
-  final String? status;
+  final String status;
 
   BottomSheetForm({
     super.key,
@@ -18,7 +18,7 @@ class BottomSheetForm extends StatelessWidget {
     this.id,
     this.title,
     this.description,
-    this.status,
+    required this.status,
   });
 
   final ApiService _apiService = ApiService();
@@ -223,8 +223,10 @@ class BottomSheetForm extends StatelessWidget {
 
       if (controller.isEdit) {
         await _apiService.updateTaskStatus(taskId, status);
+        dashboard.onTaskSaved();
       } else {
         await _apiService.createTask(title, description, status);
+        dashboard.onTaskSaved();
       }
 
       // clear form

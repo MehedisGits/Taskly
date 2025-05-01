@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_manager/services/task_storage_service.dart';
 import '../../../models/user_model.dart';
 import '../../../services/api_services.dart';
 
@@ -9,33 +10,45 @@ class UserController extends GetxController {
   final Rx<UserDetails?> user = Rx<UserDetails?>(null);
   final isLoading = false.obs;
 
+  late TaskStorageService storage;
+  final isDarkMode = false.obs;
+
   final completedTaskCount = 0.obs;
   final cancelledTaskCount = 0.obs;
+  final newTaskCount = 0.obs;
+  final inProgressTaskCount = 0.obs;
   final totalTasksCount = 0.obs;
-
-  final isDarkMode = false.obs;
 
   final ApiService _apiService = ApiService();
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
+    final prefs = await SharedPreferences.getInstance();
+    storage = TaskStorageService(prefs);
     _loadTheme();
-    loadUserProfile();
-    loadTaskCounts();
+    await loadUserProfile();
+    await refreshAllTaskCounts();
   }
 
-  Future<void> loadTaskCounts() async {
+  /// 🔄 Load all counts using TaskStorageService
+  Future<void> refreshAllTaskCounts() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      completedTaskCount.value = prefs.getInt('CompletedTaskCount') ?? 0;
-      totalTasksCount.value = prefs.getInt('TotalTaskCount') ?? 0;
-      cancelledTaskCount.value = prefs.getInt('CancelledTaskCount') ?? 0;
+      completedTaskCount.value = storage.loadTaskCount("Completed");
+      cancelledTaskCount.value = storage.loadTaskCount("Cancelled");
+      newTaskCount.value = storage.loadTaskCount("New");
+      inProgressTaskCount.value = storage.loadTaskCount("InProgress");
+
+      totalTasksCount.value = completedTaskCount.value +
+          cancelledTaskCount.value +
+          newTaskCount.value +
+          inProgressTaskCount.value;
     } catch (e) {
-      debugPrint("Error loading task counts: $e");
+      debugPrint("❌ Error loading task counts: $e");
     }
   }
 
+  /// 👤 User profile management
   Future<void> loadUserProfile() async {
     isLoading.value = true;
     try {
@@ -51,7 +64,8 @@ class UserController extends GetxController {
 
       await prefs.setString('userDetails', jsonEncode(fetchedUser.toJson()));
     } catch (e) {
-      Get.snackbar("Error", "Could not load profile", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", "Could not load profile",
+          snackPosition: SnackPosition.BOTTOM);
       debugPrint("User profile load error: $e");
     } finally {
       isLoading.value = false;
@@ -64,6 +78,7 @@ class UserController extends GetxController {
     await prefs.setString('userDetails', jsonEncode(updatedProfile.toJson()));
   }
 
+  /// 🌙 Theme
   Future<void> toggleDarkMode(bool value) async {
     isDarkMode.value = value;
     Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);

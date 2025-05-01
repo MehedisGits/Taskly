@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:task_manager/widgets/bottom_sheet_form.dart';
-import 'package:task_manager/widgets/task_categories.dart'; // Make sure it's the correct import
+import 'package:task_manager/widgets/task_categories.dart'; // Update the path if needed
 
 class TaskCard extends StatelessWidget {
   final String taskId;
@@ -35,13 +35,16 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     DateTime parsedDate = DateTime.tryParse(createdDate) ?? DateTime.now();
     String formattedDate = DateFormat('MMM dd, yyyy').format(parsedDate);
 
     if (isLoading) {
       return Shimmer.fromColors(
-        baseColor: Colors.grey.shade200,
-        highlightColor: Colors.grey.shade100,
+        baseColor: colorScheme.surfaceVariant.withOpacity(0.3),
+        highlightColor: colorScheme.surfaceVariant.withOpacity(0.1),
         child: Card(
           elevation: 4,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -51,146 +54,143 @@ class TaskCard extends StatelessWidget {
       );
     }
 
-    // Get the matched category
     final matchedCategory = taskCategories.firstWhere(
           (cat) => cat.name.toLowerCase() == category.toLowerCase(),
-      orElse: () => taskCategories.last, // Fallback if not found
+      orElse: () => taskCategories.last,
     );
 
     return Dismissible(
-      key: UniqueKey(),
-      background: _slideRightBackground(),
-      secondaryBackground: _slideLeftBackground(),
+      key: Key(taskId),
+      background: _slideRightBackground(colorScheme),
+      secondaryBackground: _slideLeftBackground(colorScheme),
       onDismissed: (direction) {
-        if (direction == DismissDirection.startToEnd) {
-          onComplete?.call(); // Swipe right = Complete
-        }
-        if (direction == DismissDirection.endToStart) {
-          onDelete?.call(); // Swipe left = Delete
-        }
+        if (direction == DismissDirection.startToEnd) onComplete?.call();
+        if (direction == DismissDirection.endToStart) onDelete?.call();
       },
       child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 4,
         margin: EdgeInsets.symmetric(
-          vertical: isMobile ? 8 : 12,
-          horizontal: isMobile ? 12 : 20,
+          vertical: isMobile ? 10 : 14,
+          horizontal: isMobile ? 16 : 24,
         ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        color: colorScheme.surface,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
           onTap: () => _isExpanded.toggle(),
+          borderRadius: BorderRadius.circular(20),
+          splashColor: colorScheme.primary.withOpacity(0.1),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title + action buttons
+
+                // Title & actions
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Text(
                         title,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
                           fontSize: isMobile ? 18 : 20,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                     ),
-                    Obx(() {
-                      return _isExpanded.value
-                          ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () => Get.bottomSheet(
-                              BottomSheetForm(
-                                heading: 'Update task',
-                                id: taskId,
-                                title: title,
-                                description: description,
-                              ),
-                            ),
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                          ),
-                          IconButton(
-                            onPressed: onDelete,
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                          ),
-                        ],
-                      )
-                          : const SizedBox();
-                    }),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                // Date + Category with icon and color
-                Row(
-                  children: [
-                    Text(
-                      formattedDate,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: Colors.grey),
-                    ),
-                    const SizedBox(width: 12),
-                    Row(
+                    Obx(() => _isExpanded.value
+                        ? Row(
                       children: [
-                        Icon(
-                          matchedCategory.icon,
-                          color: matchedCategory.color,
-                          size: 16,
+                        IconButton(
+                          icon: Icon(Icons.edit, color: colorScheme.primary),
+                          onPressed: () => Get.bottomSheet(BottomSheetForm(
+                            heading: 'Update task',
+                            id: taskId,
+                            title: title,
+                            description: description,
+                            status: taskStatus,
+                          )),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          matchedCategory.name,
-                          style: TextStyle(
-                            color: matchedCategory.color,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        IconButton(
+                          icon: Icon(Icons.delete_outline, color: colorScheme.error),
+                          onPressed: onDelete,
                         ),
                       ],
+                    )
+                        : const SizedBox()),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                // Date + Category
+                Row(
+                  children: [
+                    Icon(Icons.access_time, color: colorScheme.outline, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      formattedDate,
+                      style: textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: matchedCategory.color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(matchedCategory.icon, color: matchedCategory.color, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            matchedCategory.name,
+                            style: TextStyle(
+                              color: matchedCategory.color,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
                 // Description
-                Obx(() {
-                  return AnimatedCrossFade(
-                    firstChild: Text(
-                      description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    secondChild: Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    crossFadeState: _isExpanded.value
-                        ? CrossFadeState.showSecond
-                        : CrossFadeState.showFirst,
-                    duration: const Duration(milliseconds: 300),
-                  );
-                }),
+                Obx(() => AnimatedCrossFade(
+                  crossFadeState: _isExpanded.value
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 300),
+                  firstChild: Text(
+                    description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                  ),
+                  secondChild: Text(
+                    description,
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                  ),
+                )),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
 
                 // Expand/Collapse icon
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Obx(
-                        () => Icon(
-                      _isExpanded.value
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  child: Obx(() => Icon(
+                    _isExpanded.value
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: colorScheme.outline,
+                  )),
                 ),
               ],
             ),
@@ -200,7 +200,7 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  Widget _slideRightBackground() {
+  Widget _slideRightBackground(ColorScheme colorScheme) {
     return Container(
       color: Colors.green,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -209,9 +209,9 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  Widget _slideLeftBackground() {
+  Widget _slideLeftBackground(ColorScheme colorScheme) {
     return Container(
-      color: Colors.red,
+      color: colorScheme.error,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       alignment: Alignment.centerRight,
       child: const Icon(Icons.delete, color: Colors.white, size: 32),

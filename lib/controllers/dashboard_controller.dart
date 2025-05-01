@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/controllers/task_data_controller.dart';
+import 'package:task_manager/modules/profile/controller/user_controller.dart';
 import 'package:task_manager/services/api_services.dart';
 
 import '../models/task_model.dart';
@@ -66,6 +64,7 @@ class DashboardController extends GetxController {
       final cat = _getCategoryByIndex(idx);
       final tasks = await _loadTasksForCategory(cat);
       visibleTasks.assignAll(tasks);
+      taskCounts.refresh();
       visibleTasks.refresh();
     } catch (e) {
       print("❌ Category Load Error: $e");
@@ -137,6 +136,7 @@ class DashboardController extends GetxController {
     try{
       ApiService apiService = ApiService();
       await apiService.deleteTask(taskId);
+      Get.find<UserController>().refreshAllTaskCounts();
       onTaskSaved();
     } catch(e){
       print("❌ Task Delete Error: $e");
@@ -149,12 +149,13 @@ class DashboardController extends GetxController {
       ApiService apiService = ApiService();
       await apiService.updateTaskStatus(taskId, 'Completed');
 
-      // 🔁 Identify current category
+      // Identify current category
       final currentCategory = _getCategoryByIndex(selectedCategoryIndex.value);
 
-      // 🧹 Remove from current list if present (for instant UI feedback)
+      // Remove from current list if present (for instant UI feedback)
       visibleTasks.removeWhere((task) => task.sId == taskId);
       visibleTasks.refresh();
+      taskCounts.refresh();
 
       // ✅ Mark 'Completed' and 'All' to be refetched
       refetchFlags['Completed'] = true;
@@ -165,12 +166,13 @@ class DashboardController extends GetxController {
         refetchFlags[currentCategory] = true;
       }
 
-      // 🧭 Switch to 'Completed' tab (index 4)
+      // Switch to 'Completed' tab (index 4)
       selectedCategoryIndex.value = 4;
 
-      // 🔄 Fetch completed tasks and update counts
+      // Fetch completed tasks and update counts
       await fetchTasksForCategory(4);
       await _updateTaskCounts();
+      Get.find<UserController>().refreshAllTaskCounts();
 
       // ✅ Confirm to user
       Get.snackbar('Task Completed', 'Task marked as completed ✅',
@@ -200,6 +202,9 @@ class DashboardController extends GetxController {
 
     await fetchTasksForCategory(selectedCategoryIndex.value);
     await _updateTaskCounts();
+    taskCounts.refresh();
+    visibleTasks.refresh();
+
   }
 
   String _getCategoryByIndex(int i) {
