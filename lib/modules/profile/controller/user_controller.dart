@@ -53,15 +53,21 @@ class UserController extends GetxController {
     isLoading.value = true;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final storedUserData = prefs.getString('userDetails');
 
+      // ✅ Step 1: Try loading from shared preferences
+      final storedUserData = prefs.getString('userDetails');
       if (storedUserData != null) {
         user.value = UserDetails.fromJson(jsonDecode(storedUserData));
       }
 
+      // ✅ Step 2: Immediately notify UI with temp (or null-safe fallback)
+      update(); // force UI rebuild if not using Obx
+
+      // ✅ Step 3: Always fetch fresh from server
       final fetchedUser = await _apiService.fetchUserData();
       user.value = fetchedUser;
 
+      // ✅ Step 4: Store for future fast load
       await prefs.setString('userDetails', jsonEncode(fetchedUser.toJson()));
     } catch (e) {
       Get.snackbar("Error", "Could not load profile",
@@ -71,6 +77,7 @@ class UserController extends GetxController {
       isLoading.value = false;
     }
   }
+
 
   Future<void> updateProfile(UserDetails updatedProfile) async {
     user.value = updatedProfile;

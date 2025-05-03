@@ -46,6 +46,9 @@ class DashboardController extends GetxController {
   Future<void> _initializeDashboard() async {
     isLoading.value = true;
     try {
+      // 🛠️ Make sure tasks load from API if local is empty
+      await _ensureTasksAvailable();
+
       await _updateTaskCounts();
       await fetchTasksForCategory(selectedCategoryIndex.value);
     } catch (e) {
@@ -55,6 +58,17 @@ class DashboardController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> _ensureTasksAvailable() async {
+    final categories = ['New', 'Cancelled', 'InProgress', 'Completed'];
+    for (final cat in categories) {
+      final localTasks = await storage.loadTasks(cat);
+      if (localTasks.isEmpty && await checkInternetConnection()) {
+        await _fetchAndSaveCategory(cat);
+      }
+    }
+  }
+
 
   /// Public: fetch tasks by category index
   Future<void> fetchTasksForCategory(int idx) async {
