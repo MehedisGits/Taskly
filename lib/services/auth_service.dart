@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_manager/core/routes.dart';
 
 class AuthService extends GetxService {
   late SharedPreferences _sharedPreferences;
@@ -38,8 +39,8 @@ class AuthService extends GetxService {
       // Optionally reset other singleton services if you have any (example: AuthService)
       Get.reset(); // Reset GetX (controller + services) if you want even harder reset
 
+      _clearUserData();
       // Navigate to Login screen with a fresh clean start
-      Get.offAllNamed('/login');
     } catch (e) {
       Get.snackbar(
         'Logout Error',
@@ -61,18 +62,10 @@ class AuthService extends GetxService {
   }
 
   /// Clear all user data (useful for account deletion or app reset)
-  Future<void> clearUserData() async {
-    try {
-      await _sharedPreferences.clear();
-      isLoggedIn.value = false;
-      Get.offAllNamed('/login'); // Redirect to login screen
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to clear user data. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
+  Future<void> _clearUserData() async {
+    await _sharedPreferences.clear();
+    isLoggedIn.value = false;
+    Get.offAllNamed(Routes.login); // Redirect to login screen
   }
 
   /// Check if the token is valid (placeholder for actual validation logic)

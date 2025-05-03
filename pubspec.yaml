@@ -20,6 +20,7 @@ dependencies:
   shared_preferences: ^2.5.2
   shimmer: ^3.0.0
   connectivity_plus: ^5.0.2
+  flutter_otp_text_field: ^1.5.1+1
 
 
   intl: any

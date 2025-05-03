@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/modules/auth/views/forget_pass_screen.dart';
 
+import '../../../core/routes.dart';
 import '../controller/login_controller.dart';
 import '../../../core/strings.dart';
 import '../../../utils/responsive_size.dart';
@@ -86,7 +88,7 @@ class LoginScreen extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         InkWell(
-          onTap: () => Get.to(SignUpScreen(), transition: Transition.zoom),
+          onTap: () => Get.to(SignUpScreen(), transition: Transition.downToUp),
           child: Text(
             AppStrings.signUp,
             style: TextStyle(
@@ -107,7 +109,7 @@ class LoginScreen extends StatelessWidget {
 
   Widget buildForgetPassword(BuildContext context) {
     return InkWell(
-      onTap: () => Get.snackbar(AppStrings.forgotPassword, "Forget password screen opening"),
+      onTap: () => Get.to(ForgetPassUi(), transition: Transition.rightToLeft),
       child: Text(
         AppStrings.forgotPassword,
         textAlign: TextAlign.center,
@@ -126,21 +128,21 @@ class LoginScreen extends StatelessWidget {
 
   Widget buildObxPasswordField() {
     return Obx(() => CustomTextField(
-      labelText: AppStrings.password,
-      hintText: AppStrings.enterYourPassword,
-      controller: controller.passwordController,
-      obscureText: !controller.isPasswordVisible.value,
-      suffixIcon: IconButton(
-        icon: Icon(
-          controller.isPasswordVisible.value
-              ? Icons.visibility
-              : Icons.visibility_off,
-          color: Get.context?.theme.iconTheme.color,
-        ),
-        onPressed: controller.togglePasswordVisibility,
-      ),
-      validator: (value) => controller.validatePassword(value),
-    ));
+          labelText: AppStrings.password,
+          hintText: AppStrings.enterYourPassword,
+          controller: controller.passwordController,
+          obscureText: !controller.isPasswordVisible.value,
+          suffixIcon: IconButton(
+            icon: Icon(
+              controller.isPasswordVisible.value
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+              color: Get.context?.theme.iconTheme.color,
+            ),
+            onPressed: controller.togglePasswordVisibility,
+          ),
+          validator: (value) => controller.validatePassword(value),
+        ));
   }
 
   Widget buildTextFormField() {

@@ -6,4 +6,6 @@ class Routes {
   static const String splash = '/splash';
   static const String addTask = '/addTask';
   static const String profile = '/profile';
+  static const String forgetPass = '/forgetPass';
+  static const String otpVerification = '/otpVerification';
 }

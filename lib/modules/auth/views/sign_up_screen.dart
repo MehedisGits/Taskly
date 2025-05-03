@@ -21,125 +21,129 @@ class SignUpScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16 * screenScale),
-            child: Card(
-              // Use theme-aware card color
-              color: context.theme.cardColor,
-              elevation: 0,
-              child: Padding(
-                padding: EdgeInsets.all(16 * screenScale),
-                child: Form(
-                  key: controller.formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTitle(context),
-                      SizedBox(height: responsiveSize(context, mobileSize: 16)),
-                      // First Name Field
-                      CustomTextField(
-                        labelText: 'First Name',
-                        hintText: 'Enter your first name',
-                        controller: controller.firstNameController,
-                        validator: (value) => value != null && value.isEmpty
-                            ? 'First Name cannot be empty'
-                            : null,
-                      ),
-                      SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      // Last Name Field
-                      CustomTextField(
-                        labelText: 'Last Name',
-                        hintText: 'Enter your last name',
-                        controller: controller.lastNameController,
-                        validator: (value) => value != null && value.isEmpty
-                            ? 'Last Name cannot be empty'
-                            : null,
-                      ),
-                      SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      // Email Field
-                      CustomTextField(
-                        labelText: AppStrings.email,
-                        hintText: AppStrings.enterYourEmail,
-                        controller: controller.emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) => !GetUtils.isEmail(value ?? '')
-                            ? 'Enter a valid email address'
-                            : null,
-                      ),
-                      SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      // Phone Number Field
-                      CustomTextField(
-                        labelText: 'Phone Number',
-                        hintText: 'Enter your phone number',
-                        controller: controller.phoneController,
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Phone number is required';
-                          } else if (!RegExp(r'^[0-9]{10,15}$')
-                              .hasMatch(value)) {
-                            return 'Enter a valid phone number';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      // Password Field
-                      Obx(() => CustomTextField(
-                            labelText: AppStrings.password,
-                            hintText: AppStrings.enterYourPassword,
-                            controller: controller.passwordController,
-                            obscureText: controller.isPasswordHidden.value,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                controller.isPasswordHidden.value
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: controller.togglePasswordVisibility,
+      body: _buildBody(screenScale, context),
+    );
+  }
+
+  Center _buildBody(double screenScale, BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16 * screenScale),
+          child: Card(
+            // Use theme-aware card color
+            color: context.theme.cardColor,
+            elevation: 0,
+            child: Padding(
+              padding: EdgeInsets.all(16 * screenScale),
+              child: Form(
+                key: controller.formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTitle(context),
+                    SizedBox(height: responsiveSize(context, mobileSize: 16)),
+                    // First Name Field
+                    CustomTextField(
+                      labelText: 'First Name',
+                      hintText: 'Enter your first name',
+                      controller: controller.firstNameController,
+                      validator: (value) => value != null && value.isEmpty
+                          ? 'First Name cannot be empty'
+                          : null,
+                    ),
+                    SizedBox(height: responsiveSize(context, mobileSize: 12)),
+                    // Last Name Field
+                    CustomTextField(
+                      labelText: 'Last Name',
+                      hintText: 'Enter your last name',
+                      controller: controller.lastNameController,
+                      validator: (value) => value != null && value.isEmpty
+                          ? 'Last Name cannot be empty'
+                          : null,
+                    ),
+                    SizedBox(height: responsiveSize(context, mobileSize: 12)),
+                    // Email Field
+                    CustomTextField(
+                      labelText: AppStrings.email,
+                      hintText: AppStrings.enterYourEmail,
+                      controller: controller.emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) => !GetUtils.isEmail(value ?? '')
+                          ? 'Enter a valid email address'
+                          : null,
+                    ),
+                    SizedBox(height: responsiveSize(context, mobileSize: 12)),
+                    // Phone Number Field
+                    CustomTextField(
+                      labelText: 'Phone Number',
+                      hintText: 'Enter your phone number',
+                      controller: controller.phoneController,
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Phone number is required';
+                        } else if (!RegExp(r'^[0-9]{10,15}$')
+                            .hasMatch(value)) {
+                          return 'Enter a valid phone number';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: responsiveSize(context, mobileSize: 12)),
+                    // Password Field
+                    Obx(() => CustomTextField(
+                          labelText: AppStrings.password,
+                          hintText: AppStrings.enterYourPassword,
+                          controller: controller.passwordController,
+                          obscureText: controller.isPasswordHidden.value,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isPasswordHidden.value
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
-                            validator: (value) => value != null &&
-                                    value.length < 6
-                                ? 'Password must be at least 6 characters long'
-                                : null,
-                          )),
-                      SizedBox(height: responsiveSize(context, mobileSize: 12)),
-                      // Confirm Password Field
-                      Obx(() => CustomTextField(
-                            labelText: 'Confirm Password',
-                            hintText: 'Re-enter your password',
-                            controller: controller.confirmPasswordController,
-                            obscureText: controller.isPasswordHidden.value,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                controller.isPasswordHidden.value
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: controller.togglePasswordVisibility,
+                            onPressed: controller.togglePasswordVisibility,
+                          ),
+                          validator: (value) => value != null &&
+                                  value.length < 6
+                              ? 'Password must be at least 6 characters long'
+                              : null,
+                        )),
+                    SizedBox(height: responsiveSize(context, mobileSize: 12)),
+                    // Confirm Password Field
+                    Obx(() => CustomTextField(
+                          labelText: 'Confirm Password',
+                          hintText: 'Re-enter your password',
+                          controller: controller.confirmPasswordController,
+                          obscureText: controller.isPasswordHidden.value,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isPasswordHidden.value
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
-                            validator: (value) =>
-                                value != controller.passwordController.text
-                                    ? 'Passwords do not match'
-                                    : null,
-                          )),
-                      SizedBox(height: responsiveSize(context, mobileSize: 16)),
-                      // Sign Up Button
-                      CustomButton(
-                        onPressed: () {
-                          if (controller.formKey.currentState!.validate()) {
-                            controller.signUp();
-                          }
-                        },
-                        text: AppStrings.signUp,
-                      ),
-                      SizedBox(height: responsiveSize(context, mobileSize: 16)),
-                      // Login Redirect Row
-                      _buildLoginRow(context),
-                    ],
-                  ),
+                            onPressed: controller.togglePasswordVisibility,
+                          ),
+                          validator: (value) =>
+                              value != controller.passwordController.text
+                                  ? 'Passwords do not match'
+                                  : null,
+                        )),
+                    SizedBox(height: responsiveSize(context, mobileSize: 16)),
+                    // Sign Up Button
+                    CustomButton(
+                      onPressed: () {
+                        if (controller.formKey.currentState!.validate()) {
+                          controller.signUp();
+                        }
+                      },
+                      text: AppStrings.signUp,
+                    ),
+                    SizedBox(height: responsiveSize(context, mobileSize: 16)),
+                    // Login Redirect Row
+                    _buildLoginRow(context),
+                  ],
                 ),
               ),
             ),
@@ -172,7 +176,7 @@ class SignUpScreen extends StatelessWidget {
         SizedBox(width: 6),
         InkWell(
           onTap: () {
-            Get.offAll(LoginScreen(), transition: Transition.zoom);
+            Get.offAll(LoginScreen(), transition: Transition.upToDown);
           },
           child: Text(
             'Log in',

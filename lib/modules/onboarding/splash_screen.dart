@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/core/routes.dart';
+import 'package:task_manager/modules/auth/views/forget_pass_screen.dart';
 import 'package:task_manager/services/api_client.dart';
 
 class SplashScreen extends StatefulWidget {

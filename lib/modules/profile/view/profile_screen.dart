@@ -202,6 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await _authService.logout();
       Get.back(); // Close dialog
       Get.offAllNamed('/login');
+
     } catch (e) {
       Get.back();
       Get.snackbar(
